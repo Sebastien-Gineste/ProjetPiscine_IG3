@@ -9,11 +9,10 @@ exports.selectAll = (req, res, next) => {
   }).catch((error) => {
       switch(error) {
         case Error.NO_RESULTS:
-            console.log('Pas de demande.');
+            console.log('Pas de données dans cette table.');
             res.status(400).json({ error })
             break;
         default : 
-            console.log(error == Errors.NO_RESULTS)
             console.log('service indispo.');
             res.status(400).json({ error })
             break;
