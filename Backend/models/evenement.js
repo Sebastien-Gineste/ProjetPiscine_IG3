@@ -1,12 +1,11 @@
 const Model = require("../models/model");
 
-class Etudiant extends Model {
+class Evenement extends Model {
 
   constructor() {
     super();
-    this.tableName = "etudiant";
-    this.tabKey = ["numEtudiant"];
-    
+    this.tableName = "evenement";
+    this.tabKey = ["numEvenement"];
   }
   /*
    * objeyVal : {nomColonne : valColonne, nomColone2 : valColone2}
@@ -43,4 +42,4 @@ class Etudiant extends Model {
 
 }
 
-module.exports = Etudiant
+module.exports = Evenement

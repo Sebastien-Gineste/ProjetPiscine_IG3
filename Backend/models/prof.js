@@ -1,11 +1,11 @@
 const Model = require("../models/model");
 
-class Etudiant extends Model {
+class Prof extends Model {
 
   constructor() {
     super();
-    this.tableName = "etudiant";
-    this.tabKey = ["numEtudiant"];
+    this.tableName = "prof";
+    this.tabKey = ["idProf"];
     
   }
   /*
@@ -43,4 +43,4 @@ class Etudiant extends Model {
 
 }
 
-module.exports = Etudiant
+module.exports = Prof
