@@ -4,9 +4,12 @@ const Errors = {
     NO_RESULTS: new Error('No results'),
     BAD_REQUEST: new Error('Bad request'),
     CONNECTION_ERROR: new Error('Unable to query database'),  
+    TOO_MANY_RESPONSE: new Error('Trop de valeur retourné'),
+    BAD_PASSWORD: new Error("Mauvais mots de passe"),
   }
-
-module.exports = class Model{ // Model générique pour les tables de la base de données;
+exports.client = client;
+exports.Error = Errors;
+exports.Model = class Model{ // Model générique pour les tables de la base de données;
 
     constructor(){
         this.client = client; // Il contient la connexion à la base de données
@@ -31,7 +34,7 @@ module.exports = class Model{ // Model générique pour les tables de la base de
 
             request = request.substr(0, request.length - 1) // enlève la dernière virgule
             request+= ") VALUES("+strValue.substr(0, strValue.length - 1)+") RETURNING *";
-
+            
             const query = {
                 name: 'save-générique', // réquête préparer
                 text: request,
@@ -95,8 +98,8 @@ module.exports = class Model{ // Model générique pour les tables de la base de
                     reject(Error.CONNECTION_ERROR);
                     return;
                 }
-                if(results[0] !== undefined) {
-                    resolve(results)
+                if(results.rows[0] !== undefined) {
+                    resolve(results.rows)
                 } else {
                     reject(Error.NO_RESULTS);
                 }
@@ -139,7 +142,6 @@ module.exports = class Model{ // Model générique pour les tables de la base de
                 values: tabValues,
               }
 
-            console.log(query)
             this.client.query(query, function(error, results) {
                 if (error) {
                     console.log(error)

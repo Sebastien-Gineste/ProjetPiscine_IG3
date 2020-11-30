@@ -1,10 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-const userCtrl = require('../controllers/etudiant');
+const auth = require("../middleware/auth")
 
-router.post('/signup', userCtrl.signup);
-router.get('/etudiants', userCtrl.selectAll)
-router.post('/login', userCtrl.login);
+const etudiantCtrl = require('../controllers/etudiant');
+
+router.get('/', auth.verifyToken, etudiantCtrl.selectAll)
+router.post('/Inscription', etudiantCtrl.signup);
+router.put('/'/*,auth.verifyToken*/, etudiantCtrl.update)
+router.get('/etudiants', etudiantCtrl.selectAll)
+router.post('/login', etudiantCtrl.login);
 
 module.exports = router;

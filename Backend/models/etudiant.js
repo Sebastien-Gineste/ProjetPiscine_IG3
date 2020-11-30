@@ -1,6 +1,7 @@
-const Model = require("../models/model");
+const model = require("../models/model");
+const bcrypt = require("bcrypt");
 
-class Etudiant extends Model {
+class Etudiant extends model.Model {
 
   constructor() {
     super();
@@ -8,6 +9,43 @@ class Etudiant extends Model {
     this.tabKey = ["numEtudiant"];
     
   }
+
+  checkConnexion(email, mdp){
+    return new Promise((resolve, reject) => {
+      const query = {
+          name: 'select-userByEmail', // réquête préparer
+          text: 'SELECT * FROM '+this.tableName+' WHERE "emailEtudiant" = $1',
+          values: [email],
+      };
+     
+      model.client.query(query, function(error, results) {
+          if (error) {
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+            if(results.rows.length > 1 ){
+              reject(model.Error.TOO_MANY_RESPONSE)
+            }
+            else{ // Utilisateur Bien retourné
+              bcrypt.compare(mdp, results.rows[0].mdpEtudiant).then(valid => {
+                if(!valid){
+                  reject(model.Error.BAD_PASSWORD);
+                }
+                else{
+                  resolve(results.rows);
+                }
+              })
+            }  
+          } else {
+              // pas de résultat
+              reject(model.Error.NO_RESULTS);
+          }
+      });
+  });
+  }
+
   /*
    * objeyVal : {nomColonne : valColonne, nomColone2 : valColone2}
   */

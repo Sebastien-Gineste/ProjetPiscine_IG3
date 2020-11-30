@@ -1,19 +1,30 @@
 const jwt = require('jsonwebtoken');
+const SecretToken = require('../config/tokenKey');
 
-module.exports = (req, res, next) => {
+exports.verifyToken = (req, res, next) => {
   try {
-    console.log("ok")
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
-    const userId = decodedToken.userId;
-    if (req.body.userId && req.body.userId !== userId) {
-      throw 'Invalid user ID';
+    if(typeof req.headers["authorization"] !== 'undefined') {
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, SecretToken);
+        console.log(decodedToken);
+        const userId = decodedToken.idEtudiant;
+        if (req.body.userId && req.body.userId !== userId) {
+          res.sendStatus(403);
+        } else {
+          next(); // Utilisateur Valider
+        }
     } else {
-      next();
+        // Forbidden
+        res.sendStatus(403);
     }
-  } catch {
-    res.status(401).json({
-      error: new Error('Invalid request!')
-    });
   }
-};
+  catch(error){
+    console.log(error)
+    res.status(400).json({ error })
+  }
+}
+
+
+exports.createToken = function(idEtudiant) {
+  return jwt.sign( {idEtudiant: idEtudiant}, SecretToken, {expiresIn: '24h'});
+}

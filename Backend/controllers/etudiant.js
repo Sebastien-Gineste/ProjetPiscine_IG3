@@ -1,11 +1,11 @@
-const jwt = require('jsonwebtoken');
+const auth = require('../middleware/auth')
 const Etudiant = require("../models/etudiant");
+const errorModel = require("../models/model");
 const bcrypt = require("bcrypt");
 
 exports.selectAll = (req, res, next) => {
   new Etudiant().selectAll().then((results) => {
-      console.log(results)
-      res.status(201).json({ message: 'Utilisateur créé !' })
+      res.status(200).json(results)
   }).catch((error) => {
       switch(error) {
         case Error.NO_RESULTS:
@@ -19,42 +19,77 @@ exports.selectAll = (req, res, next) => {
       }
   })
 }
- // A modif
+
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
       .then(hash => {
-        const user = new Etudiant({
-          email: req.body.email,
-          password: hash
-        });
-        user.save()
+        const user = {
+          nomEtudiant : req.body.nom,
+          prenomEtudiant : req.body.prenom,
+          emailEtudiant: req.body.email,
+          mdpEtudiant: hash,
+          annePromo : req.body.promo
+        };
+        console.log(user)
+        if(req.body.numEtudiant){ //Si l'étudiant à mit son num étudiant 
+          user.numEtudiant = req.body.numEtudiant
+        }
+        new Etudiant().save(user)
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
           .catch(error => res.status(400).json({ error }));
       })
       .catch(error => res.status(500).json({ error }));
-  };
+};
 
-  exports.login = (req, res, next) => {
-    Etudiant.findOne({ email: req.body.email })
-      .then(user => {
-        if (!user) {
-          return res.status(401).json({ error: 'Utilisateur non trouvé !' });
+exports.update =(req,res,next) => {
+
+        const user = { }
+
+        if(req.body.nom){
+          user.nomEtudiant = req.body.nom
         }
-        bcrypt.compare(req.body.password, user.password)
-          .then(valid => {
-            if (!valid) {
-              return res.status(401).json({ error: 'Mot de passe incorrect !' });
-            }
-            res.status(200).json({
-              userId: user._id,
-              token: jwt.sign(
-                { userId: user._id },
-                'RANDOM_TOKEN_SECRET',
-                { expiresIn: '24h' }
-              )
-            });
-          })
-          .catch(error => res.status(500).json({ error }));
-      })
-      .catch(error => res.status(500).json({ error }));
-  };
+        if(req.body.prenom){
+          user.prenomEtudiant = req.body.prenom
+        }
+        if(req.body.promo){
+          user.annePromo = req.body.promo
+        }
+        if(req.body.email){
+          user.emailEtudiant = req.body.email
+        }
+
+        if(Object.keys(user).length == 0 || !req.body.id){ // pas de modif ou pas d'id
+          res.status(400).json({ message : "Pas de valeur à modifier" })
+        }
+        else{
+          console.log(user)
+          new Etudiant().update([req.body.id],user)
+          .then(() => res.status(200).json({ message: 'Utilisateur modifier !' }))
+          .catch(error => res.status(400).json({ error }));
+        }
+};
+
+exports.login = (req, res, next) => {
+  console.log(req.body);
+  new Etudiant().checkConnexion(req.body.email, req.body.password)
+    .then(user => {
+          res.status(200).json({
+            admin: user[0].estAdmin,
+            userId: user[0].numEtudiant,
+            token: auth.createToken(user[0].numEtudiant)
+          });
+        })
+    .catch(error =>{
+      switch(error) {
+        case errorModel.Error.BAD_PASSWORD:
+          res.status(403).send("mauvais mots de passe")
+          break;
+        case errorModel.Error.NO_RESULTS:
+          res.status(403).send("Email non trouvée")
+          break;
+        default:
+          res.status(500).send('Problème de connection')
+          break;
+      }      
+    });
+  }
