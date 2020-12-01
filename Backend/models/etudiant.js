@@ -57,6 +57,10 @@ class Etudiant extends model.Model {
     return super.selectAll(this.tableName)
   }
 
+  selectByEmail(email){
+    return super.select(this.tableName,["emailEtudiant"],email)
+  }
+
   /*  
    * id : [val Clé primaire]
   */
