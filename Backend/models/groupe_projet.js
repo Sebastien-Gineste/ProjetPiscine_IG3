@@ -1,6 +1,6 @@
-const Model = require("../models/model");
+const model = require("../models/model");
 
-class Groupe extends Model {
+class Groupe extends model.Model {
 
   constructor() {
     super();

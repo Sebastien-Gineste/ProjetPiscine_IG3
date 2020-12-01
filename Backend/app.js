@@ -4,10 +4,11 @@ const bodyParser = require('body-parser');
 const Pool = require("./config/conf")
 
 const path = require('path');
-/*
-const stuffRoutes = require("./routes/stuff");
-*/
-const userRoutes = require('./routes/etudiant');
+
+const etudiantRoutes = require('./routes/etudiant');
+const groupeRoutes = require('./routes/groupe_projet');
+const evenementRoutes = require('./routes/evenement');
+
 
 const app = express();
 
@@ -20,8 +21,8 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
-/*
-app.use('/api/stuff', stuffRoutes);*/
-app.use('/api/Etudiant', userRoutes);
+app.use('/api/Etudiant', etudiantRoutes);
+app.use('/api/Groupe', groupeRoutes);
+app.use('/api/Evenement', evenementRoutes);
 
 module.exports = app;

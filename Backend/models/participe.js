@@ -1,6 +1,6 @@
-const Model = require("../models/model");
+const model = require("../models/model");
 
-class Participe extends Model {
+class Participe extends model.Model {
 
   constructor() {
     super();

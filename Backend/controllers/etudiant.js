@@ -100,6 +100,12 @@ exports.select = (req,res,next) => {
   res.status(500).send('Pas encore fait')
 }
 
+exports.envoieCodeMail = (req,res,next) =>{
+  console.log(req.params.id);
+  console.log(req.body.email);
+  res.status(500).send('Pas encore fait')
+}
+
 /* A faire */
 exports.changeMdp = (req,res,next) => {
   console.log(req.params.id)

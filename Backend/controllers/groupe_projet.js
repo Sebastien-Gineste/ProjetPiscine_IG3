@@ -1,4 +1,4 @@
-const Groupe = require('../models/groupe_jprojet');
+const Groupe = require('../models/groupe_projet');
 const Composer = require('../models/composerGroupe_Etudiant');
 const Etudiant = require('../models/etudiant');
 const errorModel = require("../models/model");
