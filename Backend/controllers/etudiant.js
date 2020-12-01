@@ -58,12 +58,12 @@ exports.update =(req,res,next) => {
           user.emailEtudiant = req.body.email
         }
 
-        if(Object.keys(user).length == 0 || !req.body.id){ // pas de modif ou pas d'id
+        if(Object.keys(user).length == 0){ // pas de modif 
           res.status(400).json({ message : "Pas de valeur à modifier" })
         }
         else{
           console.log(user)
-          new Etudiant().update([req.body.id],user)
+          new Etudiant().update([req.params.id],user)
           .then(() => res.status(200).json({ message: 'Utilisateur modifier !' }))
           .catch(error => res.status(400).json({ error }));
         }
@@ -92,4 +92,22 @@ exports.login = (req, res, next) => {
           break;
       }      
     });
-  }
+}
+
+/* A faire */
+exports.select = (req,res,next) => {
+  console.log(req.params.id)
+  res.status(500).send('Pas encore fait')
+}
+
+/* A faire */
+exports.changeMdp = (req,res,next) => {
+  console.log(req.params.id)
+  res.status(500).send('Pas encore fait')
+}
+
+/* A faire */
+exports.delete = (req,res,next) => {
+  console.log(req.params.id)
+  res.status(500).send('PPas encore fait')
+}
