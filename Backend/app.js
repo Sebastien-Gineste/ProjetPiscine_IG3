@@ -22,6 +22,6 @@ app.use(bodyParser.json());
 
 /*
 app.use('/api/stuff', stuffRoutes);*/
-app.use('/api/auth', userRoutes);
+app.use('/api/Etudiant', userRoutes);
 
 module.exports = app;
