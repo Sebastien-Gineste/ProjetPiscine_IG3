@@ -9,6 +9,7 @@ const etudiantRoutes = require('./routes/etudiant');
 const groupeRoutes = require('./routes/groupe_projet');
 const evenementRoutes = require('./routes/evenement');
 const creneauRoutes = require('./routes/creneau');
+const profRoutes = require('./routes/prof');
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 
 app.use('/api/Etudiant', etudiantRoutes);
 app.use('/api/Groupe', groupeRoutes);
+app.use('/api/Prof', profRoutes);
 app.use('/api/Evenement', evenementRoutes);
 app.use('/api/Evenement/:id/Creneau',creneauRoutes);
 
