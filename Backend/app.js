@@ -10,7 +10,7 @@ const groupeRoutes = require('./routes/groupe_projet');
 const evenementRoutes = require('./routes/evenement');
 const creneauRoutes = require('./routes/creneau');
 const profRoutes = require('./routes/prof');
-const promoRoutes = require('./routes/promo';)
+const promoRoutes = require('./routes/promo');
 
 const app = express();
 
