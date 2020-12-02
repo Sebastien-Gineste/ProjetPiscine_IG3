@@ -15,7 +15,7 @@ import store from './store/'
 
 
 
-if(localStorage.getItem("token")){
+if(localStorage.getItem("token")){  // Vérifie si un token est déjà existant
     var id = localStorage.getItem("id");
     var token = localStorage.getItem("token");
     axios.post(`http://localhost:3000/api/Etudiant/`+id).then((response) => {
