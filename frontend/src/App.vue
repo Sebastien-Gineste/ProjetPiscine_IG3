@@ -10,6 +10,25 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue";
+import axios from "axios";
+import store from './store/'
+
+
+
+if(localStorage.getItem("token")){
+    var id = localStorage.getItem("id");
+    var token = localStorage.getItem("token");
+    axios.post(`http://localhost:3000/api/Etudiant/`+id).then((response) => {
+            var user = {admin : response.data.admin, userId : id, token : token};
+            console.log(user);
+            store.dispatch('connexion',user);
+            store.push("/")
+        })
+        .catch((error) => { 
+          console.log(error);
+        });
+}
+
 
 export default {
   components: { NavBar },

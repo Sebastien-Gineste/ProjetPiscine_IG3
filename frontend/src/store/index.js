@@ -9,29 +9,29 @@ export default new Vuex.Store({
   state: {
     id : null, 
     admin : false,
-    token :null
+    token : null
   },
   mutations: {
-    UPDATE_USER : (state, id, admin, token) =>{
-      state.id = id,
-      state.admin = admin,
-      state.token = token
+    UPDATE_USER : (state, user) =>{
+      state.id = user.userId
+      state.admin = user.admin,
+      state.token = user.token
     }
   },
   getters: {
     isAdmin : state => {
-      return state.id; 
+      return state.admin; 
     },
     isUser : state => {
       return state.id != null;
     }
   },
   actions: {
-    connexion({ commit },id,admin,token){
-      commit('UPDATE_USER',id,admin, token)
+    connexion({ commit },user){
+      commit('UPDATE_USER',user)
     },
     deconnexion({ commit }){
-      commit('UPDATE_USER',null,false,null)
+      commit('UPDATE_USER',{userId : null,admin : false, token : null})
     }
   },
   modules: {

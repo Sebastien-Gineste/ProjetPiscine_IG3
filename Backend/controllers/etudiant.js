@@ -73,6 +73,7 @@ exports.login = (req, res, next) => {
   console.log(req.body);
   new Etudiant().checkConnexion(req.body.email, req.body.password)
     .then(user => {
+          console.log(user[0])
           res.status(200).json({
             admin: user[0].estAdmin,
             userId: user[0].numEtudiant,
@@ -92,6 +93,26 @@ exports.login = (req, res, next) => {
           break;
       }      
     });
+}
+
+exports.checkAdmin = (req,res,next) => {
+  new Etudiant().select([req.params.id])
+  .then(user => {
+     if(user[0].estAdmin){
+      res.status(200).json({
+        admin: true
+      });
+     }
+     else{
+      res.status(200).json({
+        admin: false
+      });
+     }
+  })
+  .catch(error => {
+    console.log(error)
+    res.status(500).send(error);
+  });
 }
 
 /* A faire */

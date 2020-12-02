@@ -51,7 +51,9 @@
         evt.preventDefault()
         axios.post(`http://localhost:3000/api/Etudiant/Connexion`,this.form).then((response) => {
              var user = response.data;
-             this.$store.dispatch('connexion',user.admin,user.userId,user.token);
+             localStorage.setItem("token",user.token);
+             localStorage.setItem("id",user.userId);
+             this.$store.dispatch('connexion',user);
              this.$router.push("/")
         })
         .catch((error) => { 

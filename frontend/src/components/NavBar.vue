@@ -41,6 +41,8 @@ export default {
    methods:{
        ...mapGetters(['isUser','isAdmin']),
        Deconnexion(){
+           localStorage.removeItem('token');
+           localStorage.removeItem('id');
            this.$store.dispatch('deconnexion');
        }
    }
