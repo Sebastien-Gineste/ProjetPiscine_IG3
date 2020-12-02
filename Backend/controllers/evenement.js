@@ -3,7 +3,7 @@ const errorModel = require("../models/model");
 
 //A faire
 exports.selectAll = (req, res, next) => {
-  res.status(500).send('Pas encore fait')
+  res.status(500).send('Pas encore fait bla')
 };
 
 //A faire

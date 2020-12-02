@@ -5,8 +5,8 @@ const auth = require("../middleware/auth")
 
 const evenementCtrl = require('../controllers/evenement');
 
-router.get('/', auth.verifyToken, evenementCtrl.selectAll)                   // Information de tous les événements
-router.get('/:id',auth.verifyToken, evenementCtrl.select)                    // Information d'un événement identifiant avec son "id"
+router.get('/', evenementCtrl.selectAll)                                     // Information de tous les événements
+router.get('/:id', evenementCtrl.select)                                     // Information d'un événement identifiant avec son "id"
 router.post('/',auth.verifyToken, evenementCtrl.save);                       // Création d'un évenemnt
 router.put('/:id',auth.verifyToken, evenementCtrl.update)                    // Modification d'un événement identifier avec son "id"
 router.delete('/:id',auth.verifyToken,evenementCtrl.delete)                  // Supprimer un événement identifier avec son "id"
