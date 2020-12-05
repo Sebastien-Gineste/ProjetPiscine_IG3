@@ -21,8 +21,7 @@ export default new Vuex.Store({
       return state.admin; 
     },
     isUser : state => { // permet de voir qui est connecté 
-      return state.id != "-1";
-    },
+      return state.id !== "-1" && state.id !== null},
     isUpdate : state =>{ // permet de savoir si le state n'a pas été mise a jour au chargement de vue pour la première fois
       return state.id === null
     }
