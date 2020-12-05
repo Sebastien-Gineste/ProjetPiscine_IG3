@@ -32,6 +32,7 @@
 
 <script>
  import axios from "axios";
+ import tok from "../service/token";
  //import router from '../router'
 
   export default {
@@ -51,8 +52,7 @@
         evt.preventDefault()
         axios.post(`http://localhost:3000/api/Etudiant/Connexion`,this.form).then((response) => {
              var user = response.data;
-             localStorage.setItem("token",user.token);
-             localStorage.setItem("id",user.userId);
+             sessionStorage.setItem("token",tok.encode(user.token,user.userId));
              this.$store.dispatch('connexion',user);
              this.$router.push("/")
         })

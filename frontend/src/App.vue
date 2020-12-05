@@ -11,27 +11,29 @@
 <script>
 import NavBar from "@/components/NavBar.vue";
 import axios from "axios";
-import store from './store/'
-
-
-
-if(localStorage.getItem("token")){  // Vérifie si un token est déjà existant
-    var id = localStorage.getItem("id");
-    var token = localStorage.getItem("token");
-    axios.post(`http://localhost:3000/api/Etudiant/`+id).then((response) => {
-            var user = {admin : response.data.admin, userId : id, token : token};
-            console.log(user);
-            store.dispatch('connexion',user);
-            store.push("/")
-        })
-        .catch((error) => { 
-          console.log(error);
-        });
-}
+import tok from "./service/token"
+import store from './store/';
 
 
 export default {
   components: { NavBar },
+  beforeMount(){
+    if(store.getters.isUpdate){
+       if(sessionStorage.getItem("token")){  // Vérifie si un token est déjà existant
+          var user = tok.decode(sessionStorage.getItem("token"));
+          axios.post(`http://localhost:3000/api/Etudiant/`+user.id, { headers:{authorization: "bearer "+user.token}}).then((response) => {
+                  user = {admin : response.data.admin, userId : user.id, token : user.token};
+                  store.dispatch('connexion',user);
+              })
+              .catch((error) => { 
+                console.log(error);
+              });
+      }
+      else{
+         store.dispatch('deconnexion',user);
+      }
+    }
+  }
 }
 
 </script>

@@ -1,6 +1,7 @@
 const express = require('express');
 require('dotenv').config()
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser')
 const Pool = require("./config/conf")
 
 const path = require('path');
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
   });
 
 app.use(bodyParser.json());
+app.use(cookieParser())
 
 app.use('/api/Etudiant', etudiantRoutes);
 app.use('/api/Groupe', groupeRoutes);

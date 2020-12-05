@@ -24,6 +24,14 @@ exports.verifyToken = (req, res, next) => {
   }
 }
 
+exports.decodeToken = (token) =>{
+  try{
+    return jwt.verify(token, SecretToken)
+  }
+  catch(error){
+    return error;
+  }
+}
 
 exports.createToken = function(idEtudiant) {
   return jwt.sign( {idEtudiant: idEtudiant}, SecretToken, {expiresIn: '24h'});

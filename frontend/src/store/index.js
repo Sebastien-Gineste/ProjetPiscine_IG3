@@ -9,21 +9,22 @@ export default new Vuex.Store({
   state: {
     id : null, 
     admin : false,
-    token : null
   },
   mutations: {
     UPDATE_USER : (state, user) =>{
       state.id = user.userId
-      state.admin = user.admin,
-      state.token = user.token
+      state.admin = user.admin
     }
   },
   getters: {
     isAdmin : state => {
       return state.admin; 
     },
-    isUser : state => {
-      return state.id != null;
+    isUser : state => { // permet de voir qui est connecté 
+      return state.id != "-1";
+    },
+    isUpdate : state =>{ // permet de savoir si le state n'a pas été mise a jour au chargement de vue pour la première fois
+      return state.id === null
     }
   },
   actions: {
@@ -31,7 +32,7 @@ export default new Vuex.Store({
       commit('UPDATE_USER',user)
     },
     deconnexion({ commit }){
-      commit('UPDATE_USER',{userId : null,admin : false, token : null})
+      commit('UPDATE_USER',{userId : "-1",admin : false})
     }
   },
   modules: {
