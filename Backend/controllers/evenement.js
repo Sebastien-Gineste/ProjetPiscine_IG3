@@ -8,6 +8,7 @@ exports.selectAll = (req, res, next) => {
 
 //A faire
 exports.save = (req, res, next) => {
+  console.log(req.body);
   res.status(500).send('Pas encore fait')
 };
 
