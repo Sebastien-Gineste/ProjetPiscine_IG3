@@ -26,8 +26,8 @@ const routes = [
   {
     path: '/Evenement/Création',
     name: 'EvenementsCreation',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Planning.vue'),
-    meta : {requireAuth : true}
+    component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Evenement.vue'),
+    meta : {requireAuth : true, requireAdmin : true}
   },
   {
     path: '/about',
@@ -50,8 +50,14 @@ router.beforeEach((to,from,next) => {
     if(store.getters.isUpdate){ // on vient de recharger la page
       if(sessionStorage.getItem("token")){  // Vérifie si un token est déjà existant
         var user = tok.decode(sessionStorage.getItem("token"));
-        axios.post(`http://localhost:3000/api/Etudiant/`+user.id, { headers:{authorization: "bearer "+user.token}}).then(() => {
-                next(); // identifier
+        axios.post(`http://localhost:3000/api/Etudiant/`+user.id,{}, { headers:{authorization: "bearer "+user.token}}).then((res) => {
+                if(to.meta.requireAdmin){
+                  if(res.data.admin) {next();} // identifier
+                  else{ next({ name : "Connexion" });}
+                }
+                else{
+                  next(); // identifier
+                }
             })
             .catch((error) => { 
               console.log(error);
@@ -68,7 +74,13 @@ router.beforeEach((to,from,next) => {
       }
     }
     else if(store.getters.isUser){ // il a accès
-      next();
+     if(to.meta.requireAdmin){
+       if(store.getters.isAdmin) {next();} // identifier
+       else{ next({ name : "Connexion" });}
+     }
+     else{
+       next(); // identifier
+     }
     }
     else{ // n'a pas le droit
       next({

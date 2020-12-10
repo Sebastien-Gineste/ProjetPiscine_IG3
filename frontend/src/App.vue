@@ -2,8 +2,9 @@
   <div id="app">
     <nav-bar /> <!-- Menu  -->
 
-    <router-view/> <!-- Affiche la page du router sélectionner -->
-
+    <div id="contain">
+      <router-view/> <!-- Affiche la page du router sélectionner -->
+    </div>
   </div>
 </template>
 
@@ -39,6 +40,9 @@ export default {
 </script>
 
 <style lang="scss">
+#contain{
+  min-height : 100vh;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
