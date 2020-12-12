@@ -1,7 +1,7 @@
 <template>
     <div id="Evenement_panel">  
-        <h1 v-if="isCreate" >Création d'un nouvel événement !</h1>
-        <h1 v-else>Modification de l'événement n°{{$route.params.id}} !</h1>
+        <h1 id="title_event" v-if="isCreate" >Création d'un nouvel événement !</h1>
+        <h1 id="title_event" v-else>Modification de l'événement n°{{$route.params.id}} !</h1>
 
         <b-alert v-if="error.length > 0" variant="danger" show>{{this.error}}</b-alert>
 
@@ -15,7 +15,7 @@
                         label="Nom de l'évenement:"
                         label-for="NomEvent">
                         <b-form-input
-                            :readonly="!readonly"
+                            :readonly="readonly"
                             id="NomEvent"
                             v-model="form.nomE"
                             type="text"
@@ -45,7 +45,7 @@
                         id="date2"
                         label="Date limite de réservation des créneaux:"
                         label-for="DateLimEvent">
-                        <b-form-datepicker id="DateLimEvent" :readonly="!readonly" :hide-header="true" :state="form.DateLim.length !== 0" :date-disabled-fn="dateDisabled" :min="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
+                        <b-form-datepicker id="DateLimEvent" :readonly="readonly" :hide-header="true" :state="form.DateLim.length !== 0" :date-disabled-fn="dateDisabled" :min="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
                     </b-form-group>
                 </b-col>
                 <b-col sm="6">  
@@ -53,7 +53,7 @@
                         id="date1"
                         label="Date début Evenement:"
                         label-for="DateDebEvent">
-                        <b-form-datepicker id="DateDebEvent" :readonly="!readonly" :hide-header="true" :state="form.DateDeb.length !== 0 && +new Date(form.DateLim) <= +new Date(form.DateDeb)" :date-disabled-fn="dateDisabled" :min="minDate" required v-model="form.DateDeb" class="mb-2"></b-form-datepicker>
+                        <b-form-datepicker id="DateDebEvent" :readonly="readonly" :hide-header="true" :state="form.DateDeb.length !== 0 && +new Date(form.DateLim) <= +new Date(form.DateDeb)" :date-disabled-fn="dateDisabled" :min="minDate" required v-model="form.DateDeb" class="mb-2"></b-form-datepicker>
                     </b-form-group>
                 </b-col>
             </b-row> 
@@ -66,7 +66,7 @@
                         label="Duree Evenement : (1 = 1 jour)"
                         label-for="DureEvenement">
                         <b-form-input
-                            :readonly="!readonly"
+                            :readonly="readonly"
                             id="DureEvenement"
                             v-model="form.DureeE"
                             type="number"
@@ -93,7 +93,7 @@
                         label="Nombre des membres du jury:"
                         label-for="NbMembre">
                         <b-form-input
-                            :readonly="!readonly"
+                            :readonly="readonly"
                             id="NbMembre"
                             v-model="form.nbJury"
                             type="number"
@@ -139,8 +139,8 @@ export default {
                 nbJury : null,
             },
             options: [
-                { value: '1_heure', text: '1 heure' , disabled: !this.readonly },
-                { value: '1_heure_30', text: '1 heure et demie', disabled: !this.readonly },
+                { value: '1_heure', text: '1 heure' , disabled: this.readonly },
+                { value: '1_heure_30', text: '1 heure et demie', disabled: this.readonly },
             ],
             promos : [
                 {value: '2023', text: 'IG3'},
@@ -153,7 +153,7 @@ export default {
     },
     computed: {
       readonly() {
-            return !this.isCreate && this.showModif
+            return (this.isCreate ? false : !this.showModif )
       },
       isCreate(){
             return this.$route.params.id === undefined
@@ -197,6 +197,13 @@ export default {
             if(mm<10){mm='0'+mm}
             return yyyy+'-'+mm+'-'+dd
         },
+        makeToast(variant = null, titre, message) {
+            this.$bvToast.toast(message, {
+                title: titre,
+                variant: variant,
+                solid: true
+            })
+       },
         dateDisabled(ymd, date) { // enlève les weekend du datePicker
             const weekday = date.getDay()
             return weekday === 0 || weekday === 6
@@ -223,7 +230,7 @@ export default {
                     this.promos[i].disabled = false
                 }
             }
-            else if(this.verifForm() && this.isCreate){
+            else if(this.verifForm() && this.isCreate){ // on créée l'évenement 
                 console.log(this.form);
                 // appel axios
                 var user = tok.decode(sessionStorage.getItem("token"));
@@ -241,8 +248,24 @@ export default {
                 });
             }
             else if(this.verifForm() && !this.isCreate && this.showModif){ // On modifie l'événement 
-                // appel axios put
-                console.log("ok")
+                console.log(this.form);
+                console.log("appel axios")
+                // appel axios
+                user = tok.decode(sessionStorage.getItem("token"));
+                axios.put(`http://localhost:3000/api/Evenement/`+this.$route.params.id,this.form,{ headers:{authorization: "bearer "+user.token}}).then((response) => {
+                    console.log(response.data);
+                    this.makeToast('success',"Enregistrer :)",response.data.message)
+                    this.refrech();
+                })
+                .catch((error) => { 
+                    var msg = error.response;
+                    console.log(msg)
+                    if(msg.status == '403'){ // pas autorisé 
+                        this.messageError = msg.data
+                    }
+                    this.makeToast('warning',"Erreur :(",error.response.data.message)
+                    this.refrech();
+                });
             }
         }
     },
@@ -267,9 +290,7 @@ export default {
             })
             .catch((error) => { 
                 console.log(error);
-                this.show = false;
-                this.error = "Erreur : L'événement n'est pas bien définie (Pas trouver dans la BD)";
-                //this.$router.push("/");
+                this.$router.push("/404"); // redirection 404
             });
         }
         // récupère promo
@@ -280,7 +301,7 @@ export default {
                     var text = "IG"
                     var idClass = ((month >= 9)? 6 : 5 ) // permet de déduire les classes avec les années de promo 
                     for (let i = 0; i < response.data.length; i++) {
-                        this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : !this.readonly})
+                        this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : this.readonly})
                     }
             })
             .catch((error) => { 
@@ -309,5 +330,8 @@ export default {
  }
  #Annuler{
      margin-left: 5%;
+ }
+ #title_event{
+     margin-bottom: 3%;
  }
 </style>
