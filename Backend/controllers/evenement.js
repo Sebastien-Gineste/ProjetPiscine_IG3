@@ -88,11 +88,12 @@ exports.update = (req, res, next) => {
             var dateDeb = dataNew.hasOwnProperty("dateDebut") ? dataNew.dateDebut : dataBD.dateDebut
             var durreC = dataNew.hasOwnProperty("dureeCreneau") ? dataNew.dureeCreneau : dataBD.dureeCreneau
             var durreE = dataNew.hasOwnProperty("duree") ? dataNew.duree : dataBD.duree
-            var heureMin = 8
-            var heureMax = 19
+            var heureMin = (req.body.minHeure ? req.body.minHeure : 8)
+            var heureMax = (req.body.maxHeure ? req.body.maxHeure : 19)
+            var toutRegenerer = (req.body.toutRegenerer ? req.body.toutRegenerer : true)
             var tabAncienceDate = generateDateEvent(dataBD.dateDebut,dataBD.duree)
     
-            supprimeCreneaux(dateDeb, durreE ,durreC,dataBD.numEvenement,heureMin,heureMax,tabAncienceDate,true).then((result)=> {
+            supprimeCreneaux(dateDeb, durreE ,durreC,dataBD.numEvenement,heureMin,heureMax,tabAncienceDate,toutRegenerer).then((result)=> {
               console.log(result)
               new Creneau().generate(result).then((results) => { // on génère les nouveaux créneaux
                 res.status(200).json({ message: 'Evenement modifier ! Avec sa petite génération :) ' })

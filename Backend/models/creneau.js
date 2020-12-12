@@ -35,7 +35,7 @@ class Creneau extends model.Model {
       request = request.substr(0, request.length - 2) + " RETURNING *" // enlève ,(
 
       const query = {
-          name: 'save-generation', // réquête préparer
+          name: 'save-generation-'+tabCreneau.length, // réquête préparer
           text: request,
           values: tabValues,
       }

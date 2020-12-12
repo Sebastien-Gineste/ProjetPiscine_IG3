@@ -108,7 +108,57 @@
             <b-button id="submit" v-if="isCreate" type="submit" variant="primary">Créer</b-button>
             <b-button id="submit" v-else type="submit" variant="primary">Modifier</b-button>
             <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="primary">Annuler</b-button>
+            <b-button id="panel" v-if="isCreate" @click="affichePanel()" type="button" variant="primary">Option création</b-button>
+            <b-button id="panel" v-else @click="affichePanel()" type="button" variant="primary">Option modification</b-button>
             <div v-if="messageError.length > 0">{{messageError}}</div>
+
+            <div v-if="showPanel" id="optionCreation">
+                 <!-- Durée Event --> 
+                <b-row class="my-1">
+                    <b-col>  
+                        <b-form-group
+                            id="heureMin"
+                            label="Heure min des créneaux"
+                            label-for="MinHeure">
+                            <b-form-input
+                                :readonly="readonly"
+                                id="MinHeure"
+                                v-model="form.minHeure"
+                                type="number"
+                                step="0.25"
+                                required
+                                min="1"
+                            ></b-form-input>
+                            <small>8.25 = 8h15</small>
+                        </b-form-group>
+                    </b-col>
+                    <b-col >  
+                        <b-form-group
+                            id="heureMax"
+                            label="Heure max des créneaux"
+                            label-for="MaxHeure">
+                            <b-form-input
+                                :readonly="readonly"
+                                id="MaxHeure"
+                                v-model="form.maxHeure"
+                                step="0.25"
+                                type="number"
+                                required
+                                min="1"
+                            ></b-form-input>
+                        </b-form-group>
+                    </b-col>
+                    <b-col  v-if="!isCreate">  
+                        <b-form-group
+                            id="generationForm"
+                            label="Supprimer tous les anciens créneaux ?"
+                            label-for="ifGener">
+                            <b-form-checkbox id="ifGener" v-model="form.toutRegenerer" name="check-button" switch>
+                            </b-form-checkbox>
+                        </b-form-group>
+                    </b-col>
+                </b-row> 
+            </div>
         </b-form>
         
     </div>
@@ -137,6 +187,9 @@ export default {
                 DureeS: null,
                 Promo : null,
                 nbJury : null,
+                minHeure : 8,
+                maxHeure : 19,
+                toutRegenerer : true,
             },
             options: [
                 { value: '1_heure', text: '1 heure' , disabled: this.readonly },
@@ -149,6 +202,7 @@ export default {
             minDate : minDate,
             show: true,
             showModif : false,
+            showPanel : false,
         }
     },
     computed: {
@@ -208,6 +262,9 @@ export default {
             const weekday = date.getDay()
             return weekday === 0 || weekday === 6
         },
+        affichePanel(){
+            this.showPanel = !this.showPanel
+        },
         refrech(){
             document.getElementById("submit").innerHTML = "Modifier";
             this.showModif = false;
@@ -234,6 +291,8 @@ export default {
                 console.log(this.form);
                 // appel axios
                 var user = tok.decode(sessionStorage.getItem("token"));
+                this.form.minHeure = parseFloat(this.form.minHeure)
+                this.form.maxHeure = parseFloat(this.form.maxHeure)
                 axios.post(`http://localhost:3000/api/Evenement/`,this.form,{ headers:{authorization: "bearer "+user.token}}).then((response) => {
                     console.log(response.data);
                     alert(response.data.message);
@@ -249,7 +308,9 @@ export default {
             }
             else if(this.verifForm() && !this.isCreate && this.showModif){ // On modifie l'événement 
                 console.log(this.form);
-                console.log("appel axios")
+                this.form.minHeure = parseFloat(this.form.minHeure)
+                this.form.maxHeure = parseFloat(this.form.maxHeure)
+                console.log(this.form);
                 // appel axios
                 user = tok.decode(sessionStorage.getItem("token"));
                 axios.put(`http://localhost:3000/api/Evenement/`+this.$route.params.id,this.form,{ headers:{authorization: "bearer "+user.token}}).then((response) => {
@@ -285,6 +346,9 @@ export default {
                                 DureeS: response.data.dureeCreneau,
                                 Promo : response.data.anneePromo,
                                 nbJury : response.data.nombreMembreJury,
+                                minHeure : 8,
+                                maxHeure : 19,
+                                toutRegenerer : true,
                                 
                             }
             })
@@ -328,10 +392,14 @@ export default {
      padding: 20px;
      background: lightcyan;
  }
- #Annuler{
+ #Annuler,#panel{
      margin-left: 5%;
  }
  #title_event{
      margin-bottom: 3%;
  }
+ #optionCreation{
+     margin-top: 3%;
+ }
+
 </style>
