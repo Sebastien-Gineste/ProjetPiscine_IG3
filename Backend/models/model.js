@@ -138,7 +138,7 @@ exports.Model = class Model{ // Model générique pour les tables de la base de 
 
             const query = {
 
-                name: 'update-générique', // réquête préparer
+                name: 'update-générique-'+tableName, // réquête préparer
                 text: request,
                 values: tabValues,
               }
