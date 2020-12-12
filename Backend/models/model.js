@@ -69,7 +69,7 @@ exports.Model = class Model{ // Model générique pour les tables de la base de 
             }
 
             const query = {
-                name: 'select-générique', // réquête préparer
+                name: 'select-générique-'+tableName, // réquête préparer
                 text: request,
                 values: tabKeySearch,
               }
@@ -79,6 +79,7 @@ exports.Model = class Model{ // Model générique pour les tables de la base de 
                     reject(Error.CONNECTION_ERROR);
                     return;
                 }
+                
                 if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
                     resolve(results.rows)
                 } else {

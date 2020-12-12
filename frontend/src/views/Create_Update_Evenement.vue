@@ -1,6 +1,6 @@
 <template>
     <div id="Evenement_panel">  
-        <h1 v-if="isCreate()" >Création d'un nouvel événement !</h1>
+        <h1 v-if="isCreate" >Création d'un nouvel événement !</h1>
         <h1 v-else>Modification de l'événement n°{{$route.params.id}} !</h1>
 
         <b-alert v-if="error.length > 0" variant="danger" show>{{this.error}}</b-alert>
@@ -15,6 +15,7 @@
                         label="Nom de l'évenement:"
                         label-for="NomEvent">
                         <b-form-input
+                            :readonly="!readonly"
                             id="NomEvent"
                             v-model="form.nomE"
                             type="text"
@@ -41,30 +42,31 @@
             <b-row class="my-1">
                 <b-col sm="6">  
                     <b-form-group
+                        id="date2"
+                        label="Date limite de réservation des créneaux:"
+                        label-for="DateLimEvent">
+                        <b-form-datepicker id="DateLimEvent" :readonly="!readonly" :hide-header="true" :state="form.DateLim.length !== 0" :date-disabled-fn="dateDisabled" :min="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
+                    </b-form-group>
+                </b-col>
+                <b-col sm="6">  
+                    <b-form-group
                         id="date1"
                         label="Date début Evenement:"
                         label-for="DateDebEvent">
-                        <b-form-datepicker id="DateDebEvent" :hide-header="true" :state="form.DateDeb.length !== 0" :date-disabled-fn="dateDisabled" :min="minDate" required v-model="form.DateDeb" class="mb-2"></b-form-datepicker>
-                    </b-form-group>
-                </b-col>
-                    <b-col sm="6">  
-                    <b-form-group
-                        id="date2"
-                        label="Date limite Evenement:"
-                        label-for="DateLimEvent">
-                        <b-form-datepicker id="DateLimEvent" :hide-header="true" :state="form.DateLim.length !== 0 && +new Date(form.DateLim) > +new Date(form.DateDeb) && +new Date(form.DateDeb).setDate(new Date(form.DateDeb).getDate()+parseInt(form.DureeE)) > +new Date(form.DateLim)" :date-disabled-fn="dateDisabled" :min="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
+                        <b-form-datepicker id="DateDebEvent" :readonly="!readonly" :hide-header="true" :state="form.DateDeb.length !== 0 && +new Date(form.DateLim) <= +new Date(form.DateDeb)" :date-disabled-fn="dateDisabled" :min="minDate" required v-model="form.DateDeb" class="mb-2"></b-form-datepicker>
                     </b-form-group>
                 </b-col>
             </b-row> 
 
             <!-- Durée Event --> 
             <b-row class="my-1">
-                <b-col sm="6">  
+                <b-col sm="4">  
                     <b-form-group
                         id="number1"
                         label="Duree Evenement : (1 = 1 jour)"
                         label-for="DureEvenement">
                         <b-form-input
+                            :readonly="!readonly"
                             id="DureEvenement"
                             v-model="form.DureeE"
                             type="number"
@@ -73,7 +75,7 @@
                         ></b-form-input>
                     </b-form-group>
                 </b-col>
-                    <b-col sm="6">  
+                <b-col sm="4">  
                     <b-form-group
                         id="select"
                         label="Durée des soutenances:"
@@ -85,10 +87,27 @@
                         </b-form-select>
                     </b-form-group>
                 </b-col>
+                <b-col sm="4">  
+                    <b-form-group
+                        id="number3"
+                        label="Nombre des membres du jury:"
+                        label-for="NbMembre">
+                        <b-form-input
+                            :readonly="!readonly"
+                            id="NbMembre"
+                            v-model="form.nbJury"
+                            type="number"
+                            required
+                            min="1"
+                        ></b-form-input>
+                    </b-form-group>
+                </b-col>
             </b-row> 
 
 
-            <b-button type="submit" variant="primary">Créer</b-button>
+            <b-button id="submit" v-if="isCreate" type="submit" variant="primary">Créer</b-button>
+            <b-button id="submit" v-else type="submit" variant="primary">Modifier</b-button>
+            <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="primary">Annuler</b-button>
             <div v-if="messageError.length > 0">{{messageError}}</div>
         </b-form>
         
@@ -113,14 +132,15 @@ export default {
             form: {
                 nomE: '',
                 DateDeb : this.formatDate(minDate),
-                DateLim: '',
+                DateLim: this.formatDate(minDate),
                 DureeE : '',
                 DureeS: null,
                 Promo : null,
+                nbJury : null,
             },
             options: [
-                { value: '1_heure', text: '1 heure' },
-                { value: '1_heure_30', text: '1 heure et demie' },
+                { value: '1_heure', text: '1 heure' , disabled: !this.readonly },
+                { value: '1_heure_30', text: '1 heure et demie', disabled: !this.readonly },
             ],
             promos : [
                 {value: '2023', text: 'IG3'},
@@ -128,12 +148,18 @@ export default {
             ],
             minDate : minDate,
             show: true,
+            showModif : false,
         }
     },
-    methods:{
-        isCreate(){
+    computed: {
+      readonly() {
+            return !this.isCreate && this.showModif
+      },
+      isCreate(){
             return this.$route.params.id === undefined
-        },
+      },
+    },
+    methods:{
         verifForm(){
             if(this.form.nomE.length === 0){
                 this.messageError = "Le nom ne peut pas être vide"
@@ -143,20 +169,19 @@ export default {
                 this.messageError = "Le date limite d'événement ne peut pas être vide"
                 return false
             }
+            else if(this.form.nbJury < 1 ){
+                this.messageError = "Il doit y avoir au moins 1 membre pour le jury"
+                return false
+            }
             var dateDeb = new Date(this.form.DateDeb);
             var dateLim = new Date(this.form.DateLim);
-            if(dateLim < dateDeb){
-                this.messageError = "La date limite ne peut pas être inférieur à la date de début de l'évenement"
+            if(dateLim > dateDeb){
+                this.messageError = "La date limite de réservation ne peut pas être supérieur à la date de début de l'évenement"
                 return false
             }
             else if(this.form.DureeE < 1){
                 this.messageError = "L'évenement doit durée au moins 1 jour"
                 return false  
-            }
-
-            else if(+dateDeb.setDate(dateDeb.getDate()+parseInt(this.form.DureeE)) <= +dateLim){
-                this.messageError = "La date limite ne peut pas être supérieur ou égale à la durée total de l'événement"
-                return false
             }
             else{
                 this.messageError = "";
@@ -176,15 +201,36 @@ export default {
             const weekday = date.getDay()
             return weekday === 0 || weekday === 6
         },
+        refrech(){
+            document.getElementById("submit").innerHTML = "Modifier";
+            this.showModif = false;
+            for (let i =0;i<this.options.length;i++){
+                this.options[i].disabled = true
+            }
+            for (let i =0;i<this.promos.length;i++){
+                this.promos[i].disabled = true
+            } 
+        },
         onSubmit(evt) {
             evt.preventDefault()
-            if(this.verifForm()){
+            if(!this.isCreate && !this.showModif){ // page de modification
+                document.getElementById("submit").innerHTML = "Valider";
+                this.showModif = true;
+                for (let i =0;i<this.options.length;i++){
+                    this.options[i].disabled = false
+                }
+                for (let i =0;i<this.promos.length;i++){
+                    this.promos[i].disabled = false
+                }
+            }
+            else if(this.verifForm() && this.isCreate){
                 console.log(this.form);
                 // appel axios
                 var user = tok.decode(sessionStorage.getItem("token"));
                 axios.post(`http://localhost:3000/api/Evenement/`,this.form,{ headers:{authorization: "bearer "+user.token}}).then((response) => {
                     console.log(response.data);
-                    //this.$router.push("/")
+                    alert(response.data.message);
+                    this.$router.push("/")
                 })
                 .catch((error) => { 
                     var msg = error.response;
@@ -194,26 +240,58 @@ export default {
                     }
                 });
             }
+            else if(this.verifForm() && !this.isCreate && this.showModif){ // On modifie l'événement 
+                // appel axios put
+                console.log("ok")
+            }
         }
     },
     beforeMount(){ // récupère les infos d'un événement si on est sur la page création Evenement 
-    if(!this.isCreate()){
-       if(sessionStorage.getItem("token")){  // Vérifie si un token est déjà existant
+    if(sessionStorage.getItem("token")){  // Vérifie si un token est déjà existant
+        if(!this.isCreate){
           var user = tok.decode(sessionStorage.getItem("token"));
           axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id, { headers:{authorization: "bearer "+user.token}}).then((response) => {
                   console.log(response)
                   this.data = response.data
-              })
-              .catch((error) => { 
+                  this.minDate = response.data.dateDebut
+                  this.form = {
+                                nomE: response.data.nomEvenement,
+                                DateDeb : this.formatDate(response.data.dateDebut),
+                                DateLim: this.formatDate(response.data.dateLimiteResa),
+                                DureeE : response.data.duree,
+                                DureeS: response.data.dureeCreneau,
+                                Promo : response.data.anneePromo,
+                                nbJury : response.data.nombreMembreJury,
+                                
+                            }
+            })
+            .catch((error) => { 
                 console.log(error);
                 this.show = false;
                 this.error = "Erreur : L'événement n'est pas bien définie (Pas trouver dans la BD)";
                 //this.$router.push("/");
-              });
-      }
-      else{
-         this.$router.push("/")
-      }
+            });
+        }
+        // récupère promo
+        axios.get(`http://localhost:3000/api/Promo/`).then((response) => {
+                    this.promos = [];
+                    var actuYear = new Date().getFullYear()
+                    var month = new Date().getMonth() + 1
+                    var text = "IG"
+                    var idClass = ((month >= 9)? 6 : 5 ) // permet de déduire les classes avec les années de promo 
+                    for (let i = 0; i < response.data.length; i++) {
+                        this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : !this.readonly})
+                    }
+            })
+            .catch((error) => { 
+                console.log(error);
+                this.show = false;
+                this.error = "Erreur : Impossible de récuperer les promos";
+                //this.$router.push("/");
+            });
+    }
+    else{
+        this.$router.push("/")
     }
   }
 }
@@ -228,5 +306,8 @@ export default {
      margin-left: 15%;
      padding: 20px;
      background: lightcyan;
+ }
+ #Annuler{
+     margin-left: 5%;
  }
 </style>
