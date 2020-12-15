@@ -9,8 +9,8 @@
 
         <b-collapse id="nav-collapse" is-nav>
           <b-navbar-nav>
-            <li v-if="isUser()" class="nav-item"><b-link class="nav-link" to="/about">S'inscrire à une soutance</b-link></li>
-            <li v-if="isUser()" class="nav-item"><b-link class="nav-link" to="/Groupe">Gestion du groupe</b-link></li>
+            <li v-if="isUser() && !isAdmin()" class="nav-item"><b-link class="nav-link" to="/about">S'inscrire à une soutance</b-link></li>
+            <li v-if="isUser() && !isAdmin()" class="nav-item"><b-link class="nav-link" to="/Groupe">Gestion du groupe</b-link></li>
             <li v-if="isAdmin()" class="nav-item"><b-link class="nav-link" to="/Evenement">Gestion des événements</b-link></li>
             <li v-if="isAdmin()" class="nav-item"><b-link class="nav-link" to="/Planning">Gestion des plannings</b-link></li>
             <li v-if="isAdmin()" class="nav-item"><b-link class="nav-link" to="/Tuteur">Gesion des tuteus</b-link></li>
