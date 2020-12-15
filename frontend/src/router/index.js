@@ -36,6 +36,12 @@ const routes = [
     meta : {requireAuth : true, requireAdmin : true}
   },
   {
+    path: '/Evenement/Planning/:id',
+    name: 'planningEvent',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Planning_admin.vue'),
+    meta : {requireAuth : true, requireAdmin : true}
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting
