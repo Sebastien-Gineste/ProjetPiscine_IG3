@@ -57,8 +57,26 @@ class Creneau extends model.Model {
 
   }
 
-  selectAll(){
-    return super.selectAll(this.tableName)
+  selectAll(id){
+    return new Promise((resolve, reject) => {
+      const query = {
+        name: 'selectall-creneau-event', // réquête préparer
+        text: 'select creneau."numCreneau" , date, "numEvenement", "idGroupe" , "salle", "heureDebut", pr."idProf", pr."nomProf", pr."prenomProf" from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf" where "numEvenement" = $1 ORDER BY date ASC, creneau."numCreneau";',//'select * from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf"  where "numEvenement" = $1 ORDER BY date ASC, creneau."numCreneau";',
+        values: [id],
+      }
+      this.client.query(query, function(error, results) {
+        console.log(error)
+          if (error) {
+              reject(Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results.rows[0] !== undefined) {
+              resolve(results.rows)
+          } else {
+              reject(Error.NO_RESULTS);
+          }
+      });
+  });
   }
 
   /*  

@@ -36,7 +36,7 @@ const routes = [
     meta : {requireAuth : true, requireAdmin : true}
   },
   {
-    path: '/Evenement/Planning/:id',
+    path: '/Evenement/:id/Planning',
     name: 'planningEvent',
     component: () => import(/* webpackChunkName: "about" */ '../views/Planning_admin.vue'),
     meta : {requireAuth : true, requireAdmin : true}

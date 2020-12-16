@@ -1,5 +1,5 @@
 <template>
-    <div :id="'cre_'+creneau.id" class="creneau">
+    <div v-if="creneau.show" :id="'cre_'+creneau.id" class="creneau">
         <table class="typeCreneau" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
             <tbody>
                 <tr>
@@ -12,10 +12,9 @@
         </span>
         <div class="contenueCreneau" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
             <div unselectable="on" tabindex="0" aria-owns="Planning" aria-label="text" class="inforCreneau">
-              <b unselectable="on">{{creneau.groupe}}</b>
+              <b unselectable="on">{{creneau.id+" - "}}{{groupe}}</b>
                 <br>{{profs}}
-                <br>{{creneau.salle}}
-                <br>
+                <br>{{salle}}
             </div>
         </div>
     </div>
@@ -23,16 +22,40 @@
 
 <script>
 export default {
-    props: { index: Number, creneau: Object},
+    props: {creneau: Object},
     computed : {
-        profs(){
-            let str = ""
-            for (let i =0; i<this.creneau.jury.length;i++){
-                str += this.creneau.jury[i]+" - "
+        groupe(){
+            if(this.creneau.groupe !== null){
+                return this.creneau.groupe
             }
-            str = str.substr(0,str.length-3)
-            return str
+            else{
+                return "groupe non défini"
+            }
+        },
+        salle(){
+            if(this.creneau.salle !== null){
+                return this.creneau.salle
+            }
+            else{
+                return "salle non défini"
+            }
+        },
+        profs(){
+            if(this.creneau.jury !== null){
+                let str = ""
+                console.log(this.creneau)
+                for (let i =0; i<this.creneau.jury.length;i++){
+                    str += this.creneau.jury[i]+" - "
+                }
+                str = str.substr(0,str.length-3)
+                return str
+            }
+            return "Jury non défini"
+           
         }
+    },
+    beforeMount(){
+        
     }
 }
 </script>
@@ -55,6 +78,10 @@ export default {
 
     ._1heure30{
         height: 175% !important;
+    }
+
+    ._Com00{
+        top : 0% !important;
     }
 
     ._Com25{
