@@ -82,6 +82,7 @@ exports.update = (req, res, next) => {
       }
       else{
         console.log(dataNew) // valeur à changer 
+        console.log("ok")
         new Evenement().update([req.params.id],dataNew)
         .then(() => {
           if(dataNew.hasOwnProperty("dateDebut") || dataNew.hasOwnProperty("dureeCreneau") || dataNew.hasOwnProperty("duree")){ // Il faut recréer des créneaux
@@ -113,7 +114,7 @@ exports.update = (req, res, next) => {
           }
         
         })
-        .catch(error => res.status(400).json({ error }));
+        .catch(error => res.status(400).json({ message : 'pas compris pk'+error }));
       }
 
     }).catch((error) => {
@@ -131,6 +132,7 @@ exports.update = (req, res, next) => {
     })
   })
   .catch((error) => {
+    console.log("ok")
     console.log(error);
     res.status(400).json({ error });
   });

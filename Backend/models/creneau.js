@@ -108,7 +108,8 @@ class Creneau extends model.Model {
 
         model.client.query(query, function(error, results) {
           if (error) {
-              reject(model.Errors.CONNECTION_ERROR);
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
               return;
           } else {
               resolve(true);
