@@ -1,5 +1,5 @@
 <template>
-    <div v-if="show" :id="'cre_'+creneau.id" class="creneau">
+    <div @click="goPanel" v-if="show" :id="'cre_'+creneau.id" class="creneau">
         <table class="typeCreneau" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
             <tbody>
                 <tr>
@@ -22,7 +22,7 @@
 
 <script>
 export default {
-    props: {creneau: Object, Dates : Object},
+    props: {creneau: Object, Dates : Object, appelPanel : Function},
     computed : {
         dates(){
             return this.Dates.tab
@@ -47,17 +47,24 @@ export default {
             }
         },
         profs(){
-            if(this.creneau.jury !== null){
+            if(this.creneau.jury !== null && this.creneau.jury[0] !== null){
                 let str = ""
                 console.log(this.creneau)
                 for (let i =0; i<this.creneau.jury.length;i++){
-                    str += this.creneau.jury[i].nomProf+" - "
+                    if(this.creneau.jury[i] !== null){
+                        str += this.creneau.jury[i].nomProf+" - "
+                    }
                 }
                 str = str.substr(0,str.length-3)
                 return str
             }
             return "Jury non défini"
            
+        }
+    },
+    methods: {
+        goPanel(){
+            this.appelPanel(this.creneau)
         }
     },
     beforeMount(){
@@ -68,7 +75,7 @@ export default {
 
 <style lang="scss">
     .creneau{
-        cursor: auto;
+        cursor: pointer;
         width: 100%;
     }
     .typeCreneau{

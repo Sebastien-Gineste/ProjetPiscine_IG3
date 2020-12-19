@@ -168,6 +168,7 @@
 <script>
 import tok from "../service/token"
 import axios from "axios"
+import util from "../service/fonctionUtil"
 
 export default {
     data(){
@@ -243,21 +244,8 @@ export default {
             }
         },
         formatDate(d){
-            const date = new Date(d)
-            var dd = date.getDate(); 
-            var mm = date.getMonth()+1;
-            var yyyy = date.getFullYear(); 
-            if(dd<10){dd='0'+dd} 
-            if(mm<10){mm='0'+mm}
-            return yyyy+'-'+mm+'-'+dd
+           return util.formatDate(d);
         },
-        makeToast(variant = null, titre, message) {
-            this.$bvToast.toast(message, {
-                title: titre,
-                variant: variant,
-                solid: true
-            })
-       },
         dateDisabled(ymd, date) { // enlève les weekend du datePicker
             const weekday = date.getDay()
             return weekday === 0 || weekday === 6
@@ -315,7 +303,7 @@ export default {
                 user = tok.decode(sessionStorage.getItem("token"));
                 axios.put(`http://localhost:3000/api/Evenement/`+this.$route.params.id,this.form,{ headers:{authorization: "bearer "+user.token}}).then((response) => {
                     console.log(response.data);
-                    this.makeToast('success',"Enregistrer :)",response.data.message)
+                    util.makeToast(this,'success',"Enregistrer :)",response.data.message)
                     this.refrech();
                 })
                 .catch((error) => { 
@@ -324,7 +312,7 @@ export default {
                     if(msg.status == '403'){ // pas autorisé 
                         this.messageError = msg.data
                     }
-                    this.makeToast('warning',"Erreur :(",error.response.data.message)
+                    util.makeToast(this,'warning',"Erreur :(",error.response.data.message)
                     this.refrech();
                 });
             }

@@ -2,22 +2,75 @@
     <div id="planning">
         <h1 id="title_planning" >Planning de l'événement n°{{$route.params.id}} !</h1>
         <b-alert  v-if="errorMessage.length > 0" variant="danger" show>{{this.errorMessage}}</b-alert>
+        <transition name="slide-fade">
+            <div @click="removePanel()" id="fond" v-if="show"></div>
+         </transition>
+        <transition name="slide-fade">
+            <div id="panelModifCreneau" v-if="show">
+                    <h3>Modification du Creneau {{panelCreneau.id}}</h3>
+
+                    <b-form-group id="input-prof" label="Jury" label-for="input-jury">
+                        <b-row class="my-1">
+                            <b-col v-for="numJ in event.nombreMembreJury" :key="numJ">  
+                                <b-form-select :id="'input-jury-'+numJ" v-model="panelCreneau.jury[numJ-1]" required :options="profs">
+                                    <template #first>
+                                        <b-form-select-option :value="null" disabled>Sélectionner un prof</b-form-select-option>
+                                    </template>
+                                </b-form-select>
+                            </b-col>
+                        </b-row>
+                    </b-form-group> 
+
+                    <b-row class="my-1">
+                        <b-col>  
+                            <b-form-group id="input-salle" label="Nom de la salle" label-for="salle">
+                                <b-form-input id="salle" list="listeSalle" placeholder="Pas de salle encore" v-model="panelCreneau.salle"></b-form-input>
+                                 <datalist id="listeSalle">
+                                    <option v-for="salle in salles" :key="salle">{{ salle }}</option>
+                                </datalist>
+                            </b-form-group>
+                        </b-col>
+                         <b-col>  
+                            <b-form-group id="input-group" label="Groupe" label-for="NomGr">
+                                <b-form-input  id="NomGr" v-model="panelCreneau.groupe" type="text" readonly required placeholder="Pas encore réserver.."></b-form-input>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+
+                     <!-- Durée Event --> 
+                    <b-row class="my-1">
+                        <b-col>  
+                            <b-form-group  id="heureMin" label="Heure début" label-for="MinHeure">
+                                <b-form-input  id="MinHeure" v-model="panelCreneau.heureDebut" type="number"  step="0.25"  required  min="8"></b-form-input>
+                                <small>8.25 = 8h15</small>
+                            </b-form-group>
+                        </b-col>
+                        <b-col>  
+                            <b-form-group id="dateCreneau" label="date du créneau" label-for="dateCren">
+                                <b-form-datepicker id="dateCren" :hide-header="true" :state="date.indexOf(formatDate(panelCreneau.dateCreneau)) !== -1" :date-disabled-fn="dateDisabled" :min="date[0]" :max="date[date.length-1]" required v-model="panelCreneau.dateCreneau" class="mb-2"></b-form-datepicker>
+                            </b-form-group>
+                        </b-col>
+                    </b-row> 
+
+                    <b-button id="enregister" @click="enregistrerCreneau()" type="button" variant="primary">Enregistrer</b-button>
+                    <b-button id="supprimer" @click="supprimerCreneau()" type="button" variant="primary">Supprimer</b-button>
+            </div>
+        </transition>
         <b-container id="contain" class="bv-example-row">
             <b-row id="firstCol">
-                <b-col cols="1"></b-col>
-                <b-col> <b-icon @click="prevWeek" icon="arrow-left-circle-fill"></b-icon></b-col>
+                <b-col><b-icon @click="prevWeek" icon="arrow-left"></b-icon></b-col>
+                <b-col><b-icon @click="prevWeekEvent" icon="arrow-left-circle-fill"></b-icon></b-col>
                 <b-col></b-col>
-                <b-col></b-col>
-                <b-col></b-col> 
-                <b-col> <b-icon @click="nextWeek" icon="arrow-right-circle-fill"></b-icon></b-col> 
+                <b-col> <b-icon @click="nextWeekEvent" icon="arrow-right-circle-fill"></b-icon></b-col> 
+                <b-col><b-icon @click="nextWeek" icon="arrow-right"></b-icon></b-col>
             </b-row>
             <b-row>
                 <b-col cols="1">Heure</b-col>
-                <b-col :class="[date.indexOf(dateActu.tab[0]) != -1 ? 'datePlanning' : 'notDatePlanning']" >Lundi : {{formatDate(dateActu.tab[0],"tableau")}}</b-col>
-                <b-col :class="[date.indexOf(dateActu.tab[1]) != -1 ? 'datePlanning' : 'notDatePlanning']" >Mardi : {{formatDate(dateActu.tab[1],"tableau")}}</b-col>
-                <b-col :class="[date.indexOf(dateActu.tab[2]) != -1 ? 'datePlanning' : 'notDatePlanning']" >Mercredi :{{formatDate(dateActu.tab[2],"tableau")}}</b-col>
-                <b-col :class="[date.indexOf(dateActu.tab[3]) != -1 ? 'datePlanning' : 'notDatePlanning']" >Jeudi : {{formatDate(dateActu.tab[3],"tableau")}}</b-col> 
-                <b-col :class="[date.indexOf(dateActu.tab[4]) != -1 ? 'datePlanning' : 'notDatePlanning']" >Vendredi : {{formatDate(dateActu.tab[4],"tableau")}}</b-col> 
+                <b-col :class="[date.indexOf(dateActu.tab[0]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[0] == new Date() ? 'dateActu' : '']" >Lundi : {{formatDate(dateActu.tab[0],"tableau")}}</b-col>
+                <b-col :class="[date.indexOf(dateActu.tab[1]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[1] == new Date() ? 'dateActu' : '']" >Mardi : {{formatDate(dateActu.tab[1],"tableau")}}</b-col>
+                <b-col :class="[date.indexOf(dateActu.tab[2]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[2] == new Date() ? 'dateActu' : '']" >Mercredi :{{formatDate(dateActu.tab[2],"tableau")}}</b-col>
+                <b-col :class="[date.indexOf(dateActu.tab[3]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[3] == new Date() ? 'dateActu' : '']" >Jeudi : {{formatDate(dateActu.tab[3],"tableau")}}</b-col> 
+                <b-col :class="[date.indexOf(dateActu.tab[4]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[4] == new Date() ? 'dateActu' : '']" >Vendredi : {{formatDate(dateActu.tab[4],"tableau")}}</b-col> 
             </b-row>
             <b-row id="heure8">
                 <b-col cols="1">8h</b-col>
@@ -117,11 +170,11 @@
             </b-row>
             <b-row id="lastcol">
                 <b-col cols="1"></b-col>
-                <b-col> <b-icon @click="prevWeek" icon="arrow-left-circle-fill"></b-icon></b-col>
+                <b-col><b-icon @click="prevWeek" icon="arrow-left"></b-icon></b-col>
+                <b-col> <b-icon @click="prevWeekEvent" icon="arrow-left-circle-fill"></b-icon></b-col>
                 <b-col></b-col>
-                <b-col></b-col>
-                <b-col></b-col> 
-                <b-col> <b-icon @click="nextWeek" icon="arrow-right-circle-fill"></b-icon></b-col> 
+                <b-col> <b-icon @click="nextWeekEvent" icon="arrow-right-circle-fill"></b-icon></b-col> 
+                <b-col><b-icon @click="nextWeek" icon="arrow-right"></b-icon></b-col>
             </b-row>
         </b-container>
 
@@ -132,7 +185,8 @@
 <script>
 import Creneau from "@/components/Creneau.vue";
 import Vue from 'vue'
-//import tok from "../service/token"
+import tok from "../service/token"
+import util from "../service/fonctionUtil"
 import axios from "axios"
 const ComponentClass = Vue.extend(Creneau)
  
@@ -145,12 +199,63 @@ export default {
             date : [],
             event : null,
             dateActu : { tab : []},
-            errorMessage : ""
-           
-            
+            errorMessage : "",
+            show : false,
+            salles : ['TD15','SC102'],
+            profs : [
+                
+            ],
+            panelCreneau : {
+                idEvent : null,
+                id : null,
+                heureDebut : 8,
+                dateCreneau : null,
+                jury : [],
+                salle : null,
+                groupe : null,
+            }
         }
     },
     methods : {
+        affichePanelCreneau(creneau){
+            console.log(creneau)
+            this.panelCreneau = {
+                idEvent : event.numEvenement,
+                id : creneau.id,
+                salle : creneau.salle,
+                dateCreneau : creneau.date,
+                heureDebut : creneau.heureTotal,
+                groupe : creneau.groupe
+            }
+            
+            this.panelCreneau.jury = []
+            for(let i = 0;i<creneau.jury.length;i++){  // met l'id des profs dans le tableau de jury du panelCreneau
+                creneau.jury[i] !== null ?  this.panelCreneau.jury.push(creneau.jury[i].idProf) : this.panelCreneau.jury.push(null)
+            }
+
+            this.show = true
+        },
+        removePanel(){
+            this.show = false // enlève le panel
+            for(let i = 0;i<this.event.nombreMembreJury;i++){ // on remet à null
+                this.panelCreneau.jury[i] = null
+            }
+            this.panelCreneau = {id : null,heureMin : 8, dateCreneau : null,salle : null,groupe : null} // rénitialise le formulaire du créneau
+        },
+        enregistrerCreneau(){
+            alert("enregistre")
+            console.log(this.panelCreneau)
+        },
+        supprimerCreneau(){
+            alert("supp : " + this.panelCreneau.id)
+        },
+        formatDate(d, type="normal"){
+            return util.formatDate(d,type)
+        },
+        dateDisabled(ymd, date) { // enlève les weekend du datePicker
+            const weekday = date.getDay()
+            return weekday === 0 || weekday === 6
+        },
         generateDateEvent(DateDebut,DureeE){
             var tabDate = []
             var i = 0
@@ -161,35 +266,53 @@ export default {
                     i--
                 }
                 else{
-                    tabDate.push(this.formatDate(dateActu))
+                    tabDate.push(util.formatDate(dateActu))
                 }
                 dateActu.setDate(dateActu.getDate()+1) // on passe au jour suivant
                 i++
             }
             return tabDate
         },
-        formatDate(d, type="normal"){
-            const date = new Date(d)
-            var dd = date.getDate(); 
-            var mm = date.getMonth()+1;
-            var yyyy = date.getFullYear(); 
-            if(dd<10){dd='0'+dd} 
-            if(mm<10){mm='0'+mm}
-            return type=="normal" ? yyyy+'-'+mm+'-'+dd : dd+'/'+mm+'/'+yyyy
-        },
-        getDateWeek(dateDebut){
+        getDateWeek(dateActu = new Date()){
             var tabDate = []
-            var date = dateDebut
-            console.log(date)
-            console.log(dateDebut)
-            var day = date.getDate();
+            var date= new Date(dateActu);
             var numJ = date.getDay();
             if(numJ == 0){numJ = 7}
+            var dayWeek = new Date(dateActu);
+            dayWeek.setDate(dayWeek.getDate() + 1 - numJ);
             for (var i=1; i<8; i++) {
-                date.setDate(day + i - numJ); //incrementation
-                tabDate.push(this.formatDate(new Date(date)));
+                tabDate.push(util.formatDate(dayWeek));
+                dayWeek.setDate(dayWeek.getDate()+1); //incrementation
             }
             return tabDate
+        },
+        nextWeekEvent(){
+            var lastDay = new Date(this.dateActu.tab[6]);
+            if(lastDay >= new Date(this.date[this.date.length-1])){ // on a dépassé les dates de l'évenement
+                util.makeToast(this,"warning","Attention !","L'événement n'est pas de ce sens ! :)")
+            }
+            else if(lastDay < new Date(this.date[this.date.length-1]) && lastDay > new Date(this.date[0])){ // on passe à la semaine suivante
+                lastDay.setDate(lastDay.getDate() + 1)
+                this.dateActu.tab = this.getDateWeek(lastDay)
+            }
+            else{
+                lastDay = new Date(this.date[0]); // on charge la première date de l'événement
+                this.dateActu.tab = this.getDateWeek(lastDay)
+            }
+        },
+        prevWeekEvent(){
+            var prevDay = new Date(this.dateActu.tab[0]);
+            if(prevDay <= new Date(this.date[0])){ // on a dépassé les dates de l'évenement
+                util.makeToast(this,"warning","Attention !","L'événement n'est pas de ce sens ! :)")
+            }
+            else if(prevDay > new Date(this.date[0]) && prevDay < new Date(this.date[this.date.length-1])){ // on passe à la semaine précédente
+                prevDay.setDate(prevDay.getDate() - 1)
+                this.dateActu.tab = this.getDateWeek(prevDay)
+            }
+            else{
+                prevDay = new Date(this.date[this.date.length-1]); // on charge la dernière date de l'événement
+                this.dateActu.tab = this.getDateWeek(prevDay)
+            }
         },
         nextWeek(){
             var lastDay = new Date(this.dateActu.tab[6]);
@@ -205,16 +328,37 @@ export default {
     beforeMount(){
         this.dateActu.tab = this.getDateWeek(new Date())
 
+        // récupère l'évenement
         axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id).then((response) => {
             console.log(response)
             var infoEvent = response.data;
             this.date = this.generateDateEvent(infoEvent.dateDebut, infoEvent.duree);
             this.event = infoEvent
+            for(let i = 0;i<this.event.nombreMembreJury;i++){
+                this.panelCreneau.jury.push(null)
+            }
+            
         })
         .catch(()=> { // pas trouvé 
             this.$router.push("/404"); // redirection 404
         });
-        
+
+        // récupère les profs
+        var user = tok.decode(sessionStorage.getItem("token"));
+        axios.get(`http://localhost:3000/api/Prof/`, { headers:{authorization: "bearer "+user.token}}).then((response) => {
+            var profs = response.data;
+            for(let i=0;i<profs.length;i++){
+                this.profs.push({value : profs[i].idProf , text : profs[i].nomProf+" "+profs[i].prenomProf})
+            }
+        })
+        .catch((error)=> { // pas trouvé 
+            console.log(error.response.data)
+            if(error.response.status == '403'){ // pas autorisé 
+                this.errorMessage = error.response.data
+            }
+        });
+
+        // récupère les créneaux
         axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id+'/Creneau').then((response) => {
                 var infoCreneau = response.data.creneaux;
                 console.log(infoCreneau)
@@ -224,25 +368,41 @@ export default {
                 while(i < infoCreneau.length){
                     if(memoireId == infoCreneau[i].numCreneau){ // on l'a déjà traté mais il y a une info en plus (autres profs)
                         console.log(infoCreneau[i].numCreneau)
-                        this.creneaux[this.creneaux.length-1].jury.push({idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf}) // ajout un nouveau prof
+                        var j = 0;
+                        while(this.creneaux[this.creneaux.length-1].jury[j] != null){ // tant que les cases du tableau ne sont pas vide, on continue
+                            j++
+                        } // on a trouvé la case qui est null
+                        this.creneaux[this.creneaux.length-1].jury[j] = {idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf} // ajout un nouveau prof
                     }
                     else{
                         memoireId = infoCreneau[i].numCreneau
+
+                        let tabVideProf = []
+                        for(let i = 0;i<this.event.nombreMembreJury;i++){
+                            tabVideProf.push(null)
+                        }
+    
                         this.creneaux.push({
                             id : infoCreneau[i].numCreneau,
                             salle : infoCreneau[i].salle,
-                            jury : infoCreneau[i].idProf == null ? null : [{idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf}],
+                            jury :  tabVideProf, // définit un tableau de jury de taille event.nombreMembreJury avec valeur = null
                             groupe : infoCreneau[i].idGroupe,
                             duree1h : this.event.dureeCreneau == "1_heure",
                             heureDebut: (infoCreneau[i].heureDebut % 1).toFixed(2).substring(2),
-                            date : this.formatDate(infoCreneau[i].date),
+                            heureTotal : infoCreneau[i].heureDebut,
+                            date : util.formatDate(infoCreneau[i].date),
                         })
+
+                        if(infoCreneau[i].idProf !== null){ // s'il y a un prof, on l'ajoute
+                            this.creneaux[this.creneaux.length-1].jury[0] = {idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf}
+                        }
 
                         var instance = new ComponentClass({
                             propsData: {
                                 creneau: this.creneaux[this.creneaux.length-1],
                                 //show : this.dateActu.indexOf(this.creneaux[this.creneaux.length-1].date) != -1 ? true : false,
-                                Dates : this.dateActu
+                                Dates : this.dateActu,
+                                appelPanel : this.affichePanelCreneau
                             }
                         })
                         instance.$mount() // pass nothing
@@ -283,6 +443,31 @@ export default {
         margin-top: 2%;
         margin-bottom: 5%;
     }
+    #panelModifCreneau{
+        top:20%;
+        position: fixed;
+        width: 70%;
+        margin-left: 15%;
+        text-align: center;
+        background: lightcyan;
+        z-index: 99;
+        padding: 15px;
+        border: solid 2px lightgrey;
+
+        #supprimer{
+            margin-left :20px;
+        }
+    }
+    #fond{
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        background: lightgrey;
+        z-index :98;
+        opacity: 0.7;
+        left: 0px;
+        top: 0px;
+    }
     #contain{
         max-width: 95vw !important;
         margin: auto;
@@ -290,26 +475,44 @@ export default {
             border-top : 0px solid !important;
             //border-bottom : 0px solid !important;
             background-color : transparent !important;
-    }
-    #lastcol div, #firstCol div{
-        border : 0px solid !important;
-        svg {
-            cursor : pointer;
+        }
+        #lastcol div, #firstCol div{
+            border : 0px solid !important;
+            svg {
+                cursor : pointer;
+            }
+        }
+        .dateActu{
+            font-weight: bold;
+            text-decoration: underline;
+            border: 2px solid !important
+        }
+        .notDatePlanning{
+            background: repeating-linear-gradient( 45deg, blue 0px, blue 40px, black 40px, black 80px );
+            color: white;
         }
     }
-    .notDatePlanning{
-        background: repeating-linear-gradient( 45deg, blue 0px, blue 40px, black 40px, black 80px );
-        color: white;
+
+    #input-prof{
+        padding: 10px;
+        background: lightblue;
+        margin: 10px;
     }
+
+
+
+    /* Les animations d'entrée (« enter ») et de sortie (« leave »)  */
+    /* peuvent utiliser différentes fonctions de durée et de temps.  */
+    .slide-fade-enter-active {
+        transition: all .3s ease;
+    }
+    .slide-fade-leave-active {
+        transition: all .6s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+    .slide-fade-enter, .slide-fade-leave-to
+    /* .slide-fade-leave-active below version 2.1.8 */ {
+        transform: translateX(10px);
+        opacity: 0;
+
     }
 </style>
-
-<!--    <b-row v-for="heure in colonne" :key="heure" >
-                <b-col cols="1">{{heure}}</b-col>
-                <b-col class="colonne"><Creneau :creneau="creneaux[0]"></Creneau></b-col>
-                <b-col class="colonne"></b-col>
-                <b-col class="colonne"></b-col>
-                <b-col class="colonne"></b-col>
-                <b-col class="colonne"></b-col>
-            </b-row>
-colonne : ["8h","9h","10h","11h","12h","13h","14h","15h","16h","17h","18h","19h"] -->
