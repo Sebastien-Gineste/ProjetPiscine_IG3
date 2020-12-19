@@ -2,8 +2,11 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import store from '../store'
-import axios from "axios"
-import tok from "../service/token"
+import axio from "axios";
+
+const axios = axio.create({
+  withCredentials: true
+})
 
 Vue.use(VueRouter)
 // page de l'application
@@ -64,39 +67,30 @@ const router = new VueRouter({
 router.beforeEach((to,from,next) => {
   if(to.meta.requireAuth){
     if(store.getters.isUpdate){ // on vient de recharger la page
-      if(sessionStorage.getItem("token")){  // Vérifie si un token est déjà existant
-        var user = tok.decode(sessionStorage.getItem("token"));
-        axios.post(`http://localhost:3000/api/Etudiant/`+user.id,{}, { headers:{authorization: "bearer "+user.token}}).then((res) => {
-                if(to.meta.requireAdmin){
-                  if(res.data.admin) {next();} // identifier
-                  else{ next({ name : "Connexion" });}
-                }
-                else{
-                  next(); // identifier
-                }
-            })
-            .catch((error) => { 
-              console.log(error);
-              next({ // existe pas
-                name : "Connexion"
-              });
-            
-          });
-      }
-      else{
-        next({ // pas de token : pas le droit
+      axios.post(`http://localhost:3000/api/Etudiant/VerifCo`).then((res) => {
+        if(to.meta.requireAdmin){
+            if(res.data.admin) {next();} // identifier
+            else{ next({ name : "Connexion" });}
+        }
+        else{
+          next(); // identifier
+        }
+        })
+      .catch((error) => { 
+        console.log(error);
+        next({ // existe pas
           name : "Connexion"
         });
-      }
+      });
     }
     else if(store.getters.isUser){ // il a accès
-     if(to.meta.requireAdmin){
-       if(store.getters.isAdmin) {next();} // identifier
-       else{ next({ name : "Connexion" });}
-     }
-     else{
-       next(); // identifier
-     }
+      if(to.meta.requireAdmin){
+        if(store.getters.isAdmin) {next();} // identifier
+        else{ next({ name : "Connexion" });}
+      }
+      else{
+        next(); // identifier
+      }
     }
     else{ // n'a pas le droit
       next({

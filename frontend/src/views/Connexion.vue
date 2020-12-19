@@ -31,9 +31,10 @@
 </template>
 
 <script>
- import axios from "axios";
- import tok from "../service/token";
- //import router from '../router'
+import axio from "axios";
+const axios = axio.create({
+  withCredentials: true
+})
 
   export default {
     data() {
@@ -52,7 +53,6 @@
         evt.preventDefault()
         axios.post(`http://localhost:3000/api/Etudiant/Connexion`,this.form).then((response) => {
              var user = response.data;
-             sessionStorage.setItem("token",tok.encode(user.token,user.userId));
              this.$store.dispatch('connexion',user);
              this.$router.push("/")
         })

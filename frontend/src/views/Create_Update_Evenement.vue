@@ -166,9 +166,12 @@
 
 
 <script>
-import tok from "../service/token"
-import axios from "axios"
+import axio from "axios";
 import util from "../service/fonctionUtil"
+
+const axios = axio.create({
+  withCredentials: true
+})
 
 export default {
     data(){
@@ -278,12 +281,12 @@ export default {
             else if(this.verifForm() && this.isCreate){ // on créée l'évenement 
                 console.log(this.form);
                 // appel axios
-                var user = tok.decode(sessionStorage.getItem("token"));
                 this.form.minHeure = parseFloat(this.form.minHeure)
                 this.form.maxHeure = parseFloat(this.form.maxHeure)
-                axios.post(`http://localhost:3000/api/Evenement/`,this.form,{ headers:{authorization: "bearer "+user.token}}).then((response) => {
+                axios.post(`http://localhost:3000/api/Evenement/`,this.form).then((response) => {
                     console.log(response.data);
                     alert(response.data.message);
+                    //util.makeToast(this,'success',"Enregistrer :)","")
                     this.$router.push("/")
                 })
                 .catch((error) => { 
@@ -300,8 +303,7 @@ export default {
                 this.form.maxHeure = parseFloat(this.form.maxHeure)
                 console.log(this.form);
                 // appel axios
-                user = tok.decode(sessionStorage.getItem("token"));
-                axios.put(`http://localhost:3000/api/Evenement/`+this.$route.params.id,this.form,{ headers:{authorization: "bearer "+user.token}}).then((response) => {
+                axios.put(`http://localhost:3000/api/Evenement/`+this.$route.params.id,this.form).then((response) => {
                     console.log(response.data);
                     util.makeToast(this,'success',"Enregistrer :)",response.data.message)
                     this.refrech();
@@ -319,26 +321,23 @@ export default {
         }
     },
     beforeMount(){ // récupère les infos d'un événement si on est sur la page création Evenement 
-    if(sessionStorage.getItem("token")){  // Vérifie si un token est déjà existant
         if(!this.isCreate){
-          var user = tok.decode(sessionStorage.getItem("token"));
-          axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id, { headers:{authorization: "bearer "+user.token}}).then((response) => {
-                  console.log(response)
-                  this.data = response.data
-                  this.minDate = response.data.dateDebut
-                  this.form = {
-                                nomE: response.data.nomEvenement,
-                                DateDeb : this.formatDate(response.data.dateDebut),
-                                DateLim: this.formatDate(response.data.dateLimiteResa),
-                                DureeE : response.data.duree,
-                                DureeS: response.data.dureeCreneau,
-                                Promo : response.data.anneePromo,
-                                nbJury : response.data.nombreMembreJury,
-                                minHeure : 8,
-                                maxHeure : 19,
-                                toutRegenerer : true,
-                                
-                            }
+            axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id).then((response) => {
+                console.log(response)
+                this.data = response.data
+                this.minDate = response.data.dateDebut
+                this.form = {
+                        nomE: response.data.nomEvenement,
+                        DateDeb : this.formatDate(response.data.dateDebut),
+                        DateLim: this.formatDate(response.data.dateLimiteResa),
+                        DureeE : response.data.duree,
+                        DureeS: response.data.dureeCreneau,
+                        Promo : response.data.anneePromo,
+                        nbJury : response.data.nombreMembreJury,
+                        minHeure : 8,
+                        maxHeure : 19,
+                        toutRegenerer : true,          
+                    }
             })
             .catch((error) => { 
                 console.log(error);
@@ -347,26 +346,22 @@ export default {
         }
         // récupère promo
         axios.get(`http://localhost:3000/api/Promo/`).then((response) => {
-                    this.promos = [];
-                    var actuYear = new Date().getFullYear()
-                    var month = new Date().getMonth() + 1
-                    var text = "IG"
-                    var idClass = ((month >= 9)? 6 : 5 ) // permet de déduire les classes avec les années de promo 
-                    for (let i = 0; i < response.data.length; i++) {
-                        this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : this.readonly})
-                    }
-            })
-            .catch((error) => { 
-                console.log(error);
-                this.show = false;
-                this.error = "Erreur : Impossible de récuperer les promos";
-                //this.$router.push("/");
-            });
+            this.promos = [];
+            var actuYear = new Date().getFullYear()
+            var month = new Date().getMonth() + 1
+            var text = "IG"
+            var idClass = ((month >= 9)? 6 : 5 ) // permet de déduire les classes avec les années de promo 
+            for (let i = 0; i < response.data.length; i++) {
+                this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : this.readonly})
+            }
+        })
+        .catch((error) => { 
+            console.log(error);
+            this.show = false;
+            this.error = "Erreur : Impossible de récuperer les promos";
+            //this.$router.push("/");
+        });
     }
-    else{
-        this.$router.push("/")
-    }
-  }
 }
 </script>
 

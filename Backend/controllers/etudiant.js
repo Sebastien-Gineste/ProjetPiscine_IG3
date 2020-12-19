@@ -74,11 +74,11 @@ exports.login = (req, res, next) => {
   new Etudiant().checkConnexion(req.body.email, req.body.password)
     .then(user => {
           console.log(user[0])
-          res.status(200).json({
-            admin: user[0].estAdmin,
+          res.cookie('jwtAuth', auth.createToken(user[0].numEtudiant), {maxAge:'6000000', httpOnly:true}).status(200).json( 
+            {admin: user[0].estAdmin,
             userId: user[0].numEtudiant,
-            token: auth.createToken(user[0].numEtudiant)
-          });
+            token: auth.createToken(user[0].numEtudiant)}
+          );
         })
     .catch(error =>{
       switch(error) {
@@ -96,23 +96,31 @@ exports.login = (req, res, next) => {
 }
 
 exports.checkAdmin = (req,res,next) => {
-  new Etudiant().select([req.params.id])
-  .then(user => {
-     if(user[0].estAdmin){
-      res.status(200).json({
-        admin: true
-      });
-     }
-     else{
-      res.status(200).json({
-        admin: false
-      });
-     }
-  })
-  .catch(error => {
-    console.log(error)
-    res.status(500).send(error);
-  });
+  var id = auth.exportsId(req.headers.cookie)
+  if(id){ // il y a un id dans le token du cookie
+    new Etudiant().select([id])
+    .then(user => {
+       if(user[0].estAdmin){
+        res.status(200).json({
+          userId : id,
+          admin: true
+        });
+       }
+       else{
+        res.status(200).json({
+          admin: false,
+          userId : id
+        });
+       }
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).send(error);
+    });
+  }
+  else{
+    res.status(401).send("Pas autorisé");
+  }
 }
 
 /* A faire */

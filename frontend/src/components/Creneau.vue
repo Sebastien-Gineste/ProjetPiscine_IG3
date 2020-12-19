@@ -1,5 +1,5 @@
 <template>
-    <div @click="goPanel" v-if="show" :id="'cre_'+creneau.id" class="creneau">
+    <div @click="goPanel" v-if="show && !creneau.supprimer" :id="'cre_'+creneau.id" class="creneau">
         <table class="typeCreneau" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
             <tbody>
                 <tr>
@@ -47,6 +47,7 @@ export default {
             }
         },
         profs(){
+            console.log(this.creneau.jury)
             if(this.creneau.jury !== null && this.creneau.jury[0] !== null){
                 let str = ""
                 console.log(this.creneau)
@@ -66,9 +67,6 @@ export default {
         goPanel(){
             this.appelPanel(this.creneau)
         }
-    },
-    beforeMount(){
-        
     }
 }
 </script>

@@ -11,28 +11,27 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue";
-import axios from "axios";
-import tok from "./service/token"
+import axio from "axios";
 import store from './store/';
+
+const axios = axio.create({
+  withCredentials: true
+})
 
 
 export default {
   components: { NavBar },
   beforeMount(){
     if(store.getters.isUpdate){
-       if(sessionStorage.getItem("token")){  // Vérifie si un token est déjà existant
-          var user = tok.decode(sessionStorage.getItem("token"));
-          axios.post(`http://localhost:3000/api/Etudiant/`+user.id, { headers:{authorization: "bearer "+user.token}}).then((response) => {
-                  user = {admin : response.data.admin, userId : user.id, token : user.token};
-                  store.dispatch('connexion',user);
-              })
-              .catch((error) => { 
-                console.log(error);
-              });
-      }
-      else{
-         store.dispatch('deconnexion',user);
-      }
+      axios.post(`http://localhost:3000/api/Etudiant/VerifCo`).then((response) => {
+        var user = {admin : response.data.admin, userId : response.data.userId};
+        store.dispatch('connexion',user);
+      })
+      .catch((error) => { 
+        if(error.response.status == 401){
+          this.$store.dispatch('deconnexion');
+        }
+      });
     }
   }
 }

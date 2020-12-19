@@ -3,17 +3,18 @@ const SecretToken = require('../config/tokenKey');
 
 exports.verifyToken = (req, res, next) => {
   try {
-    if(typeof req.headers["authorization"] !== 'undefined') {
-        const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, SecretToken);
-        console.log(decodedToken);
-        const userId = decodedToken.idEtudiant;
-        if (req.body.userId && req.body.userId !== userId) {
-          res.sendStatus(403);
-        } else {
-          next(); // Utilisateur Valider
+    if(req.headers.cookie) {
+        var cookie = req.headers.cookie.split("=");
+        if(cookie[0] == "jwtAuth"){ // bon cookie
+            const token = cookie[1] // token
+            const decodedToken = jwt.verify(token, SecretToken);
+            next(); // token good
         }
-    } else {
+        else{
+          res.sendStatus(403);
+        }  
+    }
+    else {
         // Forbidden
         res.sendStatus(403);
     }
@@ -24,6 +25,18 @@ exports.verifyToken = (req, res, next) => {
   }
 }
 
+exports.exportsId = (cookie) => {
+  if(cookie) {
+    var Splitcookie = cookie.split("=");
+    if(Splitcookie[0] == "jwtAuth"){ // bon cookie
+        const token = Splitcookie[1] // token
+        const decodedToken = jwt.verify(token, SecretToken);
+        return decodedToken.idEtudiant;
+    }
+  }
+  return false 
+}
+
 exports.decodeToken = (token) =>{
   try{
     return jwt.verify(token, SecretToken)
@@ -31,6 +44,10 @@ exports.decodeToken = (token) =>{
   catch(error){
     return error;
   }
+}
+
+exports.logout = (req, res) => {
+  res.clearCookie("jwtAuth", {httpOnly: true}).status(200).send("Cookie deleted");
 }
 
 exports.createToken = function(idEtudiant) {

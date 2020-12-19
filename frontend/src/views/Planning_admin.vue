@@ -185,10 +185,12 @@
 <script>
 import Creneau from "@/components/Creneau.vue";
 import Vue from 'vue'
-import tok from "../service/token"
 import util from "../service/fonctionUtil"
-import axios from "axios"
+import axio from "axios";
 const ComponentClass = Vue.extend(Creneau)
+const axios = axio.create({
+  withCredentials: true
+})
  
 export default {
     //components: { Creneau },
@@ -201,6 +203,7 @@ export default {
             dateActu : { tab : []},
             errorMessage : "",
             show : false,
+            currentCreneau : null,
             salles : ['TD15','SC102'],
             profs : [
                 
@@ -219,8 +222,9 @@ export default {
     methods : {
         affichePanelCreneau(creneau){
             console.log(creneau)
+            this.currentCreneau = creneau
             this.panelCreneau = {
-                idEvent : event.numEvenement,
+                idEvent : this.event.numEvenement,
                 id : creneau.id,
                 salle : creneau.salle,
                 dateCreneau : creneau.date,
@@ -237,17 +241,42 @@ export default {
         },
         removePanel(){
             this.show = false // enlève le panel
+            this.currentCreneau = null
             for(let i = 0;i<this.event.nombreMembreJury;i++){ // on remet à null
                 this.panelCreneau.jury[i] = null
             }
             this.panelCreneau = {id : null,heureMin : 8, dateCreneau : null,salle : null,groupe : null} // rénitialise le formulaire du créneau
         },
         enregistrerCreneau(){
-            alert("enregistre")
-            console.log(this.panelCreneau)
+
+            if(this.currentCreneau.date === this.panelCreneau.dateCreneau && Math.floor(this.currentCreneau.heureTotal) === Math.floor(this.panelCreneau.heureDebut)){ // si on a pas modif la date ni l'heure
+                this.currentCreneau.id =  this.panelCreneau.id  
+                this.currentCreneau.salle = this.panelCreneau.salle
+                this.currentCreneau.jury = this.panelCreneau.jury // définit un tableau de jury de taille event.nombreMembreJury avec valeur = null
+                this.currentCreneau.groupe = this.panelCreneau.groupe
+                this.currentCreneau.heureDebut = (this.panelCreneau.heureDebut % 1).toFixed(2).substring(2)
+                this.currentCreneau.heureTotal = this.panelCreneau.heureDebut
+                this.currentCreneau.date = util.formatDate(this.panelCreneau.dateCreneau)
+            }
+            else{
+                alert("go supprimer et refaire")
+            }
+
+
+            console.log(this.panelCreneau.jury[0])
+           
+
+
+
+
+            util.makeToast(this,"success","Enregister","Votre modification a été enregistré ! :)")
+            //this.removePanel();
         },
         supprimerCreneau(){
-            alert("supp : " + this.panelCreneau.id)
+            util.makeToast(this,"success","Supprimer","Le créneau a été supprimé ! :)")
+            this.currentCreneau.supprimer = true;
+            this.removePanel();
+
         },
         formatDate(d, type="normal"){
             return util.formatDate(d,type)
@@ -344,8 +373,7 @@ export default {
         });
 
         // récupère les profs
-        var user = tok.decode(sessionStorage.getItem("token"));
-        axios.get(`http://localhost:3000/api/Prof/`, { headers:{authorization: "bearer "+user.token}}).then((response) => {
+        axios.get(`http://localhost:3000/api/Prof/`).then((response) => {
             var profs = response.data;
             for(let i=0;i<profs.length;i++){
                 this.profs.push({value : profs[i].idProf , text : profs[i].nomProf+" "+profs[i].prenomProf})
@@ -391,6 +419,7 @@ export default {
                             heureDebut: (infoCreneau[i].heureDebut % 1).toFixed(2).substring(2),
                             heureTotal : infoCreneau[i].heureDebut,
                             date : util.formatDate(infoCreneau[i].date),
+                            supprimer : false,
                         })
 
                         if(infoCreneau[i].idProf !== null){ // s'il y a un prof, on l'ajoute
