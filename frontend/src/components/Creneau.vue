@@ -1,28 +1,28 @@
 <template>
-    <div @click="goPanel" v-if="show && !creneau.supprimer" :id="'cre_'+creneau.id" class="creneau">
-        <table class="typeCreneau" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
+    <div v-if="show && !creneau.supprimer" :id="'cre_'+creneau.id" class="creneau">
+        <table  class="typeCreneau" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
             <tbody>
                 <tr>
                     <td></td>
                 </tr>
             </tbody>
         </table>
-        <span  class="creneau_Icon" :class="['_Com'+creneau.heureDebut]">
-            <b-icon icon="x-circle" scale="1" variant="danger"></b-icon>
-        </span>
-        <div class="contenueCreneau" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
+        <div @click="goPanel"  class="contenueCreneau" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
             <div aria-owns="Planning" aria-label="text" class="inforCreneau">
               <b>{{creneau.id+" - "}}{{groupe}}</b>
                 <br>{{profs}}
                 <br>{{salle}}
             </div>
         </div>
+         <span @click="supprime" class="creneau_Icon" :class="['_Com'+creneau.heureDebut]">
+            <b-icon icon="x-circle-fill" scale="1" variant="danger"></b-icon>
+        </span>
     </div>
 </template>
 
 <script>
 export default {
-    props: {creneau: Object, Dates : Object, appelPanel : Function},
+    props: {creneau: Object, Dates : Object, appelPanel : Function, SupprimeCreneau : Function },
     computed : {
         dates(){
             return this.Dates.tab
@@ -47,10 +47,8 @@ export default {
             }
         },
         profs(){
-            console.log(this.creneau.jury)
             if(this.creneau.jury !== null && this.creneau.jury[0] !== null){
                 let str = ""
-                console.log(this.creneau)
                 for (let i =0; i<this.creneau.jury.length;i++){
                     if(this.creneau.jury[i] !== null){
                         str += this.creneau.jury[i].nomProf+" - "
@@ -66,6 +64,9 @@ export default {
     methods: {
         goPanel(){
             this.appelPanel(this.creneau)
+        },
+        supprime(){
+            this.SupprimeCreneau(this.creneau)
         }
     }
 }
@@ -93,16 +94,28 @@ export default {
 
     ._Com00{
         top : 0% !important;
+        &.creneau_Icon{
+            top : 5% !important;
+        }
     }
 
     ._Com25{
         top : 25% !important;
+        &.creneau_Icon{
+            top : 30% !important;
+        }
     }
     ._Com50{
         top : 50% !important;
+        &.creneau_Icon{
+            top : 55% !important;
+        }
     }
     ._Com75{
         top : 75% !important;
+        &.creneau_Icon{
+            top : 80% !important;
+        }
     }
     
     .contenueCreneau{
@@ -117,10 +130,23 @@ export default {
         left: 0px; 
         width: 100%;
     }
+
     .creneau_Icon{
         position: absolute; 
-        left: 2px; 
-        top: 2px;
+        left: 5%;
+        transform: scale(1);
+        transition: all 0.5s ease;
+
+        .b-icon.bi{
+            transition: all 0.5s ease;
+        }
+
+        :hover{
+            color : white;
+        }
+        .b-icon.bi:hover{
+            transform: scale(1.3) rotateZ(-90deg);
+        }
     }
     .inforCreneau{
         position: relative; 

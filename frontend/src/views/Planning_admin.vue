@@ -66,114 +66,122 @@
             </b-row>
             <b-row>
                 <b-col cols="1">Heure</b-col>
-                <b-col :class="[date.indexOf(dateActu.tab[0]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[0] == new Date() ? 'dateActu' : '']" >Lundi : {{formatDate(dateActu.tab[0],"tableau")}}</b-col>
-                <b-col :class="[date.indexOf(dateActu.tab[1]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[1] == new Date() ? 'dateActu' : '']" >Mardi : {{formatDate(dateActu.tab[1],"tableau")}}</b-col>
-                <b-col :class="[date.indexOf(dateActu.tab[2]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[2] == new Date() ? 'dateActu' : '']" >Mercredi :{{formatDate(dateActu.tab[2],"tableau")}}</b-col>
-                <b-col :class="[date.indexOf(dateActu.tab[3]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[3] == new Date() ? 'dateActu' : '']" >Jeudi : {{formatDate(dateActu.tab[3],"tableau")}}</b-col> 
-                <b-col :class="[date.indexOf(dateActu.tab[4]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[4] == new Date() ? 'dateActu' : '']" >Vendredi : {{formatDate(dateActu.tab[4],"tableau")}}</b-col> 
+                <b-col v-if="dateAffiche[0]" @dblclick="restartAffiche" @click="desaffiche(0)" :class="[date.indexOf(dateActu.tab[0]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[0] == new Date() ? 'dateActu' : '']" >Lundi : {{formatDate(dateActu.tab[0],"tableau")}}</b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="restartAffiche" @click="desaffiche(1)" :class="[date.indexOf(dateActu.tab[1]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[1] == new Date() ? 'dateActu' : '']" >Mardi : {{formatDate(dateActu.tab[1],"tableau")}}</b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="restartAffiche" @click="desaffiche(2)" :class="[date.indexOf(dateActu.tab[2]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[2] == new Date() ? 'dateActu' : '']" >Mercredi : {{formatDate(dateActu.tab[2],"tableau")}}</b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="restartAffiche" @click="desaffiche(3)" :class="[date.indexOf(dateActu.tab[3]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[3] == new Date() ? 'dateActu' : '']" >Jeudi : {{formatDate(dateActu.tab[3],"tableau")}}</b-col> 
+                <b-col v-if="dateAffiche[4]" @dblclick="restartAffiche" @click="desaffiche(4)" :class="[date.indexOf(dateActu.tab[4]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[4] == new Date() ? 'dateActu' : '']" >Vendredi : {{formatDate(dateActu.tab[4],"tableau")}}</b-col> 
             </b-row>
             <b-row id="heure8">
                 <b-col cols="1">8h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure9">
                 <b-col cols="1">9h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure10">
                 <b-col cols="1">10h</b-col>
-                 <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure11">
                 <b-col cols="1">11h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure12">
                 <b-col cols="1">12h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure13">
                 <b-col cols="1">13h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure14">
                 <b-col cols="1">14h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure15">
                 <b-col cols="1">15h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure16">
                 <b-col cols="1">16h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure17">
                 <b-col cols="1">17h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure18">
                 <b-col cols="1">18h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
             <b-row id="heure19">
                 <b-col cols="1">19h</b-col>
-                <b-col class="colonne j_1"></b-col>
-                <b-col class="colonne j_2"></b-col>
-                <b-col class="colonne j_3"></b-col>
-                <b-col class="colonne j_4"></b-col>
-                <b-col class="colonne j_5"></b-col>
+                <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
+                <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
+                <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
+                <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
+                <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
+            </b-row>
+            <b-row>
+                <b-col cols="1"></b-col>
+                <b-col class="selectDate" :class="dateAffiche[0]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(0)">Lundi</b-col>
+                <b-col class="selectDate" :class="dateAffiche[1]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(1)">Mardi </b-col>
+                <b-col class="selectDate" :class="dateAffiche[2]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(2)">Mercredi</b-col>
+                <b-col class="selectDate" :class="dateAffiche[3]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(3)">Jeudi</b-col> 
+                <b-col class="selectDate" :class="dateAffiche[4]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(4)">Vendredi</b-col> 
             </b-row>
             <b-row id="lastcol">
                 <b-col cols="1"></b-col>
                 <b-col><b-icon @click="prevWeek" icon="arrow-left"></b-icon></b-col>
-                <b-col> <b-icon @click="prevWeekEvent" icon="arrow-left-circle-fill"></b-icon></b-col>
+                <b-col><b-icon @click="prevWeekEvent" icon="arrow-left-circle-fill"></b-icon></b-col>
                 <b-col></b-col>
-                <b-col> <b-icon @click="nextWeekEvent" icon="arrow-right-circle-fill"></b-icon></b-col> 
+                <b-col><b-icon @click="nextWeekEvent" icon="arrow-right-circle-fill"></b-icon></b-col> 
                 <b-col><b-icon @click="nextWeek" icon="arrow-right"></b-icon></b-col>
             </b-row>
         </b-container>
@@ -201,6 +209,7 @@ export default {
             date : [],
             event : null,
             dateActu : { tab : []},
+            dateAffiche : [true,true,true,true,true],
             errorMessage : "",
             show : false,
             currentCreneau : null,
@@ -220,6 +229,17 @@ export default {
         }
     },
     methods : {
+        createCreneau(e){
+            var jour = this.dateActu.tab[parseInt(e.target.classList[1].substr(2))-1] 
+            var heure = e.target.parentElement.id.substr(5)
+            console.log("j = "+jour+" heure = "+heure);
+            if(this.date.indexOf(jour) !== -1){
+                console.log("good")
+            }
+            else{
+                console.log("on peut pas")
+            }
+        },
         affichePanelCreneau(creneau){
             console.log(creneau)
             this.currentCreneau = creneau
@@ -272,6 +292,12 @@ export default {
             util.makeToast(this,"success","Enregister","Votre modification a été enregistré ! :)")
             //this.removePanel();
         },
+        SupprimeDirectCreneau(creneau){
+            console.log("creneau")
+            this.affichePanelCreneau(creneau)
+            this.show = false
+            this.supprimerCreneau()
+        },
         supprimerCreneau(){
             util.makeToast(this,"success","Supprimer","Le créneau a été supprimé ! :)")
             this.currentCreneau.supprimer = true;
@@ -284,6 +310,21 @@ export default {
         dateDisabled(ymd, date) { // enlève les weekend du datePicker
             const weekday = date.getDay()
             return weekday === 0 || weekday === 6
+        },
+        desaffiche(id){
+            this.dateAffiche[id] = true
+            for(let i = 0;i<this.dateAffiche.length;i++){
+                if(id != i){ this.dateAffiche[i] = false}  
+            }
+            this.dateActu.tab = this.getDateWeek(new Date(this.dateActu.tab[0]))
+            setTimeout(this.genererCreneau,50)
+        },
+        restartAffiche(){
+            for(let i = 0;i<this.dateAffiche.length;i++){
+                this.dateAffiche[i] = true
+            }
+            this.dateActu.tab = this.getDateWeek(new Date(this.dateActu.tab[0]))
+            setTimeout(this.genererCreneau,50)
         },
         generateDateEvent(DateDebut,DureeE){
             var tabDate = []
@@ -352,6 +393,36 @@ export default {
             var prevDay = new Date(this.dateActu.tab[0]);
             prevDay.setDate(prevDay.getDate() - 1)
             this.dateActu.tab = this.getDateWeek(prevDay)
+        },
+        genererCreneau(){
+            for(let i =0;i< this.creneaux.length; i++){
+                var elementParent =  this.$el.lastChild.childNodes[Math.floor(this.creneaux[i].heureTotal)-6].getElementsByClassName("j_"+new Date(this.creneaux[i].date).getDay())[0]
+
+                if(this.dateAffiche[new Date(this.creneaux[i].date).getDay()-1]){ // on doit l'afficher
+                    if(elementParent){
+                        if(elementParent.firstChild){ // si déjà un créneau on le suppr
+                            elementParent.removeChild(elementParent.firstChild)
+                        }
+                        var instance = new ComponentClass({
+                            propsData: {
+                                creneau: this.creneaux[i],
+                                Dates : this.dateActu,
+                                appelPanel : this.affichePanelCreneau,
+                                SupprimeCreneau : this.SupprimeDirectCreneau
+                            }
+                            })
+                        instance.$mount() // pass nothing
+                        elementParent.appendChild(instance.$el)
+                    }
+                }
+                else{
+                    if(elementParent){
+                        if(elementParent.firstChild){
+                            elementParent.removeChild(elementParent.firstChild)
+                        }
+                    }
+                }
+            }
         }
     },
     beforeMount(){
@@ -394,7 +465,7 @@ export default {
                 let memoireId = 0;
                 this.creneaux = [];
                 while(i < infoCreneau.length){
-                    if(memoireId == infoCreneau[i].numCreneau){ // on l'a déjà traté mais il y a une info en plus (autres profs)
+                    if(memoireId == infoCreneau[i].numCreneau){ // on l'a déjà traité mais il y a une info en plus (autres profs)
                         console.log(infoCreneau[i].numCreneau)
                         var j = 0;
                         while(this.creneaux[this.creneaux.length-1].jury[j] != null){ // tant que les cases du tableau ne sont pas vide, on continue
@@ -429,13 +500,14 @@ export default {
                         var instance = new ComponentClass({
                             propsData: {
                                 creneau: this.creneaux[this.creneaux.length-1],
-                                //show : this.dateActu.indexOf(this.creneaux[this.creneaux.length-1].date) != -1 ? true : false,
                                 Dates : this.dateActu,
-                                appelPanel : this.affichePanelCreneau
+                                appelPanel : this.affichePanelCreneau,
+                                SupprimeCreneau : this.SupprimeDirectCreneau
                             }
                         })
                         instance.$mount() // pass nothing
-                        this.$el.lastChild.childNodes[Math.floor(infoCreneau[i].heureDebut)-6].childNodes[new Date(infoCreneau[i].date).getDay()].appendChild(instance.$el)
+                        //this.$el.lastChild.childNodes[Math.floor(infoCreneau[i].heureDebut)-6].childNodes[new Date(infoCreneau[i].date).getDay()].appendChild(instance.$el)
+                        this.$el.lastChild.childNodes[Math.floor(infoCreneau[i].heureDebut)-6].getElementsByClassName("j_"+new Date(infoCreneau[i].date).getDay())[0].appendChild(instance.$el)
                     }
                     i++;
                 }
@@ -513,8 +585,18 @@ export default {
         }
         .dateActu{
             font-weight: bold;
-            text-decoration: underline;
+            text-decoration: underline !important;
             border: 2px solid !important
+        }
+        
+        .datePlanning,.selectDate{
+            text-decoration: none;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            &:hover{
+                background-color: white;
+                text-decoration: underline;
+            }
         }
         .notDatePlanning{
             background: repeating-linear-gradient( 45deg, blue 0px, blue 40px, black 40px, black 80px );
