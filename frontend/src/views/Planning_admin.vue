@@ -232,14 +232,36 @@ export default {
     },
     methods : {
         createCreneau(e){
-            var jour = this.dateActu.tab[parseInt(e.target.classList[1].substr(2))-1] 
-            var heure = e.target.parentElement.id.substr(5)
-            console.log("j = "+jour+" heure = "+heure);
-            if(this.date.indexOf(jour) !== -1){
-                console.log("good")
-            }
-            else{
-                console.log("on peut pas")
+            if(e.target.classList[1]){
+                var jour = this.dateActu.tab[parseInt(e.target.classList[1].substr(2))-1] 
+                var heure = e.target.parentElement.id.substr(5)
+                console.log("j = "+jour+" heure = "+heure);
+                if(this.date.indexOf(jour) !== -1){
+                    console.log("good")
+                    var newCreneau = {
+                        date: jour,
+                        duree1h: this.event.dureeCreneau == "1_heure",
+                        groupe: null,
+                        heureDebut: "00",
+                        heureTotal: heure,
+                        id: -1,
+                        jury: [],
+                        salle: null,
+                        supprimer: false,
+                        tabFrereCren: null,
+                    }
+                    for(let i = 0;i<this.event.nombreMembreJury;i++){  
+                        newCreneau.jury.push(null) 
+                    }
+                    this.creneaux.push(newCreneau); // on l'ajoute
+                    this.calculConcordanceCreneau(new Date(newCreneau.date))
+                    this.genererCreneau()
+
+                    // appel axios
+                }
+                else{
+                    console.log("on peut pas")
+                }
             }
         },
         duppliqueCreneau(creneau){
@@ -251,32 +273,18 @@ export default {
                 heureDebut: creneau.heureDebut,
                 heureTotal: creneau.heureTotal,
                 id: -1,
-                idTabCreneau: creneau.idTabCreneau + 1,
                 jury: [],
                 salle: null,
                 supprimer: false,
                 tabFrereCren: [],
             }
-            console.log(newCreneau.idTabCreneau);
-            this.creneaux.splice(newCreneau.idTabCreneau, 0, newCreneau); // on le rajoute juste après le créneau duppliquer 
-            for(let i=creneau.idTabCreneau+1;i<this.creneaux.length;i++){ // on réajuste les autres indexs
-                this.creneaux[i].idTabCreneau ++ 
-            }
-            if(creneau.tabFrereCren != null){
-                let id = creneau.tabFrereCren.indexOf(creneau)
-                creneau.tabFrereCren.splice(id+1,0,this.creneaux[creneau.idTabCreneau+1]) // on l'ajoute dans le tableau après 
-                this.creneaux[creneau.idTabCreneau+1].tabFrereCren = creneau.tabFrereCren // on l'ajout dans ses frères
-            }
-            else{
-                let tabFrere = [this.creneaux[creneau.idTabCreneau],this.creneaux[creneau.idTabCreneau+1]] // créer le tableau des frères
-                this.creneaux[creneau.idTabCreneau].tabFrereCren = tabFrere
-                this.creneaux[creneau.idTabCreneau+1].tabFrereCren = this.creneaux[creneau.idTabCreneau].tabFrereCren    
-            }
-          
+            var id = this.creneaux.indexOf(creneau)+1
+            this.creneaux.splice(this.creneaux.indexOf(creneau)+1, 0, newCreneau); // on le rajoute juste après le créneau duppliquer
 
             for(let i = 0;i<creneau.jury.length;i++){  
-                 this.creneaux[creneau.idTabCreneau+1].jury.push(null) 
+                 this.creneaux[id].jury.push(null) 
             }
+            this.calculConcordanceCreneau(new Date(newCreneau.date))
             setTimeout(this.genererCreneau,50)
 
         },
@@ -308,114 +316,34 @@ export default {
             this.panelCreneau = {id : null,heureMin : 8, dateCreneau : null,salle : null,groupe : null} // rénitialise le formulaire du créneau
         },
         enregistrerCreneau(){
-
-            if(this.currentCreneau.date === this.panelCreneau.dateCreneau && Math.floor(this.currentCreneau.heureTotal) === Math.floor(this.panelCreneau.heureDebut)){ // si on a pas modif la date ni l'heure
-                this.currentCreneau.id =  this.panelCreneau.id  
-                this.currentCreneau.salle = this.panelCreneau.salle
-                this.currentCreneau.groupe = this.panelCreneau.groupe
-                this.currentCreneau.heureDebut = (this.panelCreneau.heureDebut % 1).toFixed(2).substring(2)
-
-                var AncienneHeure = this.currentCreneau.heureTotal
-                if(this.currentCreneau.heureTotal != this.panelCreneau.heureDebut){ // On a changer son commencement 0,0.25,0.50 ou 0.75 => il faut regarder s'il chevauche un autre créneau
-                    this.currentCreneau.heureTotal = this.panelCreneau.heureDebut // on lui met la nouvelle heure
-                    if(this.currentCreneau.tabFrereCren != null){ // il a des frères => On verifie s'ils le sont toujours  
-                        console.log("frere")
-                        var tabFr = this.currentCreneau.tabFrereCren 
-                        this.calculFrere(tabFr) // Vérifie si on est toujours liés aux créneau frères
-                    }
-                    var idTab = this.currentCreneau.idTabCreneau
-                    if(this.currentCreneau.heureTotal < AncienneHeure){ // on fini plus tôt => Peut-être qu'on touche un autre creneau
-                        console.log("On vérifie avant")
-                        if(idTab>0 && this.creneaux[idTab].date === this.creneaux[idTab-1].date){ // il y a un créneau avant
-                            let heureFinal = this.event.dureeCreneau == "1_heure"? parseFloat(this.creneaux[idTab-1].heureTotal) + 1.25 : parseFloat(this.creneaux[idTab-1].heureTotal) + 1.75;
-                            console.log("heureF = "+heureFinal)
-                            if(heureFinal > this.creneaux[idTab].heureTotal){ // on doit ajouter aux frères
-                                if(this.creneaux[idTab-1].tabFrereCren == null){ // n'avait pas de frère
-                                    let tabFrere = [this.creneaux[idTab-1],this.creneaux[idTab]] // créer le tableau des frères
-                                    this.creneaux[idTab-1].tabFrereCren = tabFrere
-                                    this.creneaux[idTab].tabFrereCren = this.creneaux[idTab-1].tabFrereCren    
-                                }
-                                else{ // à déjà des frères
-                                    if(this.creneaux[idTab-1].tabFrereCren.indexOf(this.creneaux[idTab]) == -1 ){
-                                        this.creneaux[idTab-1].tabFrereCren.push(this.creneaux[idTab]) // on l'ajoute dans le tableau
-                                        this.creneaux[idTab].tabFrereCren = this.creneaux[idTab-1].tabFrereCren // on l'ajout dans ses frères
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else{ // on fini plus tard => Peut-être qu'on touche un autre creneau
-                        console.log("On vérifie après")
-                            if(idTab < this.creneaux.length-1 && this.creneaux[idTab].date === this.creneaux[idTab+1].date){ // il y a un créneau avant
-                                let heureFinal = this.event.dureeCreneau == "1_heure"? parseFloat(this.creneaux[idTab].heureTotal) + 1.25 : parseFloat(this.creneaux[idTab].heureTotal) + 1.75;
-                                console.log("heureF = "+heureFinal)
-                                if(heureFinal > this.creneaux[idTab+1].heureTotal){ // on doit ajouter aux frères
-                                    if(this.creneaux[idTab+1].tabFrereCren == null){ // n'avait pas de frère
-                                        if(this.creneaux[idTab].tabFrereCren != null){ // l'élement qu'on déplace avait déjà des frères
-                                            this.creneaux[idTab].tabFrereCren.push(this.creneaux[idTab+1]) // on l'ajoute dans le tableau
-                                            this.creneaux[idTab+1].tabFrereCren = this.creneaux[idTab].tabFrereCren // on l'ajout dans ses frères
-                                        }
-                                        else{
-                                            let tabFrere = [this.creneaux[idTab],this.creneaux[idTab+1]] // créer le tableau des frères
-                                            this.creneaux[idTab].tabFrereCren = tabFrere
-                                            this.creneaux[idTab+1].tabFrereCren = this.creneaux[idTab].tabFrereCren
-                                        }
-                                    }
-                                    else{ // à déjà des frères
-                                        if(this.creneaux[idTab+1].tabFrereCren.indexOf(this.creneaux[idTab]) == -1 ){
-                                            this.creneaux[idTab+1].tabFrereCren.unshift(this.creneaux[idTab]) // on l'ajoute dans le tableau
-                                            this.creneaux[idTab].tabFrereCren = this.creneaux[idTab+1].tabFrereCren // on l'ajout dans ses frères
-                                        }
-                                    }
-                                }
-                            }
-                    }
-                }
-                this.currentCreneau.heureTotal = this.panelCreneau.heureDebut
-                this.currentCreneau.date = util.formatDate(this.panelCreneau.dateCreneau)
-                var newJury = []
-                for(let i = 0;i<this.event.nombreMembreJury;i++){ // on remet à null
-                    if(this.panelCreneau.jury[i]){
-                        newJury.push(this.bdProfs[this.panelCreneau.jury[i]-1]) // on cherche le profs dans la sélection de tous les profs
-                    }
-                    else{
-                        newJury.push(null)
-                    }
-                }
-                this.currentCreneau.jury = newJury
+            var AncienneDate = this.currentCreneau.date
+            this.currentCreneau.id =  this.panelCreneau.id  
+            this.currentCreneau.salle = this.panelCreneau.salle
+            this.currentCreneau.groupe = this.panelCreneau.groupe
+            this.currentCreneau.heureDebut = (this.panelCreneau.heureDebut % 1).toFixed(2).substring(2)
+            if(this.currentCreneau.date !== this.panelCreneau.dateCreneau || Math.floor(this.currentCreneau.heureTotal) !== Math.floor(this.panelCreneau.heureDebut)){
+                setTimeout(this.genererCreneau,50) // le déplace
             }
-            else{ // On recharge tout 
-                alert("go supprimer et refaire")
-                // appel axios pour enregister
-                // appel axios qui recharge tous les créneaux
+            this.currentCreneau.heureTotal = this.panelCreneau.heureDebut
+            this.currentCreneau.date = util.formatDate(this.panelCreneau.dateCreneau)
+            var newJury = []
+            for(let i = 0;i<this.event.nombreMembreJury;i++){ // on remet à null
+                if(this.panelCreneau.jury[i]){
+                    newJury.push(this.bdProfs[this.panelCreneau.jury[i]-1]) // on cherche le profs dans la sélection de tous les profs
+                }
+                else{
+                    newJury.push(null)
+                }
             }
-    
+            this.currentCreneau.jury = newJury
+            this.calculConcordanceCreneau(new Date(this.currentCreneau.date), new Date(AncienneDate)) // on calcul la concordance avec les autres créneaux
             util.makeToast(this,"success","Enregister","Votre modification a été enregistré ! :)")
             setTimeout(this.removePanel,50)
+
+            // appel axios
+
         },
-        calculFrere(tabFr){
-            var id = tabFr[0].idTabCreneau // id du tableau
-            this.creneaux[id].tabFrereCren = null
-            var idDebut = id
-            while( id < idDebut + tabFr.length - 1){ // reParcours les frères pour vérifier
-                    this.creneaux[id+1].tabFrereCren = null
-                    var heureFinal = this.event.dureeCreneau == "1_heure"? parseFloat(this.creneaux[id].heureTotal) + 1.25 : parseFloat(this.creneaux[id].heureTotal) + 1.75;
-                    if(heureFinal > this.creneaux[id+1].heureTotal){ // si le créneau fini après le début du nouveau créneau
-                        if(this.creneaux[id].tabFrereCren == null){ // n'avait pas de frère
-                            var tabFrere = [this.creneaux[id],this.creneaux[id+1]] // créer le tableau des frères
-                            this.creneaux[id].tabFrereCren = tabFrere
-                            this.creneaux[id+1].tabFrereCren = this.creneaux[id].tabFrereCren
-                        }
-                        else{ // à déjà des frères
-                            this.creneaux[id].tabFrereCren.push(this.creneaux[id+1]) // on l'ajoute dans le tableau
-                            this.creneaux[id+1].tabFrereCren = this.creneaux[id].tabFrereCren // on l'ajout dans ses frères
-                        }
-                        
-                    }
-                    id++
-                }
-        },
-        SupprimeDirectCreneau(creneau){ // cliqué sur la croix en haut des créneaux
+        SupprimeDirectCreneau(creneau){ // clique sur un créneau avec l'option supprime
             console.log("creneau")
             this.affichePanelCreneau(creneau)
             this.show = false
@@ -424,7 +352,9 @@ export default {
         supprimerCreneau(){
             util.makeToast(this,"success","Supprimer","Le créneau a été supprimé ! :)")
             this.currentCreneau.supprimer = true;
-            // enlève du tableau this.creneaux
+            var idTab = this.creneaux.indexOf(this.currentCreneau)
+            this.creneaux.splice(idTab, 1) // l'enlève du tableau des créneaux
+            this.calculConcordanceCreneau(new Date(this.currentCreneau.date))
             // appel Axio pour supprimer
             this.removePanel();
 
@@ -553,7 +483,53 @@ export default {
                     }
                 }
             }
+        },
+        compare( a, b ) {
+            if(new Date(a.date) < new Date(b.date)){
+                return -1;
+            }
+            else if(new Date(a.date) > new Date(b.date)){
+                return 1;
+            }
+            else if(a.date === b.date){ // même date on compare leurs heure de début
+                if(parseFloat(a.heureTotal) < parseFloat(b.heureTotal)){
+                    return -1;
+                }
+                if(parseFloat(a.heureTotal) > parseFloat(b.heureTotal)){
+                    return 1 ;
+                }
+                return 0;
+            }
+         
+        },
+        calculConcordanceCreneau(date, secondeDate = date){ // date de la modification
+            this.creneaux.sort(this.compare) // on met le tableau dans l'ordre
+            // on regarde les frères
+            let i = 0;
+            while(i<this.creneaux.length && (new Date(this.creneaux[i].date) <= date || new Date(this.creneaux[i].date) <= secondeDate )){ // tant que le tableau n'est pas fini et qu'on est inférieur ou égale à la date
+                if(this.creneaux[i].date === this.formatDate(date) || this.creneaux[i].date === this.formatDate(secondeDate)){ // si la date est égale on calcul
+                    this.creneaux[i].tabFrereCren = null // on met son tableau de frère à null
+                    if(i > 0 && this.creneaux[i-1].date === this.creneaux[i].date){ // si un créneau à déja passé la boucle et qu'il est de même date
+                        let heureFinal = this.event.dureeCreneau == "1_heure"? parseFloat(this.creneaux[i-1].heureTotal) + 1.25 : parseFloat(this.creneaux[i-2].heureTotal) + 1.75;
+                        if(heureFinal > this.creneaux[i].heureTotal){ // si le créneau fini après le début du nouveau créneau
+                            if(this.creneaux[i-1].tabFrereCren == null){ // n'avait pas de frère
+                                let tabFrere = [this.creneaux[i-1],this.creneaux[i]] // créer le tableau des frères
+                                this.creneaux[i-1].tabFrereCren = tabFrere
+                                this.creneaux[i].tabFrereCren = this.creneaux[i-1].tabFrereCren
+                            }
+                            else{ // à déjà des frères
+                                this.creneaux[i-1].tabFrereCren.push(this.creneaux[i]) // on l'ajoute dans le tableau
+                                this.creneaux[i].tabFrereCren = this.creneaux[i-1].tabFrereCren // on l'ajout dans ses frères
+                            }
+                            
+                        }
+                    }
+                }
+                i++;
+            }
+            console.log(" i = "+i)
         }
+
     },
     beforeMount(){
         this.dateActu.tab = this.getDateWeek(new Date())
@@ -614,7 +590,6 @@ export default {
     
                         this.creneaux.push({
                             id : infoCreneau[i].numCreneau,
-                            idTabCreneau : this.creneaux.length,
                             salle : infoCreneau[i].salle,
                             jury :  tabVideProf, // définit un tableau de jury de taille event.nombreMembreJury avec valeur = null
                             groupe : infoCreneau[i].idGroupe,
