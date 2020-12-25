@@ -5,7 +5,7 @@ class Participe extends model.Model {
   constructor() {
     super();
     this.tableName = "participe";
-    this.tabKey = ["idProf","numCreneau"];
+    this.tabKey = ["idProf","numCreneau","numEvenement"];
     
   }
   /*
@@ -13,6 +13,44 @@ class Participe extends model.Model {
   */
   save(objetVal){
     return super.save(this.tableName,objetVal); 
+  }
+
+  saveJury(idE, idC, jury){
+    return new Promise((resolve, reject) => {
+        var request = 'INSERT INTO participe ( "idProf", "numCreneau", "numEvenement" ) VALUES (';
+        var tabValues = []
+        var nbVal = 1;
+        for(let i = 0; i<jury.length; i++) {
+            tabValues.push(jury[i].idProf)
+            tabValues.push(idC)
+            tabValues.push(idE)
+            request += '$'+(i+nbVal)+",$"+(i+1+nbVal)+",$"+(i+2+nbVal)+"),("
+            nbVal += 2;
+        }
+
+        request = request.substr(0, request.length - 2) // enlève ,(
+        request+= " RETURNING *;";
+
+        const query = {
+            name: 'save-jury-generique', // réquête préparer
+            text: request,
+            values: tabValues,
+        }
+
+        this.client.query(query, function(error, results) {
+            if (error) {
+                reject(Error.CONNECTION_ERROR);
+                console.log(error)
+                return;
+            }
+            else if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+                resolve(results.rows[0])
+            } else {
+                console.log(error)
+                reject(Error.NO_RESULTS);
+            }
+        });
+    });
   }
 
   selectAll(){

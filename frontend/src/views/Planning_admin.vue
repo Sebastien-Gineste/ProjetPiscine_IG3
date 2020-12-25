@@ -2,7 +2,7 @@
     <div id="planning">
         <h1 id="title_planning" >Planning de l'événement n°{{$route.params.id}} !</h1>
         <b-alert  v-if="errorMessage.length > 0" variant="danger" show>{{this.errorMessage}}</b-alert>
-        <Panel :State="panel" />
+        <Panel v-if="event!==null" :State="panel" :Salle="salles" :Jury="jury" :EventPlanning="event" :Profs="profs" :AjoutS="PanelAjoutSalle" :AjoutJ="PanelAjoutJury" :RemoveS="PanelRemoveSalle" :RemoveJ="PanelRemoveJury"/>
         <transition name="slide-fade">
             <div @click="removePanel()" id="fond" v-if="show"></div>
          </transition>
@@ -113,8 +113,8 @@
                 <b-col v-if="dateAffiche[3]" @dblclick="createCreneau" class="colonne j_4"></b-col>
                 <b-col v-if="dateAffiche[4]" @dblclick="createCreneau" class="colonne j_5"></b-col>
             </b-row>
-            <b-row id="heure13">
-                <b-col cols="1">13h</b-col>
+            <b-row id="heure13" >
+                <b-col cols="1" >13h</b-col>
                 <b-col v-if="dateAffiche[0]" @dblclick="createCreneau" class="colonne j_1"></b-col>
                 <b-col v-if="dateAffiche[1]" @dblclick="createCreneau" class="colonne j_2"></b-col>
                 <b-col v-if="dateAffiche[2]" @dblclick="createCreneau" class="colonne j_3"></b-col>
@@ -215,10 +215,11 @@ export default {
             errorMessage : "",
             show : false,
             currentCreneau : null,
-            salles : ['TD15','SC102'],
+            salles : [],
             profs : [],
+            jury : [],
             bdProfs : null,
-            panel : {mode : null},
+            panel : {mode : null, salleSelected : null, jurySelected : null},
             panelCreneau : {
                 idEvent : null,
                 id : null,
@@ -254,14 +255,126 @@ export default {
                         newCreneau.jury.push(null) 
                     }
                     this.creneaux.push(newCreneau); // on l'ajoute
+                    var newCre = this.creneaux[this.creneaux.length-1]
                     this.calculConcordanceCreneau(new Date(newCreneau.date))
                     this.genererCreneau()
 
-                    // appel axios
+                    // appel AXIOS
+                    this.axiosCreate(newCreneau,this.creneaux.indexOf(newCre));
                 }
                 else{
                     console.log("on peut pas")
                 }
+            }
+        },
+        PanelAjoutSalle(salle){
+            console.log(salle)
+            if(salle != "" && this.salles.indexOf(salle) === -1){
+                this.salles.push(salle)
+                return true
+            }
+            else{
+                return false
+            }
+        },
+        compareJury( a, b ) {
+            if(a <b){
+                return -1;
+            }
+            else if(a > b){
+                return 1;
+            }
+            return 0;
+        },
+        PanelAjoutJury(jury, beforeMount=false){
+            console.log(jury)
+            var ajout = true
+            var exact = true;
+            for(let i=0;i<jury.length;i++){ // vérifie non null 
+                if(jury[i] === null){
+                    ajout = false
+                }
+            }
+            for(let i=0;i<jury.length;i++){ // vérifie  différent
+                for(let j=0;j<jury.length;j++){ 
+                    if(jury[i] === jury[j] && i != j){
+                        ajout = false
+                    }
+                }
+            }
+            if(ajout){ // vérifie pas déjà présent
+                jury.sort(this.compareJury) // met les profs dans l'odre
+                for(let i=0;i<this.jury.length;i++){ // pour chaque jury on regarde si c'est le même
+                    let same = 0
+                    for(let j=0;j<jury.length;j++){ 
+                        if(this.jury[i][j] === jury[j]){
+                            same++
+                        }
+                    }
+                    if(same === jury.length){ // pareil
+                        exact = false
+                    }
+                }
+                if(exact){
+                    this.jury.push(jury)
+                    return true
+                }
+                else{
+                    if(!beforeMount){util.makeToast(this,"warning","Attention !","Le jury est déjà présent ! :)")}
+                    return false
+                }
+            }
+            else{
+                if(!beforeMount){util.makeToast(this,"warning","Attention !","Le jury ne peut pas être composé de plusieurs occurences d'un professeur !")}
+                return null
+            }
+          
+        },
+        PanelRemoveSalle(salle){
+            console.log(salle)
+            var id = this.salles.indexOf(salle)
+            if(id !== -1){
+                this.salles.splice(id,1)
+            }
+        },
+        PanelRemoveJury(idJury){
+            console.log(idJury)
+            this.jury.splice(idJury,1)
+        },  
+        ajoutJury(creneau, jury, affichage = true){
+            console.log(jury)
+            if(jury !== null){
+                console.log("jury ajout"+creneau)
+                var newJury = []
+                for(let i = 0;i<this.event.nombreMembreJury;i++){ // on remet à null
+                    if(jury[i]){
+                        newJury.push(this.bdProfs[jury[i]-1]) // on cherche le profs dans la sélection de tous les profs
+                    }
+                    else{
+                        newJury.push(null)
+                    }
+                }
+                var idC = this.creneaux.indexOf(creneau)
+                console.log(idC)
+                this.creneaux[idC].jury = newJury
+                if(affichage){
+                    util.makeToast(this,"success","Enregister","Jury ajouter ! :)")
+                }
+                // appel AXIOS
+                this.axiosUpdate({type : "jury", id :  this.creneaux[idC].id, jury : newJury});
+            }
+           
+        },
+        ajoutSalle(creneau, salle, affichage = true){
+            console.log(salle)
+            if(salle){
+                var idC = this.creneaux.indexOf(creneau)
+                this.creneaux[idC].salle = salle
+                if(affichage){
+                    util.makeToast(this,"success","Enregister","Salle ajouter ! :)")
+                }
+                // appel AXIOS
+                this.axiosUpdate({type : "salle", id : this.creneaux[idC].id, salle : salle});
             }
         },
         duppliqueCreneau(creneau){
@@ -284,11 +397,15 @@ export default {
             for(let i = 0;i<creneau.jury.length;i++){  
                  this.creneaux[id].jury.push(null) 
             }
+
+            // appel AXIOS
+            this.axiosCreate(newCreneau,id);
+
             this.calculConcordanceCreneau(new Date(newCreneau.date))
             setTimeout(this.genererCreneau,50)
 
         },
-        affichePanelCreneau(creneau){
+        affichePanelCreneau(creneau, funcSalle, funcJury){
             console.log(creneau)
             this.currentCreneau = creneau
             this.panelCreneau = {
@@ -297,7 +414,10 @@ export default {
                 salle : creneau.salle,
                 dateCreneau : creneau.date,
                 heureDebut : creneau.heureTotal,
-                groupe : creneau.groupe
+                groupe : creneau.groupe,
+                funcSalle : funcSalle,
+                funcJury : funcJury,
+
             }
             
             this.panelCreneau.jury = []
@@ -317,31 +437,63 @@ export default {
         },
         enregistrerCreneau(){
             var AncienneDate = this.currentCreneau.date
-            this.currentCreneau.id =  this.panelCreneau.id  
-            this.currentCreneau.salle = this.panelCreneau.salle
-            this.currentCreneau.groupe = this.panelCreneau.groupe
-            this.currentCreneau.heureDebut = (this.panelCreneau.heureDebut % 1).toFixed(2).substring(2)
-            if(this.currentCreneau.date !== this.panelCreneau.dateCreneau || Math.floor(this.currentCreneau.heureTotal) !== Math.floor(this.panelCreneau.heureDebut)){
-                setTimeout(this.genererCreneau,50) // le déplace
-            }
-            this.currentCreneau.heureTotal = this.panelCreneau.heureDebut
-            this.currentCreneau.date = util.formatDate(this.panelCreneau.dateCreneau)
             var newJury = []
-            for(let i = 0;i<this.event.nombreMembreJury;i++){ // on remet à null
-                if(this.panelCreneau.jury[i]){
-                    newJury.push(this.bdProfs[this.panelCreneau.jury[i]-1]) // on cherche le profs dans la sélection de tous les profs
+            for(let i = 0;i<this.panelCreneau.jury.length; i++){
+                newJury.push(this.panelCreneau.jury[i])
+            }
+            var affichage = true;
+            if(this.currentCreneau.salle !== this.panelCreneau.salle){
+                if(this.panelCreneau.salle == ""){
+                    this.currentCreneau.salle = null;                
+                }
+                else if(!this.panelCreneau.funcSalle(this.panelCreneau.salle)){ // on peut changer 
+                     this.currentCreneau.salle = this.panelCreneau.salle
+                      // appel AXIOS
+                     this.PanelAjoutSalle(this.currentCreneau.salle);
+                     this.axiosUpdate({type : "salle", id : this.currentCreneau.id, salle : this.currentCreneau.salle});
                 }
                 else{
-                    newJury.push(null)
+                    util.makeToast(this,"warning","Attention !","La salle est sur 2 créneaux dans la même plage horaire ! :(")
+                    affichage = false
                 }
             }
-            this.currentCreneau.jury = newJury
+           
+            this.currentCreneau.groupe = this.panelCreneau.groupe
+            this.currentCreneau.heureDebut = (this.panelCreneau.heureDebut % 1).toFixed(2).substring(2)
+
+            var relancer = false;
+            relancer = this.currentCreneau.date !== this.panelCreneau.dateCreneau || Math.floor(this.currentCreneau.heureTotal) !== Math.floor(this.panelCreneau.heureDebut)
+
+            this.currentCreneau.heureTotal = this.panelCreneau.heureDebut
+            this.currentCreneau.date = util.formatDate(this.panelCreneau.dateCreneau)
+            console.log("jury")
+            console.log(newJury)
+            if(newJury[0]){ 
+                if(!this.panelCreneau.funcJury(newJury)){// on peut changer 
+                    if(this.PanelAjoutJury(newJury,true) !== null){ // ajout dans les jurys (il retourne null s'il y a plusieurs occurence d'un prof dans le jury)
+                        this.ajoutJury(this.currentCreneau, newJury, false);
+                    }
+                    else{
+                        util.makeToast(this,"warning","Attention !","Il manque un jury ou un enseignant est répété plusieurs fois ! :(")
+                        affichage = false
+                    }
+                }
+                else{
+                        util.makeToast(this,"warning","Attention !","Un des membres du jury est sur 2 créneaux dans la même plage horaire ! :(")
+                        affichage = false
+                }
+            }
             this.calculConcordanceCreneau(new Date(this.currentCreneau.date), new Date(AncienneDate)) // on calcul la concordance avec les autres créneaux
-            util.makeToast(this,"success","Enregister","Votre modification a été enregistré ! :)")
-            setTimeout(this.removePanel,50)
-
             // appel axios
+            this.axiosUpdate({type : "update", id : this.currentCreneau.id, heureDebut : this.currentCreneau.heureTotal, date :  this.currentCreneau.date});
 
+            if(affichage){
+                util.makeToast(this,"success","Enregister","Votre modification a été enregistré ! :)")
+            }
+            if(relancer){
+                this.genererCreneau()
+            }
+            setTimeout(this.removePanel,50)            
         },
         SupprimeDirectCreneau(creneau){ // clique sur un créneau avec l'option supprime
             console.log("creneau")
@@ -352,10 +504,12 @@ export default {
         supprimerCreneau(){
             util.makeToast(this,"success","Supprimer","Le créneau a été supprimé ! :)")
             this.currentCreneau.supprimer = true;
+            var id = this.currentCreneau.id;
             var idTab = this.creneaux.indexOf(this.currentCreneau)
             this.creneaux.splice(idTab, 1) // l'enlève du tableau des créneaux
             this.calculConcordanceCreneau(new Date(this.currentCreneau.date))
-            // appel Axio pour supprimer
+            // appel AXIOS
+            this.axiosDelete(id) // remove dans la BD
             this.removePanel();
 
         },
@@ -468,6 +622,8 @@ export default {
                                 appelPanel : this.affichePanelCreneau,
                                 SupprimeCreneau : this.SupprimeDirectCreneau,
                                 DuppliquerCreneau : this.duppliqueCreneau,
+                                AjoutJury : this.ajoutJury,
+                                AjoutSalle : this.ajoutSalle,
                                 Mode : this.panel
                             }
                             })
@@ -528,8 +684,19 @@ export default {
                 i++;
             }
             console.log(" i = "+i)
+        },
+        axiosCreate(creneau,id){
+            axios.post("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/",{date : creneau.date ,groupe : creneau.groupe, salle : creneau.salle, heureTotal : creneau.heureTotal}).then((response)=> {
+                this.creneaux[id].id = response.data.data.numCreneau;
+            })
+            .catch((error) => console.log(error))
+        },
+        axiosUpdate(creneau){
+            axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id, creneau).catch((error) => console.log(error))
+        },
+        axiosDelete(idCreneau){ // supprimer le créneau dans la BD
+            axios.delete("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+idCreneau).catch((error) => console.log(error))
         }
-
     },
     beforeMount(){
         this.dateActu.tab = this.getDateWeek(new Date())
@@ -579,6 +746,14 @@ export default {
                             j++
                         } // on a trouvé la case qui est null
                         this.creneaux[this.creneaux.length-1].jury[j] = {idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf} // ajout un nouveau prof
+                        if(j === this.event.nombreMembreJury-1){ // on a rentré le dernier prof du jury
+                            var tabJury = []
+                            for(let k = 0;k<this.event.nombreMembreJury;k++){
+                                tabJury.push(this.creneaux[this.creneaux.length-1].jury[k].idProf)
+                            }
+                            this.PanelAjoutJury(tabJury,true); // on l'ajoute au tableau de jury
+                        }
+                        
                     }
                     else{
                         memoireId = infoCreneau[i].numCreneau
@@ -600,6 +775,10 @@ export default {
                             supprimer : false,
                             tabFrereCren : null,
                         })
+
+                        if( infoCreneau[i].salle !== null){
+                            this.PanelAjoutSalle(infoCreneau[i].salle);
+                        }
 
                         if(this.creneaux.length-2 >= 0 && this.creneaux[this.creneaux.length-2].date ===  this.creneaux[this.creneaux.length-1].date){ // si un créneau à déja été enregister
                             var heureFinal = this.event.dureeCreneau == "1_heure"? parseFloat(this.creneaux[this.creneaux.length-2].heureTotal) + 1.25 : parseFloat(this.creneaux[this.creneaux.length-2].heureTotal) + 1.75;
@@ -628,6 +807,8 @@ export default {
                                 appelPanel : this.affichePanelCreneau,
                                 SupprimeCreneau : this.SupprimeDirectCreneau,
                                 DuppliquerCreneau : this.duppliqueCreneau,
+                                AjoutJury : this.ajoutJury,
+                                AjoutSalle : this.ajoutSalle,
                                 Mode : this.panel
                             }
                         })
