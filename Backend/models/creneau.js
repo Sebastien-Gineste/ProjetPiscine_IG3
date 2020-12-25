@@ -61,7 +61,7 @@ class Creneau extends model.Model {
     return new Promise((resolve, reject) => {
       const query = {
         name: 'selectall-creneau-event', // réquête préparer
-        text: 'select creneau."numCreneau" , date, creneau."numEvenement", "idGroupe" , "salle", "heureDebut", pr."idProf", pr."nomProf", pr."prenomProf" from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf" where creneau."numEvenement" = $1 ORDER BY date ASC, creneau."numCreneau";',//'select * from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf"  where "numEvenement" = $1 ORDER BY date ASC, creneau."numCreneau";',
+        text: 'select creneau."numCreneau" , date, creneau."numEvenement", "idGroupe" , "salle", "heureDebut", pr."idProf", pr."nomProf", pr."prenomProf" from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf" where creneau."numEvenement" = $1 ORDER BY date ASC, "heureDebut" ASC,  creneau."numCreneau";',
         values: [id],
       }
       this.client.query(query, function(error, results) {
@@ -89,8 +89,26 @@ class Creneau extends model.Model {
   /*  
    * id : [val Clé primaire]
   */
-  delete(id){
-    return super.delete(this.tableName,this.tabKey,id)
+  delete(id, idEvent){
+    return new Promise((resolve, reject) => {
+      var request = 'DELETE FROM '+this.tableName+' WHERE creneau."numEvenement" = $1 AND creneau."numCreneau" = $2 ';
+
+      const query = {
+          name: 'delete-creneau', // réquête préparer
+          text: request,
+          values: [idEvent,id],
+        }
+
+      this.client.query(query, function(error, results) {
+        console.log(error)
+          if (error) {
+              reject(model.Errors.CONNECTION_ERROR);
+              return;
+          } else {
+              resolve("good");
+          }
+      });
+  });
   }
 
   /*
