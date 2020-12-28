@@ -55,7 +55,13 @@ const routes = [
   { path: "*", // à mettre à la fin du routeur
     name: "404",
    component:  () => import(/* webpackChunkName: "about" */ '../views/Error.vue')
-  }
+  },
+  {
+    path: '/Groupe',
+    name: 'GestionGroupe',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Group_Managing.vue'),
+    meta : {requireAuth : true}
+  },
 ]
 
 const router = new VueRouter({
