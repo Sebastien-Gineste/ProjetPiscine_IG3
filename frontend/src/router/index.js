@@ -59,8 +59,14 @@ const routes = [
   {
     path: '/Groupe',
     name: 'GestionGroupe',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Group_Managing.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Group_Management.vue'),
     meta : {requireAuth : true}
+  },
+  {
+    path: '/Evenement',
+    name: 'GestionEvent',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Event_Management.vue'),
+    meta : {requireAuth : true, requireAdmin : true}
   },
 ]
 
