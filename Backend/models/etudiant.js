@@ -14,7 +14,7 @@ class Etudiant extends model.Model {
     return new Promise((resolve, reject) => {
       const query = {
           name: 'select-userByEmail', // réquête préparer
-          text: 'SELECT * FROM '+this.tableName+' WHERE "emailEtudiant" = $1',
+          text: 'SELECT etudiant."numEtudiant", etudiant."mdpEtudiant", etudiant."estAdmin", composer."idGroupe" FROM ' + this.tableName + ' LEFT JOIN composer ON composer."numEtudiant" = etudiant."numEtudiant" WHERE "emailEtudiant" = $1',
           values: [email],
       };
      

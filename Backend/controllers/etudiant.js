@@ -77,7 +77,8 @@ exports.login = (req, res, next) => {
           res.cookie('jwtAuth', auth.createToken(user[0].numEtudiant), {maxAge:'6000000', httpOnly:true}).status(200).json( 
             {admin: user[0].estAdmin,
             userId: user[0].numEtudiant,
-            token: auth.createToken(user[0].numEtudiant)}
+            token: auth.createToken(user[0].numEtudiant),
+            group: user[0].idGroupe}
           );
         })
     .catch(error =>{
