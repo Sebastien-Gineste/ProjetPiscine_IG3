@@ -1,29 +1,3 @@
-<!--
-<template>
-    <div id="group">
-        <h1 id="title" v-if="hasGroup">Modification du groupe n°{{getGroup}}</h1>
-        <h1 id="title" v-else>Création du groupe</h1>
-
-        <h1 id="title_event" v-if="isCreate" >Création d'un nouvel événement !</h1>
-        <h1 id="title_event" v-else>Modification de l'événement n°{{$route.params.id}} !</h1>
-        
-            
-            -- hasGroup & getGroup dans le store --
-            
-            Si l'étudiant n'a pas de groupe (hasGroup == false), afficher un bouton "Créer un nouveau groupe" qui amène sur la page /Create_Update_Group
-                /Create_Update_Group fera office de page de modification ET de création de groupe (cf. Create_Update_Evenement.vue)
-
-            Si l'étudiant a déjà un groupe (hasGroup == true), afficher le groupe et ses infos (getGroup) et un bouton "Modifier le groupe" qui amène sur la page /Create_Update_Group
-                /Create_Update_Group fera office de page de modification ET de création de groupe (cf. Create_Update_Evenement.vue)
-
-
-    </div>
-</template>
--->
-
-
-
-
 <template>
     <div id="Group_panel">  
         <!-- iscreate ou hasGroup -->
@@ -118,6 +92,9 @@
                     listMembers: null,
                     toutRegenerer : true,
                 },
+                show: true,
+                showModif : false,
+                showPanel : false,
             }
         },
 

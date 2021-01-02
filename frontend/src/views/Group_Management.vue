@@ -1,262 +1,173 @@
 <template>
-    <div id="Evenement_panel">  
-        <h1 id="title_event" v-if="isCreate" >Création d'un nouvel événement !</h1>
-        <h1 id="title_event" v-else>Modification de l'événement n°{{$route.params.id}} !</h1>
+    <div id="Group_panel">  
+        <h1 id="title_group">Gestion du groupe</h1>
 
         <b-alert v-if="error.length > 0" variant="danger" show>{{this.error}}</b-alert>
 
-        <b-form id="formEvent" @submit="onSubmit" v-if="show">            
 
-            <!-- Nom Event + Promo  --> 
+
+
+<!-- PARTIE 1: S'IL A DEJA UN GROUPE -->
+
+
+
+<!-- if hasGroup then showBlock() -->
+<!-- 
+showBlock  {
+                if hasGroup then
+                    return True
+                else 
+                    return False
+} 
+-->
+
+        <b-form id="formGroup" @submit="onSubmit" v-if="show">            
+            
+            <!-- Tuteur: Nom + Prénom + Entreprise --> 
             <b-row class="my-1">
                 <b-col sm="6">  
-                   <b-form-group
+                    <b-form-group
                         id="input-group-1"
-                        label="Nom de l'évenement:"
-                        label-for="NomEvent">
+                        label="Nom du tuteur:"
+                        label-for="nomTuteur">
                         <b-form-input
                             :readonly="readonly"
-                            id="NomEvent"
-                            v-model="form.nomE"
+                            id="nomTuteur"
+                            v-model="form.nomTuteur"
                             type="text"
                             required
-                            placeholder="Nom de l'événement"
-                        ></b-form-input>
+                            placeholder="Nom du tuteur">
+                        </b-form-input>
                     </b-form-group>
                 </b-col>
                 <b-col sm="6">  
                     <b-form-group
-                        id="select2"
-                        label="Promo de l'évenement:"
-                        label-for="Promo">
-                        <b-form-select id="Promo" v-model="form.Promo" required :options="promos">
-                            <template #first>
-                                <b-form-select-option :value="null" disabled>Sélectionner une promo</b-form-select-option>
-                            </template>
-                        </b-form-select>
-                    </b-form-group>
-                </b-col>
-            </b-row> 
-
-            <!-- Date Event --> 
-            <b-row class="my-1">
-                <b-col sm="6">  
-                    <b-form-group
-                        id="date2"
-                        label="Date limite de réservation des créneaux:"
-                        label-for="DateLimEvent">
-                        <b-form-datepicker id="DateLimEvent" :readonly="readonly" :hide-header="true" :state="form.DateLim.length !== 0" :date-disabled-fn="dateDisabled" :min="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
-                    </b-form-group>
-                </b-col>
-                <b-col sm="6">  
-                    <b-form-group
-                        id="date1"
-                        label="Date début Evenement:"
-                        label-for="DateDebEvent">
-                        <b-form-datepicker id="DateDebEvent" :readonly="readonly" :hide-header="true" :state="form.DateDeb.length !== 0 && +new Date(form.DateLim) <= +new Date(form.DateDeb)" :date-disabled-fn="dateDisabled" :min="minDate" required v-model="form.DateDeb" class="mb-2"></b-form-datepicker>
-                    </b-form-group>
-                </b-col>
-            </b-row> 
-
-            <!-- Durée Event --> 
-            <b-row class="my-1">
-                <b-col sm="4">  
-                    <b-form-group
-                        id="number1"
-                        label="Duree Evenement : (1 = 1 jour)"
-                        label-for="DureEvenement">
+                        id="input-group-1"
+                        label="Prénom du tuteur:"
+                        label-for="prenomTuteur">
                         <b-form-input
                             :readonly="readonly"
-                            id="DureEvenement"
-                            v-model="form.DureeE"
-                            type="number"
+                            id="prenomTuteur"
+                            v-model="form.prenomTuteur"
+                            type="text"
                             required
-                            min="1"
+                            placeholder="Prénom du tuteur"
                         ></b-form-input>
                     </b-form-group>
                 </b-col>
-                <b-col sm="4">  
+                <b-col sm="6">  
                     <b-form-group
-                        id="select"
-                        label="Durée des soutenances:"
-                        label-for="DureeSoutenance">
-                        <b-form-select id="DureeSoutenance" required v-model="form.DureeS" :options="options">      
-                            <template #first>
-                                <b-form-select-option :value="null" disabled>Sélectionner une durée</b-form-select-option>
-                            </template>
-                        </b-form-select>
-                    </b-form-group>
-                </b-col>
-                <b-col sm="4">  
-                    <b-form-group
-                        id="number3"
-                        label="Nombre des membres du jury:"
-                        label-for="NbMembre">
+                        id="input-group-1"
+                        label="Entreprise du tuteur:"
+                        label-for="entrepriseTuteur">
                         <b-form-input
                             :readonly="readonly"
-                            id="NbMembre"
-                            v-model="form.nbJury"
-                            type="number"
+                            id="entrepriseTuteur"
+                            v-model="form.entrepriseTuteur"
+                            type="text"
                             required
-                            min="1"
+                            placeholder="Entreprise du tuteur"
                         ></b-form-input>
                     </b-form-group>
                 </b-col>
             </b-row> 
 
+            <!-- Ajouter les élèves au groupe -->
 
             <b-button id="submit" v-if="isCreate" type="submit" variant="primary">Créer</b-button>
             <b-button id="submit" v-else type="submit" variant="primary">Modifier</b-button>
-            <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="primary">Annuler</b-button>
-            <b-button id="panel" v-if="isCreate" @click="affichePanel()" type="button" variant="primary">Option création</b-button>
-            <b-button id="panel" v-else @click="affichePanel()" type="button" variant="primary">Option modification</b-button>
+            <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="primary">Supprimer le groupe</b-button>
+            <!-- Faire une fonction supprimer à la place de refrech() -->
             <div v-if="messageError.length > 0">{{messageError}}</div>
-
-            <div v-if="showPanel" id="optionCreation">
-                 <!-- Durée Event --> 
-                <b-row class="my-1">
-                    <b-col>  
-                        <b-form-group
-                            id="heureMin"
-                            label="Heure min des créneaux"
-                            label-for="MinHeure">
-                            <b-form-input
-                                :readonly="readonly"
-                                id="MinHeure"
-                                v-model="form.minHeure"
-                                type="number"
-                                step="0.25"
-                                required
-                                min="1"
-                            ></b-form-input>
-                            <small>8.25 = 8h15</small>
-                        </b-form-group>
-                    </b-col>
-                    <b-col >  
-                        <b-form-group
-                            id="heureMax"
-                            label="Heure max des créneaux"
-                            label-for="MaxHeure">
-                            <b-form-input
-                                :readonly="readonly"
-                                id="MaxHeure"
-                                v-model="form.maxHeure"
-                                step="0.25"
-                                type="number"
-                                required
-                                min="1"
-                            ></b-form-input>
-                        </b-form-group>
-                    </b-col>
-                    <b-col  v-if="!isCreate">  
-                        <b-form-group
-                            id="generationForm"
-                            label="Supprimer tous les anciens créneaux ?"
-                            label-for="ifGener">
-                            <b-form-checkbox id="ifGener" v-model="form.toutRegenerer" name="check-button" switch>
-                            </b-form-checkbox>
-                        </b-form-group>
-                    </b-col>
-                </b-row> 
-            </div>
         </b-form>
+
+<!-- FIN DE LA PARTIE 1 -->
+
+
+<!-- PARTIE 2: S'IL N'A PAS ENCORE DE GROUPE -->
+
+<!-- Même concept avec showBlock -->
+
+        <div id="b2">
+
+            <h6>VOUS N'AVEZ PAS ENCORE DE GROUPE</h6>
+
+            <b-button id="submit" v-if="isCreate" type="submit" variant="primary">Créer un groupe</b-button>
+
+
+
+        </div>
         
     </div>
 </template>
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Après data, script coming from create_update_evenement -->
+
 <script>
-import axio from "axios";
-import util from "../service/fonctionUtil"
+    import { mapGetters } from 'vuex'
+    import axio from "axios";
+    import util from "../service/fonctionUtil"
 
-const axios = axio.create({
-  withCredentials: true
-})
+    const axios = axio.create({
+        withCredentials: true
+    })
 
-export default {
-    data(){
-        const now = new Date()
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-        // 15th two months prior
-        const minDate = new Date(today)
-        return {
-            data : null,
-            error : "",
-            messageError : "",
-            form: {
-                nomE: '',
-                DateDeb : this.formatDate(minDate),
-                DateLim: this.formatDate(minDate),
-                DureeE : '',
-                DureeS: null,
-                Promo : null,
-                nbJury : null,
-                minHeure : 8,
-                maxHeure : 19,
-                toutRegenerer : true,
+    export default {
+        data() {
+            return {
+                data : null,
+                error : "",
+                messageError : "",
+                form: {
+                    idGroup: null,
+                    nomTuteur: '',
+                    prenomTuteur: '',
+                    entrepriseTuteur: '',
+                    idProf: null,
+                    listMembers: null,
+                    toutRegenerer : true,
+                },
+                show: true,
+                showModif : false,
+                showPanel : false,
+            }
+        },
+
+        computed: {
+            readonly() {
+                return (this.isCreate ? false : !this.showModif )
             },
-            options: [
-                { value: '1_heure', text: '1 heure' , disabled: this.readonly },
-                { value: '1_heure_30', text: '1 heure et demie', disabled: this.readonly },
-            ],
-            promos : [
-                {value: '2023', text: 'IG3'},
-                {value: '2022', text: 'IG4'},
-            ],
-            minDate : minDate,
-            show: true,
-            showModif : false,
-            showPanel : false,
-        }
-    },
-    computed: {
-      readonly() {
-            return (this.isCreate ? false : !this.showModif )
-      },
-      isCreate(){
-            return this.$route.params.id === undefined
-      },
-    },
-    methods:{
-        verifForm(){
-            if(this.form.nomE.length === 0){
-                this.messageError = "Le nom ne peut pas être vide"
-                return false
-            }
-            else if(this.form.DateLim.length < 1 ){
-                this.messageError = "Le date limite d'événement ne peut pas être vide"
-                return false
-            }
-            else if(this.form.nbJury < 1 ){
-                this.messageError = "Il doit y avoir au moins 1 membre pour le jury"
-                return false
-            }
-            var dateDeb = new Date(this.form.DateDeb);
-            var dateLim = new Date(this.form.DateLim);
-            if(dateLim > dateDeb){
-                this.messageError = "La date limite de réservation ne peut pas être supérieure à la date de début de l'évenement"
-                return false
-            }
-            else if(this.form.DureeE < 1){
-                this.messageError = "L'évenement doit durer au moins 1 jour"
-                return false  
-            }
-            else{
-                this.messageError = "";
-                return true
-            }
+            isCreate(){
+                return this.$route.params.id === undefined
+            },
         },
-        formatDate(d){
-           return util.formatDate(d);
-        },
-        dateDisabled(ymd, date) { // enlève les weekend du datePicker
-            const weekday = date.getDay()
-            return weekday === 0 || weekday === 6
-        },
-        affichePanel(){
-            this.showPanel = !this.showPanel
-        },
-        refrech(){
+
+        methods:{
+            ...mapGetters(['hasGroup','getGroup',]),
+            refrech(){
             document.getElementById("submit").innerHTML = "Modifier";
             this.showModif = false;
             for (let i =0;i<this.options.length;i++){
@@ -319,70 +230,72 @@ export default {
                 });
             }
         }
-    },
-    beforeMount(){ // récupère les infos d'un événement si on est sur la page création Evenement 
-        if(!this.isCreate){
-            axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id).then((response) => {
-                console.log(response)
-                this.data = response.data
-                this.minDate = response.data.dateDebut
-                this.form = {
-                        nomE: response.data.nomEvenement,
-                        DateDeb : this.formatDate(response.data.dateDebut),
-                        DateLim: this.formatDate(response.data.dateLimiteResa),
-                        DureeE : response.data.duree,
-                        DureeS: response.data.dureeCreneau,
-                        Promo : response.data.anneePromo,
-                        nbJury : response.data.nombreMembreJury,
-                        minHeure : 8,
-                        maxHeure : 19,
-                        toutRegenerer : true,          
-                    }
-            })
-            .catch((error) => { 
-                console.log(error);
-                this.$router.push("/404"); // redirection 404
-            });
-        }
-        // récupère promo
-        axios.get(`http://localhost:3000/api/Promo/`).then((response) => {
-            this.promos = [];
-            var actuYear = new Date().getFullYear()
-            var month = new Date().getMonth() + 1
-            var text = "IG"
-            var idClass = ((month >= 9)? 6 : 5 ) // permet de déduire les classes avec les années de promo 
-            for (let i = 0; i < response.data.length; i++) {
-                this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : this.readonly})
+        },
+
+        beforeMount(){ // récupère les infos d'un groupe si on est sur la page création groupe 
+            if(this.isCreate){
+                axios.get(`http://localhost:3000/api/Groupe/`+this.$route.params.id).then((response) => {
+                    console.log(response)
+
+                    this.idGroup = response.idGroupe
+                    this.nomTuteur = response.nomTuteurEntreprise
+                    this.prenomTuteur = response.prenomTuteurEntreprise
+                    this.entrepriseTuteur = response.nomEntreprise
+                    this.idProf = response.idProf
+                    this.listMembers = response.members // JE NE SAIS PAS
+                })
+                .catch((error) => { 
+                    console.log(error);
+                    this.$router.push("/404"); // redirection 404
+                });
             }
-        })
-        .catch((error) => { 
-            console.log(error);
-            this.show = false;
-            this.error = "Erreur : Impossible de récuperer les promos";
-            //this.$router.push("/");
-        });
+        }
     }
-}
+
 </script>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <style lang="scss">
- #Evenement_panel{
+ #Group_panel{
      margin-top: 5%;
  }
- #formEvent{
+ #formGroup{
      width: 70%;
      margin-left: 15%;
      padding: 20px;
      background: lightcyan;
  }
- #Annuler,#panel{
+ #Annuler{
      margin-left: 5%;
  }
- #title_event{
+ #title_group{
      margin-bottom: 3%;
- }
- #optionCreation{
-     margin-top: 3%;
  }
 
 </style>
