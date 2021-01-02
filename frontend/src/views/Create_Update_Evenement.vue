@@ -7,7 +7,7 @@
 
         <b-form id="formEvent" @submit="onSubmit" v-if="show">            
 
-             <!-- Nom Event + Promo  --> 
+            <!-- Nom Event + Promo  --> 
             <b-row class="my-1">
                 <b-col sm="6">  
                    <b-form-group
@@ -234,11 +234,11 @@ export default {
             var dateDeb = new Date(this.form.DateDeb);
             var dateLim = new Date(this.form.DateLim);
             if(dateLim > dateDeb){
-                this.messageError = "La date limite de réservation ne peut pas être supérieur à la date de début de l'évenement"
+                this.messageError = "La date limite de réservation ne peut pas être supérieure à la date de début de l'évenement"
                 return false
             }
             else if(this.form.DureeE < 1){
-                this.messageError = "L'évenement doit durée au moins 1 jour"
+                this.messageError = "L'évenement doit durer au moins 1 jour"
                 return false  
             }
             else{
