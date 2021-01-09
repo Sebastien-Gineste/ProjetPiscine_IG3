@@ -49,7 +49,35 @@ const routes = [
   { path: "*", // à mettre à la fin du routeur
     name: "404",
    component:  () => import(/* webpackChunkName: "about" */ '../views/Error.vue')
-  }
+  },
+
+
+  {
+    path: '/Groupe/Création',
+    name: 'GroupCreation',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Group.vue'),
+    meta : {requireAuth : true, requireAdmin : false}
+  },
+  {
+    path: '/Groupe/:id',
+    name: 'GroupModification',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Group.vue'),
+    meta : {requireAuth : true, requireAdmin : false}
+  },
+  {
+    path: '/Groupe',
+    name: 'GroupManagement',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Group_Management.vue'),
+    meta : {requireAuth : true, requireAdmin : false}
+  },
+
+
+  {
+    path: '/Evenement',
+    name: 'GestionEvent',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Event_Management.vue'),
+    meta : {requireAuth : true, requireAdmin : true}
+  },
 ]
 
 const router = new VueRouter({
