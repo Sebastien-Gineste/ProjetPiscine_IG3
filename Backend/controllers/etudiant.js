@@ -2,6 +2,7 @@ const auth = require('../middleware/auth')
 const Etudiant = require("../models/etudiant");
 const errorModel = require("../models/model");
 const bcrypt = require("bcrypt");
+const nodemailer = require('nodemailer');
 
 exports.selectAll = (req, res, next) => {
   new Etudiant().selectAll().then((results) => {
@@ -64,7 +65,7 @@ exports.update =(req,res,next) => {
         else{
           console.log(user)
           new Etudiant().update([req.params.id],user)
-          .then(() => res.status(200).json({ message: 'Utilisateur modifier !' }))
+          .then(() => res.status(200).json({ message: 'Utilisateur modifié !' }))
           .catch(error => res.status(400).json({ error }));
         }
 };
@@ -127,22 +128,74 @@ exports.checkAdmin = (req,res,next) => {
 /* A faire */
 exports.select = (req,res,next) => {
   console.log(req.params.id)
-  res.status(500).send('Pas encore fait')
+
+  new Etudiant().select([req.params.id]).then((results)=>{ 
+    res.status(200).json(results[0])
+  }).catch((error) => {
+    switch(error) {
+      case Error.NO_RESULTS:
+          console.log('Pas de données dans cette table.');
+          res.status(400).json({ error })
+          break;
+      default : 
+          console.log('service indispo.');
+          res.status(400).json({ error })
+          break;
+    }
+  })
 }
 
 exports.envoieCodeMail = (req,res,next) =>{
   console.log(req.body.email);
   res.status(500).send('Pas encore fait')
+  var code =  Math.random() * (99999 - 10000) + 10000;
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'projetiscine@gmail.com',
+      pass: 'T8us,5hkM'
+    }
+  });
+  
+  var mailOptions = {
+    from: 'projetiscine@gmail.com',
+    to: req.body.email,
+    subject: 'Récupération Mot de Passe',
+    text: 'Voici votre code pour récupérer votre mot de passe : '+ code
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
 }
 
 /* A faire */
 exports.changeMdp = (req,res,next) => {
-  console.log(req.params.id)
-  res.status(500).send('Pas encore fait')
+  bcrypt.hash(req.body.newPassword, 10)
+      .then(hash => {
+        const user = { }
+          user.mdpEtudiant = hash
+          console.log(user)
+
+          new Etudiant().update([req.params.id],user)
+          .then(() => res.status(200).json({ message: 'Utilisateur modifié !' }))
+          .catch(error => res.status(400).json({ error }))
+      })
+      .catch(error => res.status(500).json({ error })); 
 }
 
 /* A faire */
 exports.delete = (req,res,next) => {
-  console.log(req.params.id)
-  res.status(500).send('PPas encore fait')
+  new Etudiant().delete([req.params.id])
+  .then((results) => {
+    console.log(results)
+    res.status(200).json({ message : results})
+}).catch((error) => {
+    console.log(error);
+    res.status(400).json({ error })
+})
 }
