@@ -192,6 +192,7 @@
 
 
 <script>
+import { mapGetters } from 'vuex'
 import Creneau from "@/components/Creneau.vue";
 import Panel from "@/components/panelCreneau.vue";
 import Vue from 'vue'
@@ -232,6 +233,7 @@ export default {
         }
     },
     methods : {
+        ...mapGetters(['isUser','isAdmin']),
         createCreneau(e){
             if(e.target.classList[1]){
                 var jour = this.dateActu.tab[parseInt(e.target.classList[1].substr(2))-1] 
