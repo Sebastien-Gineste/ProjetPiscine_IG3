@@ -75,7 +75,7 @@ export default {
   beforeMount(){ // Appelé avant tout le reste
     if(store.getters.isUpdate){
       axios.post(`http://localhost:3000/api/Etudiant/VerifCo`).then((response) => {
-        var user = {admin : response.data.admin, userId : response.data.userId};
+        var user = response.data;
         store.dispatch('connexion',user);
       })
       .catch((error) => { 

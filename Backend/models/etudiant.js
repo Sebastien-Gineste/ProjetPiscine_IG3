@@ -14,7 +14,7 @@ class Etudiant extends model.Model {
     return new Promise((resolve, reject) => {
       const query = {
           name: 'select-userByEmail', // réquête préparer
-          text: 'SELECT * FROM '+this.tableName+' WHERE "emailEtudiant" = $1',
+          text: 'SELECT etudiant."numEtudiant", etudiant."mdpEtudiant", etudiant."estAdmin", evenement."numEvenement", composer."idGroupe" FROM etudiant LEFT JOIN composer ON composer."numEtudiant" = etudiant."numEtudiant" JOIN evenement ON evenement."anneePromo" = etudiant."annePromo" WHERE "emailEtudiant" = $1',
           values: [email],
       };
      
@@ -66,6 +66,35 @@ class Etudiant extends model.Model {
   */
   select(id){
     return super.select(this.tableName,this.tabKey,id)
+  }
+
+  selectEtudiant(id){
+    return new Promise((resolve, reject) => {
+      const query = {
+          name: 'select-userByID', // réquête préparer
+          text: 'SELECT etudiant."numEtudiant", etudiant."mdpEtudiant", etudiant."estAdmin", evenement."numEvenement", composer."idGroupe" FROM etudiant LEFT JOIN composer ON composer."numEtudiant" = etudiant."numEtudiant" JOIN evenement ON evenement."anneePromo" = etudiant."annePromo" WHERE etudiant."numEtudiant" = $1',
+          values: [id],
+      };
+     
+      model.client.query(query, function(error, results) {
+          if (error) {
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+            if(results.rows.length > 1 ){
+              reject(model.Error.TOO_MANY_RESPONSE)
+            }
+            else{ // Utilisateur Bien retourné
+                  resolve(results.rows);
+            }  
+          } else {
+              // pas de résultat
+              reject(model.Error.NO_RESULTS);
+          }
+      });
+    });
   }
 
   /*  
