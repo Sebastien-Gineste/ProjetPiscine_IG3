@@ -92,6 +92,9 @@ export default {
             }
     },
     computed : {
+        /* propriété calculer qui retourne le nom d'une classe en fonction de la valeur du boolean (this.cacher)
+         * Cette classe va déplacer le panel à droite afin de le caché.
+        */
         classToogle(){
             if(this.cacher){
                 return "decalePanel"
@@ -100,6 +103,8 @@ export default {
                 return ""
             }
         },
+        /* propriété calculer qui retourne le nom d'une classe en fonction de la valeur du boolean (this.cacher)
+        */
         classToogleFleche(){
             if(this.cacher){
                 return "changePanelRapide"
@@ -110,12 +115,16 @@ export default {
         },
     },
     methods : {
+        /* Fonction qui permet de changer la valeur de (this.cacher) 
+        */
         toggle(){
             this.cacher = !this.cacher
             if(this.cacher){
                 this.State.mode = null    
             }
         },
+        /* Fonction qui permet de changer la valeur de (this.Sate.mode) permettant d'effectuer des actions spécifique lors d'un clique sur un créneau 
+        */
         changeMode(mode){
             if(this.State.mode != mode){
                 this.State.mode = mode
@@ -124,18 +133,26 @@ export default {
                 this.State.mode = null
             }
         },
+        /* Fonction qui permet d'appliquer une classe si l'utilisateur reclique sur un panel déjà sélectionner 
+        */
         focus(mode){
             if(mode == this.State.mode){return "focus"}
             else{return ""}
         },
+        /* Fonction qui permet d'ajouter une salle 
+        */
         ajoutSalle(){
             if(this.AjoutS(this.salle)){
                 this.salle = "" // on la remet à ""
             }
         },
+        /* Fonction qui permet de supprimer une salle 
+        */
         removeSalle(salle){
            this.RemoveS(salle)
         },
+        /* Fonction qui compare des INT d'un tableau pour les mettres dans l'odre croissant
+        */
         compare( a, b ) {
             if(a <b){
                 return -1;
@@ -145,6 +162,8 @@ export default {
             }
             return 0;
         },
+        /* Fonction qui permet d'ajouter un jury 
+        */
         ajoutJury(){
             var tabJury = []
             for (var i = 0; i < this.jury.length; i++){
@@ -159,9 +178,13 @@ export default {
                 this.jury = juryTab
             }
         },
+        /* Fonction qui permet de supprimer un jury 
+        */
         removeJury(idJury){
             this.RemoveJ(idJury)
         },
+        /* Fonction qui retourn un STRING contenant le résumer du jury du créneau 
+        */
         printJury(idJury){
             var str = "";
             for(let i = 0; i <this.Jury[idJury].length; i++){
@@ -170,6 +193,8 @@ export default {
             return str.substr(0,str.length-2)
 
         },
+        /* Fonction qui permet d'afficher le panel de modif des salles ou des jury en fonction du mode 
+        */
         showPanel(mode){
             if(mode === "jury" && this.State.mode === "jury" && !this.show){
                 console.log("jury")
@@ -180,6 +205,8 @@ export default {
                 this.show = true;
             }   
         },
+        /* Fonction qui permet de désafficher le panel des salles/jurys
+        */
         removePanel(){
              this.show = false // enlève le panel
         }
