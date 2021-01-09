@@ -32,7 +32,7 @@ export default {
             showInfo:false,
         }
     },
-    props: {creneau: Object, Dates : Object, appelPanel : Function, SupprimeCreneau : Function, DuppliquerCreneau : Function,AjoutJury : Function,AjoutSalle : Function, Mode : Object},
+    props: {creneau: Object, Dates : Object, appelPanel : Function, SupprimeCreneau : Function, DuppliquerCreneau : Function,AjoutJury : Function,AjoutSalle : Function,Inscription : Function, Mode : Object},
     computed : {
         /* Propriété calculé qui return la valeur CSS du cursor en fonction du mode du panel 
         */
@@ -41,6 +41,8 @@ export default {
                 case 'jury' :
                     if(this.Mode.jurySelected){return "cell" }
                     break;
+                case 'inscription' :
+                    return "cell"
                 case 'salles' :
                     if(this.Mode.salleSelected){return "cell"}
                     break;
@@ -204,6 +206,9 @@ export default {
         goPanel(){
             if(this.Mode.mode === null){
                 this.appelPanel(this.creneau,this.duplicationSalle, this.duplicationJury)
+            }
+            else if(this.Mode.mode === "inscription"){
+                this.Inscription(this.creneau)
             }
             else if(this.Mode.mode === "delete"){
                 this.SupprimeCreneau(this.creneau)

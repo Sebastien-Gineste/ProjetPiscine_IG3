@@ -50,6 +50,7 @@ export default {
           axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
           /*sessionStorage.removeItem('token');*/
           this.$store.dispatch('deconnexion');
+          this.$router.push("/")
        }
    }
 }

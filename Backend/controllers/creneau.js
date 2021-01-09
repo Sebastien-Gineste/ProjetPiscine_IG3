@@ -79,10 +79,36 @@ exports.update = (req, res, next) => {
     }
     else{ // jury
         if(req.body.jury[0]){
-            new Participe().saveJury(idE,req.params.idC,req.body.jury).then((creneau)=>{
-                res.status(200).json({ message: 'Creneau modifier !', data : creneau })
+            new Participe().verifJury(idE,req.params.idC).then((nb)=>{
+                if(nb > 0){
+                    new Participe().deleteJury(idE,req.params.idC).then((results)=>{ // supprime les anciens jury avant de mettre les nouveaux
+                        new Participe().saveJury(idE,req.params.idC,req.body.jury).then((creneau)=>{
+                            res.status(200).json({ message: 'Creneau modifier !', data : creneau })
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                            res.status(400).json({ error })
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        res.status(400).json({ error })
+                    });
+                }
+                else{
+                    new Participe().saveJury(idE,req.params.idC,req.body.jury).then((creneau)=>{
+                        res.status(200).json({ message: 'Creneau modifier !', data : creneau })
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        res.status(400).json({ error })
+                    });
+                }
             })
-            .catch((error) => res.status(400).json({ error }));
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ error })
+            });
         }   
     }
 };

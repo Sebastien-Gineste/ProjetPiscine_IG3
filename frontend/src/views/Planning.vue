@@ -67,11 +67,11 @@
             </b-row>
             <b-row>
                 <b-col cols="1">Heure</b-col>
-                <b-col v-if="dateAffiche[0]" @dblclick="restartAffiche" @click="desaffiche(0)" :class="[date.indexOf(dateActu.tab[0]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[0] == new Date() ? 'dateActu' : '']" >Lundi : {{formatDate(dateActu.tab[0],"tableau")}}</b-col>
-                <b-col v-if="dateAffiche[1]" @dblclick="restartAffiche" @click="desaffiche(1)" :class="[date.indexOf(dateActu.tab[1]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[1] == new Date() ? 'dateActu' : '']" >Mardi : {{formatDate(dateActu.tab[1],"tableau")}}</b-col>
-                <b-col v-if="dateAffiche[2]" @dblclick="restartAffiche" @click="desaffiche(2)" :class="[date.indexOf(dateActu.tab[2]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[2] == new Date() ? 'dateActu' : '']" >Mercredi : {{formatDate(dateActu.tab[2],"tableau")}}</b-col>
-                <b-col v-if="dateAffiche[3]" @dblclick="restartAffiche" @click="desaffiche(3)" :class="[date.indexOf(dateActu.tab[3]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[3] == new Date() ? 'dateActu' : '']" >Jeudi : {{formatDate(dateActu.tab[3],"tableau")}}</b-col> 
-                <b-col v-if="dateAffiche[4]" @dblclick="restartAffiche" @click="desaffiche(4)" :class="[date.indexOf(dateActu.tab[4]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[4] == new Date() ? 'dateActu' : '']" >Vendredi : {{formatDate(dateActu.tab[4],"tableau")}}</b-col> 
+                <b-col v-if="dateAffiche[0]"  @click="desaffiche(0)" :class="[date.indexOf(dateActu.tab[0]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[0] == new Date() ? 'dateActu' : '']" >Lundi : {{formatDate(dateActu.tab[0],"tableau")}}</b-col>
+                <b-col v-if="dateAffiche[1]"  @click="desaffiche(1)" :class="[date.indexOf(dateActu.tab[1]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[1] == new Date() ? 'dateActu' : '']" >Mardi : {{formatDate(dateActu.tab[1],"tableau")}}</b-col>
+                <b-col v-if="dateAffiche[2]"  @click="desaffiche(2)" :class="[date.indexOf(dateActu.tab[2]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[2] == new Date() ? 'dateActu' : '']" >Mercredi : {{formatDate(dateActu.tab[2],"tableau")}}</b-col>
+                <b-col v-if="dateAffiche[3]"  @click="desaffiche(3)" :class="[date.indexOf(dateActu.tab[3]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[3] == new Date() ? 'dateActu' : '']" >Jeudi : {{formatDate(dateActu.tab[3],"tableau")}}</b-col> 
+                <b-col v-if="dateAffiche[4]"  @click="desaffiche(4)" :class="[date.indexOf(dateActu.tab[4]) != -1 ? 'datePlanning' : 'notDatePlanning',dateActu.tab[4] == new Date() ? 'dateActu' : '']" >Vendredi : {{formatDate(dateActu.tab[4],"tableau")}}</b-col> 
             </b-row>
             <b-row id="heure8">
                 <b-col cols="1">8h</b-col>
@@ -171,11 +171,11 @@
             </b-row>
             <b-row>
                 <b-col cols="1"></b-col>
-                <b-col class="selectDate" :class="dateAffiche[0]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(0)">Lundi</b-col>
-                <b-col class="selectDate" :class="dateAffiche[1]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(1)">Mardi </b-col>
-                <b-col class="selectDate" :class="dateAffiche[2]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(2)">Mercredi</b-col>
-                <b-col class="selectDate" :class="dateAffiche[3]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(3)">Jeudi</b-col> 
-                <b-col class="selectDate" :class="dateAffiche[4]? 'bg-info' : 'bg-dark text-white'" @dblclick="restartAffiche" @click="desaffiche(4)">Vendredi</b-col> 
+                <b-col class="selectDate" :class="dateAffiche[0]? 'bg-info' : 'bg-dark text-white'"  @click="desaffiche(0)">Lundi</b-col>
+                <b-col class="selectDate" :class="dateAffiche[1]? 'bg-info' : 'bg-dark text-white'"  @click="desaffiche(1)">Mardi </b-col>
+                <b-col class="selectDate" :class="dateAffiche[2]? 'bg-info' : 'bg-dark text-white'"  @click="desaffiche(2)">Mercredi</b-col>
+                <b-col class="selectDate" :class="dateAffiche[3]? 'bg-info' : 'bg-dark text-white'"  @click="desaffiche(3)">Jeudi</b-col> 
+                <b-col class="selectDate" :class="dateAffiche[4]? 'bg-info' : 'bg-dark text-white'"  @click="desaffiche(4)">Vendredi</b-col> 
             </b-row>
             <b-row id="lastcol">
                 <b-col cols="1"></b-col>
@@ -206,6 +206,10 @@ const axios = axio.create({
 export default {
     components: { Panel },
     data(){
+        var objectPanel = {mode : null, salleSelected : null, jurySelected : null}
+        if(this.isUser() && !this.isAdmin()){ // étudiant
+            objectPanel.mode = "inscription";
+        }
         return{
             creneaux : [],
             date : [],
@@ -219,7 +223,7 @@ export default {
             profs : [],
             jury : [],
             bdProfs : null,
-            panel : {mode : null, salleSelected : null, jurySelected : null},
+            panel : objectPanel,
             panelCreneau : {
                 idEvent : null,
                 id : null,
@@ -430,6 +434,19 @@ export default {
                 this.axiosUpdate({type : "salle", id : this.creneaux[idC].id, salle : salle});
             }
         },
+        /* fonction lancé par le component creneau.vue lorsque l'étudiant clique dessus et que this.mode = "inscription"
+        *  creneau : Object // créneau sur lequel on a appuyé
+        *  Ajoute le groupe de l'étudiant au créneau
+        */  
+        inscriptionGroup(creneau){
+            if(creneau.groupe === null){ // n'a pas déjà un groupe
+                creneau.groupe = -1
+
+            }
+            else{
+               util.makeToast(this,"warning","Erreur","Tu ne peux pas voler le créneau de quelqu'un d'autre !") 
+            }
+        },
         /* fonction lancé par le component creneau.vue lorsque l'utilisateur clique dessus et que this.mode = "ajout"
         *  creneau : Object // créneau sur lequel on a appuyé
         *  Ajoute un nouveau creneau ayant les mêmes propriétés que le créneau passé en paramètre (sauf groupe, salle et jury)
@@ -611,23 +628,28 @@ export default {
             const weekday = date.getDay()
             return weekday === 0 || weekday === 6
         },
-        /* fonction permettant de désafficher les jours qui ont un numéro différent de id. (lorsque l'utilisateur clique sur "lundi" par exemple)
+        /* fonction permettant de désafficher les jours qui ont un numéro différent de id. (lorsque l'utilisateur clique sur "lundi" par exemple) Ou de tout réafficher si on est déjà dans cet état
         *  id : Int // représente le numéro du jour {0,1,2,3,4,5,6} 0 = dimmanche, 1 : = lundi ....
+        *  
         */
         desaffiche(id){
-            this.dateAffiche[id] = true
+            var dejaDesafficher = false
             for(let i = 0;i<this.dateAffiche.length;i++){
-                if(id != i){ this.dateAffiche[i] = false}  
+                if(id != i && this.dateAffiche[i]){dejaDesafficher = true }  
             }
-            this.dateActu.tab = this.getDateWeek(new Date(this.dateActu.tab[0]))
-            setTimeout(this.genererCreneau,50)
-        },
-        /* fonction permettant de réafficher les jours (lorsque l'utilisateur double clique sur "lundi" par exemple)
-        */
-        restartAffiche(){
-            for(let i = 0;i<this.dateAffiche.length;i++){
-                this.dateAffiche[i] = true
+
+            if(dejaDesafficher){
+                this.dateAffiche[id] = true
+                for(let i = 0;i<this.dateAffiche.length;i++){
+                    if(id != i){ this.dateAffiche[i] = false}  
+                }
             }
+            else{
+                for(let i = 0;i<this.dateAffiche.length;i++){
+                    this.dateAffiche[i] = true
+                }
+            }
+
             this.dateActu.tab = this.getDateWeek(new Date(this.dateActu.tab[0]))
             setTimeout(this.genererCreneau,50)
         },
@@ -740,6 +762,7 @@ export default {
                                 DuppliquerCreneau : this.duppliqueCreneau,
                                 AjoutJury : this.ajoutJury,
                                 AjoutSalle : this.ajoutSalle,
+                                Inscription : this.inscriptionGroup,
                                 Mode : this.panel
                             }
                             })
@@ -822,10 +845,14 @@ export default {
         },
         /* fonction permettant de lancer un appel axios PUT (requête HTTP) au backend, enregisterant ainsi la modification du creneau en paramètre dans la BD
          * creneau : Object // contenant les modifications du créneau
+         * etudiant : Bool // permet de savoir si cette requête a été lancé par un étudiant
         */
-        axiosUpdate(creneau){
-            if(this.isAdmin()){
+        axiosUpdate(creneau,etudiant = false){
+            if(this.isAdmin() && !etudiant){
                 axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id, creneau).catch((error) => console.log(error))
+            }
+            else if(this.isUser() && etudiant){
+                axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id+"/Inscription", creneau).catch((error) => console.log(error))
             }
         },
         /* fonction permettant de lancer un appel axios DELETE (requête HTTP) au backend, supprimant le creneau en paramètre dans la BD
@@ -957,6 +984,7 @@ export default {
                                 DuppliquerCreneau : this.duppliqueCreneau,
                                 AjoutJury : this.ajoutJury,
                                 AjoutSalle : this.ajoutSalle,
+                                Inscription : this.inscriptionGroup,
                                 Mode : this.panel
                             }
                         })
