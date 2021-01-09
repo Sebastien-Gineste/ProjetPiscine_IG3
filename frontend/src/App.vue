@@ -10,7 +10,7 @@
       <div class="container">
         <div class="row">
           <div class="col-sm-12 col-md-6">
-            <h6>À propos</h6>
+            <h6><b>À propos</b></h6>
             <p class="text-justify">
               Ce site a été créé dans le cadre d'un projet universitaire. 
               <br>
@@ -23,21 +23,21 @@
           </div>
 
           <div class="col-xs-6 col-md-3">
-            <h6>Les coulisses du projet</h6>
+                      <h6><b>Les supers élèves</b></h6>
+                      <ul class="footer-links">
+                        <li>Cécile Destaing</li>
+                        <li>Loïs Anquetil</li>
+                        <li>Adnane El Abbas</li>
+                        <li>Sébastien Gineste</li>
+                        <li>Marwane Toury</li>
+                      </ul>
+          </div>
+
+          <div class="col-xs-6 col-md-3">
+            <h6><b>Les coulisses du projet</b></h6>
             <ul class="footer-links">
               <li><a href="https://trello.com/b/1wSk3836/backlog">Trello</a></li>
               <li><a href="https://drive.google.com/drive/folders/17I1erIMq8i1mWBqo9cgTSVqtHUBWOUzk?fbclid=IwAR1yQsT05Oae4nAkZmC7KXsVIXDbhwM1buU7F_ZQjNOVoXLGtingt41GoEQ">Google Drive</a></li>
-            </ul>
-          </div>
-          
-          <div class="col-xs-6 col-md-3">
-            <h6>Les supers élèves</h6>
-            <ul class="footer-links">
-              <li>Cécile Destaing</li>
-              <li>Loïs Anquetil</li>
-              <li>Adnane El Abbas</li>
-              <li>Sébastien Gineste</li>
-              <li>Marwane Toury</li>
             </ul>
           </div>
 
@@ -72,7 +72,7 @@ const axios = axio.create({
 
 export default {
   components: { NavBar },
-  beforeMount(){
+  beforeMount(){ // Appelé avant tout le reste
     if(store.getters.isUpdate){
       axios.post(`http://localhost:3000/api/Etudiant/VerifCo`).then((response) => {
         var user = {admin : response.data.admin, userId : response.data.userId};
@@ -102,11 +102,11 @@ export default {
 }
 .site-footer
 {
-  background-color:#26272b;
+  background-color:#13A3B8;
   padding:45px 0 20px;
   font-size:15px;
   line-height:24px;
-  color:#737373;
+  color:#fff;
 }
 .site-footer hr
 {
@@ -119,7 +119,7 @@ export default {
 }
 .site-footer h6
 {
-  color:#fff;
+  color:#000;
   font-size:16px;
   text-transform:uppercase;
   margin-top:5px;
@@ -127,11 +127,11 @@ export default {
 }
 .site-footer a
 {
-  color:#737373;
+  color:#ffffff;
 }
 .site-footer a:hover
 {
-  color:#3366cc;
+  color:#000;
   text-decoration:none;
 }
 .footer-links
@@ -145,11 +145,11 @@ export default {
 }
 .footer-links a
 {
-  color:#737373
+  color:#ffffff
 }
 .footer-links a:active,.footer-links a:focus,.footer-links a:hover
 {
-  color:#3366cc;
+  color:#000;
   text-decoration:none;
 }
 .footer-links.inline li
@@ -207,13 +207,13 @@ export default {
 {
   margin-right:15px;
   text-transform:uppercase;
-  color:#96a2b2;
+  color:#fff;
   font-weight:700;
   font-size:13px
 }
 .social-icons a{
   background-color:#eceeef;
-  color:#818a91;
+  color:#ffffff;
   font-size:16px;
   display:inline-block;
   line-height:44px;
