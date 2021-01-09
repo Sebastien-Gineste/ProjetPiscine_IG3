@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const SecretToken = require('../config/tokenKey');
+const Etudiant = require('../models/etudiant');
 
 exports.verifyToken = (req, res, next) => {
   try {
@@ -9,6 +10,43 @@ exports.verifyToken = (req, res, next) => {
             const token = cookie[1] // token
             const decodedToken = jwt.verify(token, SecretToken);
             next(); // token good
+        }
+        else{
+          res.sendStatus(403);
+        }  
+    }
+    else {
+        // Forbidden
+        res.sendStatus(403);
+    }
+  }
+  catch(error){
+    console.log(error)
+    res.status(400).json({ error })
+  }
+}
+
+exports.verifyTokenAdmin = (req, res, next) => {
+  try {
+    if(req.headers.cookie) {
+        var cookie = req.headers.cookie.split("=");
+        if(cookie[0] == "jwtAuth"){ // bon cookie
+            const token = cookie[1] // token
+            const decodedToken = jwt.verify(token, SecretToken);
+            console.log("idEtudiant : "+decodedToken.idEtudiant);
+            new Etudiant().select([decodedToken.idEtudiant])
+            .then(user => {
+                if(user[0].estAdmin){
+                  next(); // token good && admin
+                }
+                else{ // pas admin
+                  res.sendStatus(403);
+                }
+            })
+            .catch(error => {
+              console.log(error)
+              res.status(500).send(error);
+            });
         }
         else{
           res.sendStatus(403);

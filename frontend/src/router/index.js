@@ -22,11 +22,6 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Connexion.vue')
   },
   {
-    path: '/Planning',
-    name: 'Planning',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Planning.vue')
-  },
-  {
     path: '/Evenement/Création',
     name: 'EvenementsCreation',
     component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Evenement.vue'),
@@ -41,7 +36,7 @@ const routes = [
   {
     path: '/Evenement/:id/Planning',
     name: 'planningEvent',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Planning_admin.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Planning.vue'),
   },
   {
     path: '/about',

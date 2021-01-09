@@ -1,9 +1,9 @@
 <template>
   <div class="home">
     
-    <div v-for="events in data" :key="events">
-      <b-link class="navbar-brand" :to="'/Evenement/'+events.numEvenement+'/Planning'">
-      <h3> {{events.nomEvenement}}</h3>
+    <div v-for="(event, ide) in data" :key="ide">
+      <b-link class="navbar-brand" :to="'/Evenement/'+event.numEvenement+'/Planning'">
+      <h3> {{event.nomEvenement}}</h3>
       </b-link>
     </div>
 

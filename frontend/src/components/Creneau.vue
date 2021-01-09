@@ -9,8 +9,8 @@
         </table>
         <div class="contenueCreneau" :style="{'margin-left' : decaleCss+'% !important', width : splitCss+'% !important'}" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']" >
             <div aria-owns="Planning" aria-label="text" class="infoCreneau">
-                <b v-if="split.substr(6)<3">{{creneau.id+" - "}}{{groupe}}</b>
-                <br v-if="split.substr(6)<3">{{profs}}
+                <b v-if="split<3">{{creneau.id+" - "}}{{groupe}}</b>
+                <br v-if="split<3">{{profs}}
                 <br>{{salle}}
             </div>
         </div>
@@ -32,13 +32,17 @@ export default {
             showInfo:false,
         }
     },
-    props: {creneau: Object, Dates : Object, appelPanel : Function, SupprimeCreneau : Function, DuppliquerCreneau : Function,AjoutJury : Function,AjoutSalle : Function, Mode : Object},
+    props: {creneau: Object, Dates : Object, appelPanel : Function, SupprimeCreneau : Function, DuppliquerCreneau : Function,AjoutJury : Function,AjoutSalle : Function,Inscription : Function, Mode : Object},
     computed : {
+        /* Propriété calculé qui return la valeur CSS du cursor en fonction du mode du panel 
+        */
         cursor(){
             switch(this.Mode.mode){
                 case 'jury' :
                     if(this.Mode.jurySelected){return "cell" }
                     break;
+                case 'inscription' :
+                    return "cell"
                 case 'salles' :
                     if(this.Mode.salleSelected){return "cell"}
                     break;
@@ -53,6 +57,8 @@ export default {
             }
             return "pointer"
         },
+        /* Propriété calculé qui return la valeur CSS de "margin-left" en fonction du de la position du créneau comparer à ses frères (même temporalité) 
+        */
         decaleCss(){
             if(this.creneau.tabFrereCren !== null){
                 var id = this.creneau.tabFrereCren.indexOf(this.creneau)
@@ -63,6 +69,8 @@ export default {
                 return "0"
             }
         },
+        /* Propriété calculé qui return la valeur CSS de "width" en fonction du tableau de ses frères (même temporalité) 
+        */
         splitCss(){
             if(this.creneau.tabFrereCren !== null){ 
                return  ((1/parseFloat(/*split*/this.creneau.tabFrereCren.length)) * 100).toFixed(2)
@@ -71,21 +79,29 @@ export default {
                 return "100"
             }
         },
+        /* Propriété calculé qui permet de savoir si on doit afficher toutes les infos du créneau ou seulement quelques infos.
+        */
         split(){
             if(this.creneau.tabFrereCren !== null){
                 var split = this.creneau.tabFrereCren.length-1
-                return "_split"+split
+                return ""+split
             }
             else{
-                return "_split0"
+                return "0"
             }
         },
+         /* Propriété calculé qui permet de retourner le tableau des dates
+        */
         dates(){
             return this.Dates.tab
         },
+        /* Propriété calculé qui permet de savoir si on doit afficher le créneau ou pas (on vérifie si ça date est compris dans le tableau de dates de la semaine.)
+        */
         show(){
             return this.dates.indexOf(this.creneau.date) != -1 ? true : false 
         },
+        /* Propriété calculé qui permet de faire un affichage du groupe du créneau
+        */
         groupe(){
             if(this.creneau.groupe !== null){
                 return this.creneau.groupe
@@ -94,6 +110,8 @@ export default {
                 return "groupe non défini"
             }
         },
+        /* Propriété calculé qui permet de faire un affichage de la salle du créneau
+        */
         salle(){
             if(this.creneau.salle !== null){
                 return this.creneau.salle
@@ -102,6 +120,8 @@ export default {
                 return "salle non défini"
             }
         },
+        /* Propriété calculé qui permet de faire un affichage du jury du créneau
+        */
         profs(){
             if(this.creneau.jury !== null && this.creneau.jury[0] !== null){
                 let str = ""
@@ -118,6 +138,8 @@ export default {
         }
     },
     methods: {
+        /* Fonction qui retourne un tableau des créneaux qui sont dans la temporalité exact du créneau this.creneau
+        */
         frereDirect(){
             var tabFrere = null
             const heureDebut = parseFloat(this.creneau.heureTotal);
@@ -140,6 +162,8 @@ export default {
             }
             return tabFrere;
         },
+        /* Fonction qui retourne Vrai si le jury est duppliquer 
+        */
         duplicationJury(juryCompare){
             var tab = this.frereDirect();
             var duplicationJury = false;
@@ -156,6 +180,8 @@ export default {
             }
             return duplicationJury
         },
+         /* Fonction qui retourne Vrai si la salle est duppliquer 
+        */
         duplicationSalle(salle){
             console.log(salle)
             var tab = this.frereDirect();
@@ -170,9 +196,19 @@ export default {
             }
             return duplicationSalle
         },
+        /* Fonction qui se lance lorsqu'on clique sur un créneau. Elle permet de lancer la bonne fonction en fonction du mode (this.Mode.mode) du composant panelCreneau du planning
+        Elle permet de :
+            -Afficher un formulaire pour le créneau afin de la modifier
+            -Supprimer le créneau
+            -Modifier la salle du créneau
+            -Modifier le jury du créneau
+        */
         goPanel(){
             if(this.Mode.mode === null){
                 this.appelPanel(this.creneau,this.duplicationSalle, this.duplicationJury)
+            }
+            else if(this.Mode.mode === "inscription"){
+                this.Inscription(this.creneau)
             }
             else if(this.Mode.mode === "delete"){
                 this.SupprimeCreneau(this.creneau)

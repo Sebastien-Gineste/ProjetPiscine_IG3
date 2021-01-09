@@ -61,7 +61,18 @@ exports.select = (req, res, next) => {
     res.status(500).send('Pas encore fait')
 };
 
-//A faire
+//A faire (tâche de Cécile)
+/* Doit vérifier s'il n'a pas déjà un groupe sur un autre créneau / Si oui : le supprime
+ * Modifie le groupe du créneau
+ * return {otherCreneau : idAncienCreneau (null sinon)}
+ */
+exports.updateCreneau = (req,res, next) =>{
+    console.log(req.params.idC)
+    var idE = getIdE(req)
+    console.log("id Evenement : "+idE);
+    res.status(500).send('Pas encore fait')
+}
+
 exports.update = (req, res, next) => {
     console.log(req.params.idC)
     var idE = getIdE(req)
@@ -79,10 +90,36 @@ exports.update = (req, res, next) => {
     }
     else{ // jury
         if(req.body.jury[0]){
-            new Participe().saveJury(idE,req.params.idC,req.body.jury).then((creneau)=>{
-                res.status(200).json({ message: 'Creneau modifier !', data : creneau })
+            new Participe().verifJury(idE,req.params.idC).then((nb)=>{
+                if(nb > 0){
+                    new Participe().deleteJury(idE,req.params.idC).then((results)=>{ // supprime les anciens jury avant de mettre les nouveaux
+                        new Participe().saveJury(idE,req.params.idC,req.body.jury).then((creneau)=>{
+                            res.status(200).json({ message: 'Creneau modifier !', data : creneau })
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                            res.status(400).json({ error })
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        res.status(400).json({ error })
+                    });
+                }
+                else{
+                    new Participe().saveJury(idE,req.params.idC,req.body.jury).then((creneau)=>{
+                        res.status(200).json({ message: 'Creneau modifier !', data : creneau })
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        res.status(400).json({ error })
+                    });
+                }
             })
-            .catch((error) => res.status(400).json({ error }));
+            .catch((error) => {
+                console.log(error)
+                res.status(400).json({ error })
+            });
         }   
     }
 };

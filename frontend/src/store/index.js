@@ -10,12 +10,14 @@ export default new Vuex.Store({
     id : null, 
     admin : false,
     group : -1,
+    idEvent : -1,
   },
   mutations: {
     UPDATE_USER : (state, user) =>{
       state.id = user.userId
       state.admin = user.admin
       state.group = user.group
+      state.idEvent = user.numEvent
     }
   },
   getters: {
@@ -32,7 +34,11 @@ export default new Vuex.Store({
     },
     getGroup : state => {
       return state.group;
+    },
+    getIdEvent : state =>{ // id de l'évenement de l'étudiant 
+      return state.idEvent;
     }
+
     
   },
   actions: {
@@ -40,7 +46,7 @@ export default new Vuex.Store({
       commit('UPDATE_USER',user)
     },
     deconnexion({ commit }){
-      commit('UPDATE_USER',{userId : "-1",admin : false, group : -1})
+      commit('UPDATE_USER',{userId : "-1",admin : false, group : -1, numEvent : -1})
     }
   },
   modules: {
