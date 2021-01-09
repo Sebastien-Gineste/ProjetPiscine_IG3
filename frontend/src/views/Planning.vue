@@ -236,7 +236,7 @@ export default {
         }
     },
     methods : {
-        ...mapGetters(['isUser','isAdmin']),
+        ...mapGetters(['isUser','isAdmin','getIdEvent','hasGroup','getGroup']),
         createCreneau(e){
             /* e : Object = évenement de l'élément qui à lancé la fonction avec @dbclick sur un emplacement du planning vide
              * => Génère un créneau avec les valeurs de base et l'enregistre dans la BD
@@ -440,11 +440,32 @@ export default {
         */  
         inscriptionGroup(creneau){
             if(creneau.groupe === null){ // n'a pas déjà un groupe
-                creneau.groupe = -1
-
+                if(this.hasGroup()){ // il a eu groupe
+           
+                        var modif = {id : creneau.id, idGroupe : this.getGroup() };
+                        axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id+"/Inscription", modif)
+                        .then((reponse) => {
+                            var data = reponse.data;
+                            if(data.otherCreneau){ // On avait déjà réserver un créneau, on le remet à null
+                                var i = 0
+                                while(i < this.creneaux.length){
+                                    if(this.creneaux[i].groupe == data.otherCreneau){
+                                        this.creneaux[i].groupe = null
+                                    }
+                                }
+                            }
+                            creneau.groupe = this.getGroup(); // met le groupe de l'étudiant 
+                        })
+                        .catch((error) => console.log(error))          
+                }
+                else{
+                    util.makeToast(this,"warning","Erreur","Vous ne pouvez pas vous inscrire si vous n'avez pas de groupe !") 
+                }
             }
             else{
-               util.makeToast(this,"warning","Erreur","Tu ne peux pas voler le créneau de quelqu'un d'autre !") 
+                if(!creneau.groupe == this.getGroup()){
+                    util.makeToast(this,"warning","Erreur","Vous ne pouvez pas voler le créneau de quelqu'un d'autre !") 
+                }
             }
         },
         /* fonction lancé par le component creneau.vue lorsque l'utilisateur clique dessus et que this.mode = "ajout"
@@ -845,14 +866,10 @@ export default {
         },
         /* fonction permettant de lancer un appel axios PUT (requête HTTP) au backend, enregisterant ainsi la modification du creneau en paramètre dans la BD
          * creneau : Object // contenant les modifications du créneau
-         * etudiant : Bool // permet de savoir si cette requête a été lancé par un étudiant
         */
-        axiosUpdate(creneau,etudiant = false){
-            if(this.isAdmin() && !etudiant){
+        axiosUpdate(creneau){
+            if(this.isAdmin()){
                 axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id, creneau).catch((error) => console.log(error))
-            }
-            else if(this.isUser() && etudiant){
-                axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id+"/Inscription", creneau).catch((error) => console.log(error))
             }
         },
         /* fonction permettant de lancer un appel axios DELETE (requête HTTP) au backend, supprimant le creneau en paramètre dans la BD

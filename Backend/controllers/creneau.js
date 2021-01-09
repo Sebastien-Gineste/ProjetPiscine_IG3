@@ -61,7 +61,18 @@ exports.select = (req, res, next) => {
     res.status(500).send('Pas encore fait')
 };
 
-//A faire
+//A faire (tâche de Cécile)
+/* Doit vérifier s'il n'a pas déjà un groupe sur un autre créneau / Si oui : le supprime
+ * Modifie le groupe du créneau
+ * return {otherCreneau : idAncienCreneau (null sinon)}
+ */
+exports.updateCreneau = (req,res, next) =>{
+    console.log(req.params.idC)
+    var idE = getIdE(req)
+    console.log("id Evenement : "+idE);
+    res.status(500).send('Pas encore fait')
+}
+
 exports.update = (req, res, next) => {
     console.log(req.params.idC)
     var idE = getIdE(req)

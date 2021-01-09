@@ -11,7 +11,7 @@
 
           <b-collapse id="nav-collapse" is-nav>
             <b-navbar-nav>
-              <li v-if="isUser() && !isAdmin()" class="nav-item"><b-link class="nav-link" to="/about"><b-icon icon="calendar-event"></b-icon>S'inscrire à une soutance</b-link></li>
+              <li v-if="isUser() && !isAdmin()" class="nav-item"><b-link class="nav-link" :to="'/Evenement/'+getIdEvent()+'/Planning'"><b-icon icon="calendar-event"></b-icon>S'inscrire à une soutance</b-link></li>
               <li v-if="isUser() && !isAdmin()" class="nav-item"><b-link class="nav-link" to="/Groupe"><b-icon icon="people-fill"></b-icon>Gestion de groupe</b-link></li>
               <li v-if="isAdmin()" class="nav-item"><b-link class="nav-link" to="/Evenement"><b-icon icon="calendar-event"></b-icon>Gestion des événements</b-link></li>
               <li v-if="isAdmin()" class="nav-item"><b-link class="nav-link" to="/Tuteur"><b-icon icon="people-fill"></b-icon>Gestion des tuteurs</b-link></li>
@@ -45,7 +45,7 @@ const axios = axio.create({
 
 export default {
    methods:{
-       ...mapGetters(['isUser','isAdmin']),
+       ...mapGetters(['isUser','isAdmin','getIdEvent']),
        Deconnexion(){
           axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
           /*sessionStorage.removeItem('token');*/
