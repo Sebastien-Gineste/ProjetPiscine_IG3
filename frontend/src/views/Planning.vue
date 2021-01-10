@@ -1,8 +1,15 @@
 <template>
     <div id="planning">
-        <h1 id="title_planning" >Planning de l'événement n°{{$route.params.id}} !</h1>
+        <h1 id="title_planning" >Planning de l'événement :  {{eventName}}<b-icon v-if="eventName===''" icon="arrow-counterclockwise" animation="spin-reverse" font-scale="1"></b-icon></h1>
         <b-alert  v-if="errorMessage.length > 0" variant="danger" show>{{this.errorMessage}}</b-alert>
-        <Panel v-if="isAdmin() && event!==null" :State="panel" :Salle="salles" :Jury="jury" :EventPlanning="event" :Profs="profs" :AjoutS="PanelAjoutSalle" :AjoutJ="PanelAjoutJury" :RemoveS="PanelRemoveSalle" :RemoveJ="PanelRemoveJury"/>
+        <Panel v-if="isAdmin() && event!==null" :Couleur="couleur" :State="panel" :Salle="salles" :Jury="jury" :EventPlanning="event" :Profs="profs" :AjoutS="PanelAjoutSalle" :AjoutJ="PanelAjoutJury" :RemoveS="PanelRemoveSalle" :RemoveJ="PanelRemoveJury"/>
+        <div class="visuCreneau" v-if="currentVisu">
+            <p :style="currentVisu.couleur"> 
+                <b>{{currentVisu.id+" - "}}<b-badge v-if="currentVisu.testGroupe" variant="success">{{currentVisu.groupe}}</b-badge><span v-else class="groupCren">{{currentVisu.groupe}}</span></b>
+                <br >{{currentVisu.profs}}
+                <br><b-badge v-if="!currentVisu.salle" variant="warning">{{currentVisu.affichageSalle}}</b-badge> <span v-else>{{currentVisu.affichageSalle}}</span>
+            </p>   
+        </div>
         <transition name="slide-fade">
             <div @click="removePanel()" id="fond" v-if="show"></div>
          </transition>
@@ -205,11 +212,7 @@ const axios = axio.create({
  
 export default {
     components: { Panel },
-    data(){
-        var objectPanel = {mode : null, salleSelected : null, jurySelected : null}
-        if(this.isUser() && !this.isAdmin()){ // étudiant
-            objectPanel.mode = "inscription";
-        }
+    data(){ 
         return{
             creneaux : [],
             date : [],
@@ -219,11 +222,13 @@ export default {
             errorMessage : "",
             show : false,
             currentCreneau : null,
+            currentVisu : null,
             salles : [],
+            couleur : ['#007bff','#dc3545','#28a745','#fd7e14','#ffc107','#6f42c1','#e83e8c','#20c997','#17a2b8'],
             profs : [],
             jury : [],
             bdProfs : null,
-            panel : objectPanel,
+            panel : {mode : null, salleSelected : null, jurySelected : null},
             panelCreneau : {
                 idEvent : null,
                 id : null,
@@ -235,8 +240,19 @@ export default {
             }
         }
     },
+    computed:{
+        eventName(){
+            return this.event? this.event.nomEvenement : ""
+        }
+    },
     methods : {
         ...mapGetters(['isUser','isAdmin','getIdEvent','hasGroup','getGroup']),
+        afficheVisuCreneau(visu){
+            this.currentVisu = visu
+        },
+        quitVisuCreneau(){
+            this.currentVisu = null
+        },
         createCreneau(e){
             /* e : Object = évenement de l'élément qui à lancé la fonction avec @dbclick sur un emplacement du planning vide
              * => Génère un créneau avec les valeurs de base et l'enregistre dans la BD
@@ -280,7 +296,6 @@ export default {
         * => Ajoute la salle dans l'attribut this.salles si elle n'est pas déjà présente.
         */
         PanelAjoutSalle(salle){
-            if(this.isAdmin()){
                 console.log(salle)
                 if(salle != "" && this.salles.indexOf(salle) === -1){
                     this.salles.push(salle)
@@ -289,10 +304,6 @@ export default {
                 else{
                     return false
                 }
-            }
-            else{
-                return false
-            }
         },
         /* fonction annexe lancé par la fonction PanelAjoutJury.
         *  a : Int
@@ -315,7 +326,6 @@ export default {
         *  Elle renvoie true si elle l'a jouter et False sinon.
         */
         PanelAjoutJury(jury, beforeMount=false){
-            if(this.isAdmin()){
                 console.log(jury)
                 var ajout = true
                 var exact = true;
@@ -346,6 +356,9 @@ export default {
                     }
                     if(exact){
                         this.jury.push(jury)
+                        if(this.couleur.length < this.jury.length){ // faut rajouter une couleur
+                            this.couleur.push("#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}))
+                        }
                         return true
                     }
                     else{
@@ -357,11 +370,6 @@ export default {
                     if(!beforeMount){util.makeToast(this,"warning","Attention !","Le jury ne peut pas être composé de plusieurs occurences d'un professeur !")}
                     return null
                 }
-            }
-            else{
-                return false
-            }
-          
         },
         /* fonction lancé par le component panelCreneau.vue
         *  salle : String
@@ -441,7 +449,8 @@ export default {
         inscriptionGroup(creneau){
             if(creneau.groupe === null){ // n'a pas déjà un groupe
                 if(this.hasGroup()){ // il a eu groupe
-           
+                    var dateActu = new Date();
+                    if(dateActu <= new Date(this.event.dateLimiteResa)){
                         var modif = {id : creneau.id, idGroupe : this.getGroup() };
                         axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id+"/Inscription", modif)
                         .then((reponse) => {
@@ -457,6 +466,10 @@ export default {
                             creneau.groupe = this.getGroup(); // met le groupe de l'étudiant 
                         })
                         .catch((error) => console.log(error))          
+                    }
+                    else{
+                        util.makeToast(this,"danger","Erreur","Vous ne pouvez plus réserver pour les soutenances, la date de limite est dépassée !") 
+                    }
                 }
                 else{
                     util.makeToast(this,"warning","Erreur","Vous ne pouvez pas vous inscrire si vous n'avez pas de groupe !") 
@@ -659,20 +672,21 @@ export default {
                 if(id != i && this.dateAffiche[i]){dejaDesafficher = true }  
             }
 
-            if(dejaDesafficher){
+            if(dejaDesafficher && this.date.indexOf(this.dateActu.tab[id]) != -1){
                 this.dateAffiche[id] = true
                 for(let i = 0;i<this.dateAffiche.length;i++){
                     if(id != i){ this.dateAffiche[i] = false}  
                 }
+                this.dateActu.tab = this.getDateWeek(new Date(this.dateActu.tab[0]))
+                setTimeout(this.genererCreneau,50)
             }
-            else{
+            else if(!dejaDesafficher){
                 for(let i = 0;i<this.dateAffiche.length;i++){
                     this.dateAffiche[i] = true
                 }
+                this.dateActu.tab = this.getDateWeek(new Date(this.dateActu.tab[0]))
+                setTimeout(this.genererCreneau,50)
             }
-
-            this.dateActu.tab = this.getDateWeek(new Date(this.dateActu.tab[0]))
-            setTimeout(this.genererCreneau,50)
         },
         /* fonction permettant de générer les dates de l'événement 
         *  DateDébut : String // représentant une date
@@ -784,6 +798,8 @@ export default {
                                 AjoutJury : this.ajoutJury,
                                 AjoutSalle : this.ajoutSalle,
                                 Inscription : this.inscriptionGroup,
+                                GestionCouleur : {jury : this.jury, couleur : this.couleur},
+                                Visualisation : {affiche : this.afficheVisuCreneau, quitte : this.quitVisuCreneau},
                                 Mode : this.panel
                             }
                             })
@@ -900,41 +916,59 @@ export default {
             for(let i = 0;i<this.event.nombreMembreJury;i++){
                 this.panelCreneau.jury.push(null)
             }
-            
-        })
-        .catch(()=> { // pas trouvé 
-            this.$router.push("/404"); // redirection 404
-        });
 
-        // récupère les profs
-        if(this.isAdmin()){
-            axios.get(`http://localhost:3000/api/Prof/`).then((response) => {
-            var profs = response.data;
-            this.bdProfs = response.data
-            for(let i=0;i<profs.length;i++){
-                this.profs.push({value : profs[i].idProf , text : profs[i].nomProf+" "+profs[i].prenomProf})
-            }
-            })
-            .catch((error)=> { // pas trouvé 
-                console.log(error.response.data)
-                if(error.response.status == '403'){ // pas autorisé 
-                    this.errorMessage = error.response.data
-                }
-            });
-        }
-        
-        // récupère les créneaux
-        axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id+'/Creneau').then((response) => {
+            // récupère les créneaux
+            axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id+'/Creneau').then((response) => {
                 var infoCreneau = response.data.creneaux;
                 console.log(infoCreneau)
                 let i = 0;
-                let memoireId = 0;
                 this.creneaux = [];
                 while(i < infoCreneau.length){
-                    if(memoireId == infoCreneau[i].numCreneau){ // on l'a déjà traité mais il y a une info en plus (autres profs)
-                        console.log(infoCreneau[i].numCreneau)
+                    let tabVideProf = []
+                    for(let i = 0;i<this.event.nombreMembreJury;i++){
+                        tabVideProf.push(null)
+                    }
+                    this.creneaux.push({
+                        id : infoCreneau[i].numCreneau,
+                        salle : infoCreneau[i].salle,
+                        jury :  tabVideProf, // définit un tableau de jury de taille event.nombreMembreJury avec valeur = null
+                        groupe : infoCreneau[i].idGroupe,
+                        duree1h : this.event.dureeCreneau == "1_heure",
+                        heureDebut: (infoCreneau[i].heureDebut % 1).toFixed(2).substring(2),
+                        heureTotal : infoCreneau[i].heureDebut,
+                        date : util.formatDate(infoCreneau[i].date),
+                        supprimer : false,
+                        tabFrereCren : null,
+                    })
+
+                    if( infoCreneau[i].salle !== null){
+                        this.PanelAjoutSalle(infoCreneau[i].salle);
+                    }
+
+                    if(this.creneaux.length-2 >= 0 && this.creneaux[this.creneaux.length-2].date ===  this.creneaux[this.creneaux.length-1].date){ // si un créneau à déja été enregister
+                        var heureFinal = this.event.dureeCreneau == "1_heure"? parseFloat(this.creneaux[this.creneaux.length-2].heureTotal) + 1.25 : parseFloat(this.creneaux[this.creneaux.length-2].heureTotal) + 1.75;
+                        if(heureFinal > this.creneaux[this.creneaux.length-1].heureTotal){ // si le créneau fini après le début du nouveau créneau
+                            if(this.creneaux[this.creneaux.length-2].tabFrereCren == null){ // n'avait pas de frère
+                                var tabFrere = [this.creneaux[this.creneaux.length-2],this.creneaux[this.creneaux.length-1]] // créer le tableau des frères
+                                this.creneaux[this.creneaux.length-2].tabFrereCren = tabFrere
+                                this.creneaux[this.creneaux.length-1].tabFrereCren = this.creneaux[this.creneaux.length-2].tabFrereCren
+                            }
+                            else{ // à déjà des frères
+                                this.creneaux[this.creneaux.length-2].tabFrereCren.push(this.creneaux[this.creneaux.length-1]) // on l'ajoute dans le tableau
+                                this.creneaux[this.creneaux.length-1].tabFrereCren = this.creneaux[this.creneaux.length-2].tabFrereCren // on l'ajout dans ses frères
+                            }
+                            
+                        }
+                    }
+
+                    if(infoCreneau[i].idProf !== null){ // s'il y a un prof, on l'ajoute
+                        this.creneaux[this.creneaux.length-1].jury[0] = {idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf}
+                    }
+
+                    while(i < infoCreneau.length-1 && infoCreneau[i].numCreneau === infoCreneau[i+1].numCreneau){ // tant qu'on a des profs à rentré dans son jury 
+                        i++;
                         var j = 0;
-                        while(this.creneaux[this.creneaux.length-1].jury[j] != null){ // tant que les cases du tableau ne sont pas vide, on continue
+                        while(this.creneaux[this.creneaux.length-1].jury[j] !== null){ // tant que les cases du tableau ne sont pas vide, on continue
                             j++
                         } // on a trouvé la case qui est null
                         this.creneaux[this.creneaux.length-1].jury[j] = {idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf} // ajout un nouveau prof
@@ -945,83 +979,60 @@ export default {
                             }
                             this.PanelAjoutJury(tabJury,true); // on l'ajoute au tableau de jury
                         }
-                        
                     }
-                    else{
-                        memoireId = infoCreneau[i].numCreneau
 
-                        let tabVideProf = []
-                        for(let i = 0;i<this.event.nombreMembreJury;i++){
-                            tabVideProf.push(null)
+                    var instance = new ComponentClass({
+                        propsData: {
+                            creneau: this.creneaux[this.creneaux.length-1],
+                            Dates : this.dateActu,
+                            appelPanel : this.affichePanelCreneau,
+                            SupprimeCreneau : this.SupprimeDirectCreneau,
+                            DuppliquerCreneau : this.duppliqueCreneau,
+                            AjoutJury : this.ajoutJury,
+                            AjoutSalle : this.ajoutSalle,
+                            Inscription : this.inscriptionGroup,
+                            GestionCouleur : {jury : this.jury, couleur : this.couleur},
+                            Visualisation : {affiche : this.afficheVisuCreneau, quitte : this.quitVisuCreneau},
+                            Mode : this.panel
                         }
-    
-                        this.creneaux.push({
-                            id : infoCreneau[i].numCreneau,
-                            salle : infoCreneau[i].salle,
-                            jury :  tabVideProf, // définit un tableau de jury de taille event.nombreMembreJury avec valeur = null
-                            groupe : infoCreneau[i].idGroupe,
-                            duree1h : this.event.dureeCreneau == "1_heure",
-                            heureDebut: (infoCreneau[i].heureDebut % 1).toFixed(2).substring(2),
-                            heureTotal : infoCreneau[i].heureDebut,
-                            date : util.formatDate(infoCreneau[i].date),
-                            supprimer : false,
-                            tabFrereCren : null,
-                        })
-
-                        if( infoCreneau[i].salle !== null){
-                            this.PanelAjoutSalle(infoCreneau[i].salle);
-                        }
-
-                        if(this.creneaux.length-2 >= 0 && this.creneaux[this.creneaux.length-2].date ===  this.creneaux[this.creneaux.length-1].date){ // si un créneau à déja été enregister
-                            var heureFinal = this.event.dureeCreneau == "1_heure"? parseFloat(this.creneaux[this.creneaux.length-2].heureTotal) + 1.25 : parseFloat(this.creneaux[this.creneaux.length-2].heureTotal) + 1.75;
-                            if(heureFinal > this.creneaux[this.creneaux.length-1].heureTotal){ // si le créneau fini après le début du nouveau créneau
-                                if(this.creneaux[this.creneaux.length-2].tabFrereCren == null){ // n'avait pas de frère
-                                    var tabFrere = [this.creneaux[this.creneaux.length-2],this.creneaux[this.creneaux.length-1]] // créer le tableau des frères
-                                    this.creneaux[this.creneaux.length-2].tabFrereCren = tabFrere
-                                    this.creneaux[this.creneaux.length-1].tabFrereCren = this.creneaux[this.creneaux.length-2].tabFrereCren
-                                }
-                                else{ // à déjà des frères
-                                    this.creneaux[this.creneaux.length-2].tabFrereCren.push(this.creneaux[this.creneaux.length-1]) // on l'ajoute dans le tableau
-                                    this.creneaux[this.creneaux.length-1].tabFrereCren = this.creneaux[this.creneaux.length-2].tabFrereCren // on l'ajout dans ses frères
-                                }
-                               
-                            }
-                        }
-
-                        if(infoCreneau[i].idProf !== null){ // s'il y a un prof, on l'ajoute
-                            this.creneaux[this.creneaux.length-1].jury[0] = {idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf}
-                        }
-
-                        var instance = new ComponentClass({
-                            propsData: {
-                                creneau: this.creneaux[this.creneaux.length-1],
-                                Dates : this.dateActu,
-                                appelPanel : this.affichePanelCreneau,
-                                SupprimeCreneau : this.SupprimeDirectCreneau,
-                                DuppliquerCreneau : this.duppliqueCreneau,
-                                AjoutJury : this.ajoutJury,
-                                AjoutSalle : this.ajoutSalle,
-                                Inscription : this.inscriptionGroup,
-                                Mode : this.panel
-                            }
-                        })
-                        instance.$mount() // pass nothing
-                        //this.$el.lastChild.childNodes[Math.floor(infoCreneau[i].heureDebut)-6].childNodes[new Date(infoCreneau[i].date).getDay()].appendChild(instance.$el)
-                        this.$el.lastChild.childNodes[Math.floor(infoCreneau[i].heureDebut)-6].getElementsByClassName("j_"+new Date(infoCreneau[i].date).getDay())[0].appendChild(instance.$el)
-                    }
+                    })
+                    instance.$mount() // pass nothing
+                    //this.$el.lastChild.childNodes[Math.floor(infoCreneau[i].heureDebut)-6].childNodes[new Date(infoCreneau[i].date).getDay()].appendChild(instance.$el)
+                    this.$el.lastChild.childNodes[Math.floor(infoCreneau[i].heureDebut)-6].getElementsByClassName("j_"+new Date(infoCreneau[i].date).getDay())[0].appendChild(instance.$el)
                     i++;
+                }        
+                if(this.isUser() && !this.isAdmin()){ // étudiant
+                    this.panel.mode = "inscription";
+                }   
+            })
+            .catch((error) => { 
+                console.log(error)
+                var msg = error.response.data;
+                console.log(msg)
+                if(msg == "Pas de créneau encore"){
+                    this.errorMessage = msg
                 }
-                    
+                else{
+                    this.$router.push("/404"); // redirection 404
+                }
+            });
+            
         })
-        .catch((error) => { 
-            console.log(error)
-            var msg = error.response.data;
-            console.log(msg)
-            if(msg == "Pas de créneau encore"){
-                this.errorMessage = msg
+        .catch(()=> { // pas trouvé 
+            this.$router.push("/404"); // redirection 404
+        });
+
+        // récupère les profs
+        axios.get(`http://localhost:3000/api/Prof/`).then((response) => {
+            var profs = response.data;
+            this.bdProfs = response.data
+            for(let i=0;i<profs.length;i++){
+                this.profs.push({value : profs[i].idProf , text : profs[i].nomProf+" "+profs[i].prenomProf})
             }
-            else{
-                this.$router.push("/404"); // redirection 404
+        })
+        .catch((error)=> { // pas trouvé 
+            if(error.response.status == '403'){ // pas autorisé 
+                console.log(error.response.data)
             }
         });
     }
@@ -1031,6 +1042,24 @@ export default {
 
 
 <style lang="scss">
+    .visuCreneau{
+        position: fixed;
+        top:0px;
+        left:0px;
+        width:15vw;
+        padding : 10px;
+        z-index: 95;
+        background-color: white;
+        border : solid 0.5px grey;
+        border-radius: 15px;
+        border-top-left-radius: 0px;
+
+        p{
+            border-radius: 15px;
+            border-top-left-radius: 0px;
+        }
+        
+    }
     #title_planning{
         margin: 3%;
     }
@@ -1101,6 +1130,9 @@ export default {
         .notDatePlanning{
             background: repeating-linear-gradient( 45deg, blue 0px, blue 40px, black 40px, black 80px );
             color: white;
+        }
+        .bg-info{
+            background-color: #B2EBF2 !important;
         }
     }
 

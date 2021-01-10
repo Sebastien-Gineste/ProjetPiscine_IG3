@@ -61,7 +61,7 @@ class Creneau extends model.Model {
     return new Promise((resolve, reject) => {
       const query = {
         name: 'selectall-creneau-event', // réquête préparer
-        text: 'select creneau."numCreneau" , date, creneau."numEvenement", "idGroupe" , "salle", "heureDebut", pr."idProf", pr."nomProf", pr."prenomProf" from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf" where creneau."numEvenement" = $1 ORDER BY date ASC, "heureDebut" ASC,  creneau."numCreneau";',
+        text: 'select creneau."numCreneau" , date, creneau."numEvenement", "idGroupe" , "salle", "heureDebut", pr."idProf", pr."nomProf", pr."prenomProf" from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf" where creneau."numEvenement" = $1 ORDER BY date ASC, "heureDebut" ASC,  creneau."numCreneau","idProf" ASC;',
         values: [id],
       }
       this.client.query(query, function(error, results) {

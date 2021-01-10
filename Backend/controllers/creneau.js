@@ -63,6 +63,7 @@ exports.select = (req, res, next) => {
 
 //A faire (tâche de Cécile)
 /* Doit vérifier s'il n'a pas déjà un groupe sur un autre créneau / Si oui : le supprime
+ * Doit vérifier si la date limite de réservation n'est pas terminer
  * Modifie le groupe du créneau
  * return {otherCreneau : idAncienCreneau (null sinon)}
  */
