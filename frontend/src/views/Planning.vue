@@ -458,6 +458,7 @@ export default {
                             if(data.otherCreneau){ // On avait déjà réserver un créneau, on le remet à null
                                 var i = 0
                                 while(i < this.creneaux.length){
+                                    console.log("InscriptGroup")
                                     if(this.creneaux[i].groupe == data.otherCreneau){
                                         this.creneaux[i].groupe = null
                                     }
@@ -698,6 +699,7 @@ export default {
             var i = 0
             var dateActu = new Date(DateDebut)
             while(i < DureeE){
+                console.log("While geneDateEvent")
                 var jourActu = dateActu.getDay() 
                 if(jourActu == 0 ||jourActu == 6 ){ // samedi ou dimanche 
                     i--
@@ -776,6 +778,7 @@ export default {
         */
         suppAllCreneau(){
             while(this.$el.getElementsByClassName("creneau").length > 0){
+                console.log("Sup all creneau")
                 this.$el.getElementsByClassName("creneau")[0].remove()
             }
         },
@@ -846,6 +849,7 @@ export default {
             // on regarde les frères
             let i = 0;
             while(i<this.creneaux.length && (new Date(this.creneaux[i].date) <= date || new Date(this.creneaux[i].date) <= secondeDate )){ // tant que le tableau n'est pas fini et qu'on est inférieur ou égale à la date
+                console.log("Concordance creneau")
                 if(this.creneaux[i].date === this.formatDate(date) || this.creneaux[i].date === this.formatDate(secondeDate)){ // si la date est égale on calcul
                     this.creneaux[i].tabFrereCren = null // on met son tableau de frère à null
                     if(i > 0 && this.creneaux[i-1].date === this.creneaux[i].date){ // si un créneau à déja passé la boucle et qu'il est de même date
@@ -924,6 +928,7 @@ export default {
                 let i = 0;
                 this.creneaux = [];
                 while(i < infoCreneau.length){
+                    console.log("YES")
                     let tabVideProf = []
                     for(let i = 0;i<this.event.nombreMembreJury;i++){
                         tabVideProf.push(null)
@@ -966,9 +971,12 @@ export default {
                     }
 
                     while(i < infoCreneau.length-1 && infoCreneau[i].numCreneau === infoCreneau[i+1].numCreneau){ // tant qu'on a des profs à rentré dans son jury 
+                        console.log("salut")
                         i++;
                         var j = 0;
-                        while(this.creneaux[this.creneaux.length-1].jury[j] !== null){ // tant que les cases du tableau ne sont pas vide, on continue
+                        console.log(this.creneaux[this.creneaux.length-1].jury.length)
+                        while(this.creneaux[this.creneaux.length-1].jury.length > j && this.creneaux[this.creneaux.length-1].jury[j] !== null){ // tant que les cases du tableau ne sont pas vide, on continue
+                            console.log("OOF")
                             j++
                         } // on a trouvé la case qui est null
                         this.creneaux[this.creneaux.length-1].jury[j] = {idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf} // ajout un nouveau prof

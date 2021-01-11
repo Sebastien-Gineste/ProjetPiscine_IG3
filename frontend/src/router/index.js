@@ -28,6 +28,18 @@ const routes = [
     meta : {requireAuth : true, requireAdmin : true}
   },
   {
+    path: '/PageProfil',
+    name: 'PageProfil',
+    component: () => import(/* webpackChunkName: "about" */ '../views/PageProfil.vue'),
+    //meta : {requireAuth : false, requireAdmin : false}
+  },
+  {
+    path: '/CreationCompte',
+    name: 'CreationCompte',
+    component: () => import(/* webpackChunkName: "about" */ '../views/CreationCompte.vue'),
+    //meta : {requireAuth : false, requireAdmin : false}
+  },
+  {
     path: '/Evenement/:id',
     name: 'EvenementsModifier',
     component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Evenement.vue'),
