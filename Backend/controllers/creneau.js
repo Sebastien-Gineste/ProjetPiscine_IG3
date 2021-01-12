@@ -28,6 +28,31 @@ exports.selectAll = (req, res, next) => {
     })
 };
 
+exports.selectAllWithProf = (req, res, next) => {
+    var idE = getIdE(req)
+    console.log("id Evenement : "+idE);
+    var tabInfoProf = req.params.nom.split("-")
+    if(tabInfoProf.length == 2){
+        new Creneaux().selectAllWhereJury(idE,tabInfoProf).then((results) => {
+            res.status(200).json({creneaux : results})
+        }).catch((error) => {
+            switch(error) {
+              case Error.NO_RESULTS:
+                  console.log('Pas de données dans cette table.');
+                  res.status(400).send("Pas de créneau encore")
+                  break;
+              default : 
+                  console.log(error)
+                  console.log('service indispo.');
+                  res.status(400).json({ error })
+                  break;
+            }
+        })
+    }
+    else{
+        res.status(400).json( "Erreur params" )
+    }
+};
 //A faire
 exports.selectAllSalle = (req, res, next) => {
     var idE = getIdE(req)
@@ -63,6 +88,7 @@ exports.select = (req, res, next) => {
 
 //A faire (tâche de Cécile)
 /* Doit vérifier s'il n'a pas déjà un groupe sur un autre créneau / Si oui : le supprime
+ * Doit vérifier si la date limite de réservation n'est pas terminer
  * Modifie le groupe du créneau
  * return {otherCreneau : idAncienCreneau (null sinon)}
  */
