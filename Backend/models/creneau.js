@@ -79,6 +79,29 @@ class Creneau extends model.Model {
   });
   }
 
+  selectAllWhereJury(id,tabInfo){
+    return new Promise((resolve, reject) => {
+      const query = {
+        name: 'selectall-creneau-event-jury', // réquête préparer
+        text: 'select creneau."numCreneau" , date, creneau."numEvenement", "idGroupe" , "salle", "heureDebut", pr."idProf", pr."nomProf", pr."prenomProf" from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf" where creneau."numEvenement" = $1 AND creneau."numCreneau" IN (Select creneau."numCreneau" from creneau left join participe pa ON pa."numCreneau" = creneau."numCreneau" left join prof pr ON pr."idProf" = pa."idProf" where creneau."numEvenement" = $1 and pr."nomProf" = $2 AND pr."prenomProf" = $3) ORDER BY date ASC, "heureDebut" ASC,  creneau."numCreneau","idProf" ASC;',
+        values: [id, tabInfo[0], tabInfo[1]],
+      }
+      this.client.query(query, function(error, results) {
+        console.log(error)
+          if (error) {
+              reject(Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results.rows[0] !== undefined) {
+              resolve(results.rows)
+          } else {
+              reject(Error.NO_RESULTS);
+          }
+      });
+  });
+
+  }
+
   /*  
    * id : [val Clé primaire]
   */
