@@ -154,7 +154,14 @@ exports.update = (req, res, next) => {
 //A faire
 exports.delete = (req, res, next) => {
   console.log(req.params.id)
-  res.status(500).send('Pas encore fait')
+  new Evenement().delete([req.params.id])
+  .then((results) => {
+    console.log(results)
+    res.status(200).json({ message : results})
+  }).catch((error) => {
+      console.log(error);
+      res.status(400).json({ error })
+  })
 };
 
 

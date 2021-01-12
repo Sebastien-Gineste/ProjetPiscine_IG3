@@ -2,6 +2,7 @@ const Groupe = require('../models/groupe_projet');
 const Composer = require('../models/composerGroupe_Etudiant');
 const Etudiant = require('../models/etudiant');
 const errorModel = require("../models/model");
+const auth = require("../middleware/auth")
 
 //A tester
 exports.selectAll = (req, res, next) => {
@@ -23,19 +24,36 @@ exports.selectAll = (req, res, next) => {
 
 //A revoir id et nombre membre groupe
 exports.save = (req, res, next) => {
-  var idGroupe = req.baseUrl.split("/")[3];
-  console.log("id Groupe : "+idGroupe);
   console.log(req.body)
   const groupe = {
-      nomTuteur: req.body.nomTuteur,
-      prenomTuteur : req.body.prenomTuteur,
-      entrepriseTuteur : req.body.entrepriseTuteur,
+      nomTuteurEntreprise: req.body.nomTuteur,
+      prenomTuteurEntreprise : req.body.prenomTuteur,
+      nomEntreprise : req.body.entrepriseTuteur,
       idProf : req.body.idProf,
   };
   console.log(groupe)
   new Groupe().save(groupe)
-  .then((groupe) => res.status(201).json({ message: 'Groupe créé !', data : groupe }))
-  .catch(error => res.status(400).json({ error }));
+  .then((groupe) => {
+    console.log(groupe)
+    console.log(auth.exportsId(req.headers.cookie))
+    const composer = {
+      idGroupe : groupe.idGroupe,
+      numEtudiant : auth.exportsId(req.headers.cookie) 
+    }
+    new Composer().save(composer).then((compose)=>{
+      console.log(compose)
+      res.status(201).json(groupe.idGroupe)
+    })
+    .catch((error)=>{
+      console.log(error)
+      new Groupe().delete([groupe.idGroupe]) // on supprime le groupe solo
+      res.status(400).send("composer non créér")
+    })
+  })
+  .catch(error => {
+    console.log(error)
+    res.status(400).json({ error });
+  });
 };
 
 //A faire
@@ -43,8 +61,11 @@ exports.select = (req, res, next) => {
   console.log(req.params.id)
 
   new Groupe().select([req.params.id]).then((results)=>{ 
-    new Composer().select([req.params.id]). then((listMembers)=>{
-      res.status(200).json(results[0])
+    new Composer().select([req.params.id]).then((listMembers)=>{
+      var groupe = results[0]
+      console.log(groupe)
+      groupe.listMembers = listMembers
+      res.status(200).json(groupe)
     }).catch((error) => {
       switch(error) {
         case Error.NO_RESULTS:
@@ -76,16 +97,16 @@ exports.update = (req, res, next) => {
   const g = { }
 
         if(req.body.nomTuteur){
-          g.nomTuteur = req.body.nomTuteur
+          g.nomTuteurEntreprise = req.body.nomTuteur
         }
         if(req.body.prenomTuteur){
-          g.prenomTuteur = req.body.prenomTuteur
+          g.prenomTuteurEntreprise = req.body.prenomTuteur
         }
         if(req.body.entrepriseTuteur){
-          g.entrepriseTuteur = req.body.entrepriseTuteur
+          g.nomEntreprise = req.body.entrepriseTuteur
         }
-        if(req.body.nomProjet){
-          g.nomProjet = req.body.nomProjet
+        if(req.body.idProf){
+          g.idProf = req.body.idProf
         }
 
         if(Object.keys(g).length == 0){ // pas de modif 
@@ -134,13 +155,32 @@ exports.selectAllEtudiant = (req, res, next) => {
 //A faire
 exports.ajoutEtudiant = (req, res, next) => {
   console.log(req.params.id)
-  res.status(500).send('Pas encore fait')
+  const composer = {
+    idGroupe :req.params.id,
+    numEtudiant : req.body.idEtudiant 
+  }
+  new Composer().save(composer).then((compose)=>{
+    console.log(compose)
+    res.status(201).send("ajouter !")
+  })
+  .catch((error)=>{
+    console.log(error)
+    res.status(400).send("élève non ajouter")
+  })
 };
 
 
 //A faire
 exports.removeEtudiant = (req, res, next) => {
   console.log(req.params.id)
-  res.status(500).send('Pas encore fait')
+  console.log(req.body)
+  new Composer().delete(req.params.id,req.body.idEtudiant)
+  .then((results) => {
+    console.log(results)
+    res.status(200).json({ message : results})
+  }).catch((error) => {
+      console.log(error);
+      res.status(400).json({ error })
+  })
 };
 

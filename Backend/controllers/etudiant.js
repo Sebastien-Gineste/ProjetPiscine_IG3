@@ -22,7 +22,7 @@ exports.selectAll = (req, res, next) => {
 }
 
 exports.selectAllEtudiant = (req, res, next) => {
-  new Etudiant().selectAllEtudiant(req.params.promo).then((results) => {
+  new Etudiant().selectAllEtudiant(req.params.id).then((results) => {
     res.status(200).json(results)
 }).catch((error) => {
     switch(error) {
@@ -96,7 +96,7 @@ exports.login = (req, res, next) => {
             {admin: user[0].estAdmin,
             userId: user[0].numEtudiant,
             token: auth.createToken(user[0].numEtudiant),
-            group: user[0].idGroupe,
+            group: (user[0].idGroupe ? user[0].idGroupe : -1),
             numEvent: user[0].numEvenement}
           );
         })
@@ -126,7 +126,7 @@ exports.checkAdmin = (req,res,next) => {
           {admin: user[0].estAdmin,
           userId: user[0].numEtudiant,
           token: auth.createToken(user[0].numEtudiant),
-          group: user[0].idGroupe,
+          group: (user[0].idGroupe ? user[0].idGroupe : -1),
           numEvent: user[0].numEvenement}
         );
     })
