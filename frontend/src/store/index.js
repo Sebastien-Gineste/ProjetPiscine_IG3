@@ -33,7 +33,7 @@ export default new Vuex.Store({
       return state.id === null
     },
     hasGroup : state => {
-      return state.group !== "-1" 
+      return state.group != "-1" 
     },
     getGroup : state => {
       return state.group;
