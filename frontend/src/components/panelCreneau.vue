@@ -41,7 +41,10 @@
                         <div>
                             <h4>Liste des jurys : </h4>
                             <div id="selectSalle" class="jury">
-                                <b-form-radio  v-for="(jury, idx) in Jury" class="radio" :key="idx" v-model="State.jurySelected" name="jury" :value="jury"><span @click="removeJury(idx)">{{printJury(idx)}}</span></b-form-radio>
+                                <b-form-radio  v-for="(jury, idx) in Jury" class="radio" :key="idx" v-model="State.jurySelected" name="jury" :value="jury">
+                                    <span @click="removeJury(idx)">{{printJury(idx)}}</span> 
+                                    <input type="color" class="color-picker" v-model="couleur[idx]" name="color">
+                                </b-form-radio>
                             </div>
                         </div>
                     </div> 
@@ -75,7 +78,7 @@
 
 <script>
 export default {
-    props: {State: Object, Salle : Array, Jury : Array, EventPlanning : Object,Profs : Array, AjoutS : Function, AjoutJ : Function, RemoveS : Function, RemoveJ : Function},
+    props: {State: Object, Salle : Array,Couleur : Array, Jury : Array, EventPlanning : Object,Profs : Array, AjoutS : Function, AjoutJ : Function, RemoveS : Function, RemoveJ : Function},
     data(){
             var juryTab = []
             for(let i=0;i<this.EventPlanning.nombreMembreJury;i++){
@@ -83,6 +86,7 @@ export default {
             }
 
             return{
+                couleur: this.Couleur,
                 cacher : false,
                 show : false,
                 panel : null,
@@ -217,6 +221,10 @@ export default {
 
 
 <style lang="scss">
+
+    .color-picker{
+        margin-left: 5px;
+    }
 
     #panelToggleDelete,#panelToggleUpdate,#panelToggleSalle,#panelToggleJury{
         position: fixed;
@@ -492,7 +500,7 @@ export default {
 
     #panelSalleJuryInput{
         min-height: 50%;
-        top:20%;
+        top:10%;
         position: fixed;
         width: 70%;
         margin-left: 15%;

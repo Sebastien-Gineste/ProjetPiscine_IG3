@@ -40,7 +40,10 @@ export default new Vuex.Store({
     },
     getIdEvent : state =>{ // id de l'évenement de l'étudiant 
       return state.idEvent;
-    }
+    },
+    getId : state => {
+      return state.id
+    },
 
     
   },

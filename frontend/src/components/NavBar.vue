@@ -50,7 +50,9 @@ export default {
           axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
           /*sessionStorage.removeItem('token');*/
           this.$store.dispatch('deconnexion');
-          this.$router.push("/")
+          if(this.$router.history.current.name !== "Home"){
+              this.$router.push("/")
+          }
        }
    }
 }
@@ -85,7 +87,8 @@ export default {
     a {
         font-weight: bold;
         color: white;
-         transition: 0.35s ease;
+        font-size: 18px;
+        transition: 0.35s ease;
 
         &.router-link-exact-active:not(.navbar-brand):not(.dropdown-item) {   // couleur du lien activé (qui pointe sur la page actuel)
           border-bottom: solid 2px white;
