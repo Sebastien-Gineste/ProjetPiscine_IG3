@@ -21,6 +21,23 @@ exports.selectAll = (req, res, next) => {
   })
 }
 
+exports.selectAllEtudiant = (req, res, next) => {
+  new Etudiant().selectAllEtudiant(req.params.promo).then((results) => {
+    res.status(200).json(results)
+}).catch((error) => {
+    switch(error) {
+      case Error.NO_RESULTS:
+          console.log('Pas de données dans cette table.');
+          res.status(400).json({ error })
+          break;
+      default : 
+          console.log('service indispo.');
+          res.status(400).json({ error })
+          break;
+    }
+})
+}
+
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
       .then(hash => {

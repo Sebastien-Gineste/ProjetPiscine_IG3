@@ -27,12 +27,10 @@ exports.save = (req, res, next) => {
   console.log("id Groupe : "+idGroupe);
   console.log(req.body)
   const groupe = {
-      nomProjet : req.body.nomProjet,
       nomTuteur: req.body.nomTuteur,
       prenomTuteur : req.body.prenomTuteur,
       entrepriseTuteur : req.body.entrepriseTuteur,
-      nomEvenement : req.body.nomEvenement,
-      membre1: req.body.membre1
+      idProf : req.body.idProf,
   };
   console.log(groupe)
   new Groupe().save(groupe)
@@ -45,7 +43,20 @@ exports.select = (req, res, next) => {
   console.log(req.params.id)
 
   new Groupe().select([req.params.id]).then((results)=>{ 
-    res.status(200).json(results[0])
+    new Composer().select([req.params.id]). then((listMembers)=>{
+      res.status(200).json(results[0])
+    }).catch((error) => {
+      switch(error) {
+        case Error.NO_RESULTS:
+            console.log('Pas de données dans cette table.');
+            res.status(400).json({ error })
+            break;
+        default : 
+            console.log('service indispo.');
+            res.status(400).json({ error })
+            break;
+      }})
+    
   }).catch((error) => {
     switch(error) {
       case Error.NO_RESULTS:
