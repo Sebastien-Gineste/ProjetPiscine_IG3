@@ -61,6 +61,30 @@ class Etudiant extends model.Model {
     return super.select(this.tableName,["emailEtudiant"],email)
   }
 
+  selectAllEtudiant(promo){
+    return new Promise((resolve, reject) => {
+      const query = {
+          name: 'selectAllByPromo', // réquête préparer
+          text: 'SELECT etudiant."numEtudiant", etudiant."nomEtudiant", etudiant."prenomEtudiant" FROM etudiant WHERE etudiant."annePromo"=$1',
+          values: [promo]
+      };
+     
+      model.client.query(query, function(error, results) {
+          if (error) {
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+            resolve(results.rows);
+          } else {
+              // pas de résultat
+              reject(model.Error.NO_RESULTS);
+          }
+      });
+    }); 
+  }
+
   /*  
    * id : [val Clé primaire]
   */

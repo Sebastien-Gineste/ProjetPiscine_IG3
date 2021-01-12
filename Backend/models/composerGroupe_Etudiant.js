@@ -5,7 +5,7 @@ class Composer extends model.Model {
   constructor() {
     super();
     this.tableName = "composer";
-    this.tabKey = ["idGroupe","numEtudiant"];
+    this.tabKey = ["idGroupe"];
     
   }
   /*
