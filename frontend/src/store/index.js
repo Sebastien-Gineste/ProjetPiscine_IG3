@@ -18,6 +18,9 @@ export default new Vuex.Store({
       state.admin = user.admin
       state.group = user.group
       state.idEvent = user.numEvent
+    },
+    UPDATE_GROUP : (state, group) =>{
+      state.group=group
     }
   },
   getters: {
@@ -30,7 +33,7 @@ export default new Vuex.Store({
       return state.id === null
     },
     hasGroup : state => {
-      return state.group !== "-1" && state.group !== null
+      return state.group != "-1" 
     },
     getGroup : state => {
       return state.group;
@@ -50,7 +53,10 @@ export default new Vuex.Store({
     },
     deconnexion({ commit }){
       commit('UPDATE_USER',{userId : "-1",admin : false, group : -1, numEvent : -1})
-    }
+    },
+    ajoutGroup({commit},group){
+      commit('UPDATE_GROUP',group)
+    },
   },
   modules: {
   }

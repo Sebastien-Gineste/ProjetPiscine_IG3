@@ -24,6 +24,7 @@ class Etudiant extends model.Model {
               reject(model.Error.CONNECTION_ERROR);
               return;
           }
+          console.log(results)
           if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
             if(results.rows.length > 1 ){
               reject(model.Error.TOO_MANY_RESPONSE)
@@ -59,6 +60,30 @@ class Etudiant extends model.Model {
 
   selectByEmail(email){
     return super.select(this.tableName,["emailEtudiant"],email)
+  }
+
+  selectAllEtudiant(id){
+    return new Promise((resolve, reject) => {
+      const query = {
+          name: 'selectAllByPromoId', // réquête préparer
+          text: 'SELECT etudiant."numEtudiant", etudiant."nomEtudiant", etudiant."prenomEtudiant" FROM etudiant WHERE etudiant."estAdmin" = false AND etudiant."annePromo"= (select etudiant."annePromo" from etudiant where etudiant."numEtudiant" = $1)',
+          values: [id]
+      };
+     
+      model.client.query(query, function(error, results) {
+          if (error) {
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+            resolve(results.rows);
+          } else {
+              // pas de résultat
+              reject(model.Error.NO_RESULTS);
+          }
+      });
+    }); 
   }
 
   /*  

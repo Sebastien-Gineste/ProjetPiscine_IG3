@@ -66,13 +66,13 @@ const routes = [
   {
     path: '/Groupe/Création',
     name: 'GroupCreation',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Group.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Group_Management.vue'),
     meta : {requireAuth : true, requireAdmin : false}
   },
   {
-    path: '/Groupe/:id',
+    path: '/Groupe/Modification',
     name: 'GroupModification',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Group.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Group_Management.vue'),
     meta : {requireAuth : true, requireAdmin : false}
   },
   {
