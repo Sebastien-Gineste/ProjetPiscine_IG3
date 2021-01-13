@@ -30,7 +30,7 @@
                                 <b-col v-for="numJ in EventPlanning.nombreMembreJury" :key="numJ">  
                                     <b-form-select :id="'input-jury-'+numJ" v-model="jury[numJ-1]" required :options="Profs">
                                         <template #first>
-                                            <b-form-select-option :value="null" disabled>Sélectionner un prof</b-form-select-option>
+                                            <b-form-select-option :value="null" disabled>Sélectionner un professeur</b-form-select-option>
                                         </template>
                                     </b-form-select>
                                 </b-col>
@@ -87,7 +87,7 @@ export default {
 
             return{
                 couleur: this.Couleur,
-                cacher : false,
+                cacher : true,
                 show : false,
                 panel : null,
                 salle : "",

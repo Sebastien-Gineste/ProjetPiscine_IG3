@@ -15,14 +15,14 @@
          </transition>
         <transition name="slide-fade">
             <div id="panelModifCreneau" v-if="show">
-                    <h3>Modification du Creneau {{panelCreneau.id}}</h3>
+                    <h3>Modification du créneau {{panelCreneau.id}}</h3>
 
                     <b-form-group id="input-prof" label="Jury" label-for="input-jury">
                         <b-row class="my-1">
                             <b-col v-for="numJ in event.nombreMembreJury" :key="numJ">  
                                 <b-form-select :id="'input-jury-'+numJ" v-model="panelCreneau.jury[numJ-1]" required :options="profs">
                                     <template #first>
-                                        <b-form-select-option :value="null" disabled>Sélectionner un prof</b-form-select-option>
+                                        <b-form-select-option :value="null" disabled>Sélectionner un professeur</b-form-select-option>
                                     </template>
                                 </b-form-select>
                             </b-col>
@@ -287,7 +287,7 @@ export default {
                     this.axiosCreate(newCreneau,this.creneaux.indexOf(newCre));
                 }
                 else{
-                    console.log("on peut pas") // il a cliqué sur un jour qui ne fait pas partie de la durée de l'évenement
+                    console.log("Impossible, ce jour-ci ne fait pas partie de l'évènement.") // il a cliqué sur un jour qui ne fait pas partie de la durée de l'évenement
                 }
             }
         },
@@ -417,7 +417,7 @@ export default {
                 console.log(idC)
                 this.creneaux[idC].jury = newJury
                 if(affichage){
-                    util.makeToast(this,"success","Enregister","Jury ajouter ! :)")
+                    util.makeToast(this,"success","Enregistrement","Jury ajouté ! :)")
                 }
                 // appel AXIOS
                 this.axiosUpdate({type : "jury", id :  this.creneaux[idC].id, jury : newJury});
@@ -431,12 +431,11 @@ export default {
         *  Ajoute la salle au créneau et l'enregistre dans la BD
         */  
         ajoutSalle(creneau, salle, affichage = true){
-            console.log(salle)
             if(this.isAdmin() && salle){
                 var idC = this.creneaux.indexOf(creneau)
                 this.creneaux[idC].salle = salle
                 if(affichage){
-                    util.makeToast(this,"success","Enregister","Salle ajouter ! :)")
+                    util.makeToast(this,"success","Enregister","Salle ajoutée ! :)")
                 }
                 // appel AXIOS
                 this.axiosUpdate({type : "salle", id : this.creneaux[idC].id, salle : salle});
@@ -458,7 +457,6 @@ export default {
                             if(data.otherCreneau){ // On avait déjà réserver un créneau, on le remet à null
                                 var i = 0
                                 while(i < this.creneaux.length){
-                                    console.log("InscriptGroup")
                                     if(this.creneaux[i].groupe == data.otherCreneau){
                                         this.creneaux[i].groupe = null
                                     }
@@ -469,7 +467,7 @@ export default {
                         .catch((error) => console.log(error))          
                     }
                     else{
-                        util.makeToast(this,"danger","Erreur","Vous ne pouvez plus réserver pour les soutenances, la date de limite est dépassée !") 
+                        util.makeToast(this,"danger","Erreur","Vous ne pouvez plus réserver pour les soutenances: la date de limite est dépassée !") 
                     }
                 }
                 else{
@@ -519,7 +517,6 @@ export default {
         */  
         SupprimeDirectCreneau(creneau){ // clique sur un créneau avec l'option supprime
             if(this.isAdmin()){
-                console.log("creneau")
                 this.affichePanelCreneau(creneau)
                 this.show = false
                 this.supprimerCreneau()
@@ -603,8 +600,6 @@ export default {
 
                 this.currentCreneau.heureTotal = this.panelCreneau.heureDebut
                 this.currentCreneau.date = util.formatDate(this.panelCreneau.dateCreneau)
-                console.log("jury")
-                console.log(newJury)
                 if(newJury[0]){ 
                     if(!this.panelCreneau.funcJury(newJury)){// on peut changer 
                         if(this.PanelAjoutJury(newJury,true) !== null){ // ajout dans les jurys (il retourne null s'il y a plusieurs occurence d'un prof dans le jury)
@@ -625,7 +620,7 @@ export default {
                 this.axiosUpdate({type : "update", id : this.currentCreneau.id, heureDebut : this.currentCreneau.heureTotal, date :  this.currentCreneau.date});
 
                 if(affichage){
-                    util.makeToast(this,"success","Enregister","Votre modification a été enregistré ! :)")
+                    util.makeToast(this,"success","Enregister","Votre modification a été enregistrée ! :)")
                 }
                 if(relancer){
                     this.genererCreneau()
@@ -699,7 +694,6 @@ export default {
             var i = 0
             var dateActu = new Date(DateDebut)
             while(i < DureeE){
-                console.log("While geneDateEvent")
                 var jourActu = dateActu.getDay() 
                 if(jourActu == 0 ||jourActu == 6 ){ // samedi ou dimanche 
                     i--
@@ -778,7 +772,6 @@ export default {
         */
         suppAllCreneau(){
             while(this.$el.getElementsByClassName("creneau").length > 0){
-                console.log("Sup all creneau")
                 this.$el.getElementsByClassName("creneau")[0].remove()
             }
         },
@@ -849,7 +842,6 @@ export default {
             // on regarde les frères
             let i = 0;
             while(i<this.creneaux.length && (new Date(this.creneaux[i].date) <= date || new Date(this.creneaux[i].date) <= secondeDate )){ // tant que le tableau n'est pas fini et qu'on est inférieur ou égale à la date
-                console.log("Concordance creneau")
                 if(this.creneaux[i].date === this.formatDate(date) || this.creneaux[i].date === this.formatDate(secondeDate)){ // si la date est égale on calcul
                     this.creneaux[i].tabFrereCren = null // on met son tableau de frère à null
                     if(i > 0 && this.creneaux[i-1].date === this.creneaux[i].date){ // si un créneau à déja passé la boucle et qu'il est de même date
@@ -870,7 +862,6 @@ export default {
                 }
                 i++;
             }
-            console.log(" i = "+i)
         },
         /* fonction permettant de lancer un appel axios POST (requête HTTP) au backend, enregisterant ainsi le creneau en paramètre dans la BD
          * creneau : Object // contenant le nouveau créneau à créer
@@ -922,13 +913,20 @@ export default {
             }
 
             // récupère les créneaux
-            axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id+'/Creneau').then((response) => {
+            var route = `http://localhost:3000/api/Evenement/`+this.$route.params.id+'/Creneau'
+            if(this.$route.params.infoProf != null){
+                route+="/Jury/"+this.$route.params.infoProf
+            }
+            axios.get(route).then((response) => {
                 var infoCreneau = response.data.creneaux;
                 console.log(infoCreneau)
                 let i = 0;
                 this.creneaux = [];
                 while(i < infoCreneau.length){
+<<<<<<< HEAD
                     
+=======
+>>>>>>> 504bf91d39edbc477ace2c1a7209967f73d2c128
                     let tabVideProf = []
                     for(let i = 0;i<this.event.nombreMembreJury;i++){
                         tabVideProf.push(null)
@@ -971,10 +969,12 @@ export default {
                     }
 
                     while(i < infoCreneau.length-1 && infoCreneau[i].numCreneau === infoCreneau[i+1].numCreneau){ // tant qu'on a des profs à rentré dans son jury 
+<<<<<<< HEAD
                        
+=======
+>>>>>>> 504bf91d39edbc477ace2c1a7209967f73d2c128
                         i++;
                         var j = 0;
-                        console.log(this.creneaux[this.creneaux.length-1].jury.length)
                         while(this.creneaux[this.creneaux.length-1].jury.length > j && this.creneaux[this.creneaux.length-1].jury[j] !== null){ // tant que les cases du tableau ne sont pas vide, on continue
                             j++
                         } // on a trouvé la case qui est null
