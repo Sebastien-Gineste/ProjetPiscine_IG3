@@ -39,15 +39,11 @@ exports.selectAllEtudiant = (req, res, next) => {
 }
 
 exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
+    console.log("ok")
+    bcrypt.hash(req.body.mdpEtudiant, 10)
       .then(hash => {
-        const user = {
-          nomEtudiant : req.body.nom,
-          prenomEtudiant : req.body.prenom,
-          emailEtudiant: req.body.email,
-          mdpEtudiant: hash,
-          annePromo : req.body.promo
-        };
+        var user = req.body
+        user.mdpEtudiant= hash
         console.log(user)
         if(req.body.numEtudiant){ //Si l'étudiant à mit son num étudiant 
           user.numEtudiant = req.body.numEtudiant

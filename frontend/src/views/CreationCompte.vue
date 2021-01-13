@@ -1,12 +1,13 @@
 <template>
   <div id="contenant">
+    <b-form @submit="create">
     <b-list-group>
-      <span v-if="showMsg" id="NonRemplis"> Veuillez remplir tout les champs </span>
+      <span v-if="showMsg" id="NonRemplis"> Veuillez remplir tous les champs </span>
       <b-list-group-item id="Profil">Création de compte <b-avatar class="mr-3" id="ProfilePic"></b-avatar></b-list-group-item>
       <b-list-group-item>Nom : <input v-model="form.nomEtudiant"> </b-list-group-item>
       <b-list-group-item>Prenom : <input v-model="form.prenomEtudiant"> </b-list-group-item>
       <b-list-group-item>Numéro Etudiant : <input v-model="form.numEtudiant"> </b-list-group-item>
-      <b-list-group-item>Mail : <input v-model="form.emailEtudiant"> </b-list-group-item>
+      <b-list-group-item>Mail : <input type="email" v-model="form.emailEtudiant"> </b-list-group-item>
       <b-list-group-item>Mot de passe : <input v-model="form.mdpEtudiant"> </b-list-group-item>
       <b-list-group-item>Promo : 
       <b-form-select id="Promo" v-model="form.annePromo" required :options="promos">
@@ -14,10 +15,10 @@
       <b-form-select-option :value="null" disabled>Sélectionner une promo</b-form-select-option>
       </template>
       </b-form-select>
-      </b-list-group-item>
-      <b-button id="BoutonCreate" v-on:click="create">Créer compte</b-button>
+      </b-list-group-item>  
+      <b-button id="BoutonCreate" type="submit" >Créer compte</b-button>
     </b-list-group>
-    
+    </b-form>
   </div>
 </template>
 
@@ -49,12 +50,12 @@ const axios = axio.create({
         create() {
             this.showMsg = false
             if ((this.form.numEtudiant.length > 0) && (this.form.nomEtudiant.length > 0) && (this.form.prenomEtudiant.length > 0) && (this.form.emailEtudiant.length > 0) && (this.form.mdpEtudiant.length > 0) && (this.form.annePromo != null)){
-              axios.post('http://localhost:3000/api/etudiant/', this.form)
+              axios.post('http://localhost:3000/api/Etudiant/', this.form)
               .then((response) => {
                   console.log(response);
                   this.PageAccueil();
               }, (error) => {
-                  console.log(error);
+                  console.log(error.response);
               });
             }
             else {
@@ -85,30 +86,7 @@ const axios = axio.create({
         });
       }
   }
-},
-Methods: {
-create() {
-    axios.post('.../api/etudiant/', {
-        numEtudiant: this.numEtudiant,
-        nomEtudiant: this.nom,
-        prenomEtudiant: this.prenom,
-        emailEtudiant: this.mail,
-        mdpEtudiant: this.mdpasse,
-        annePromo: this.promo,
-        estAdmin: false,
-    })
-    .then((response) => {
-        console.log(response);
-        this.$router.push("/");
-    }, (error) => {
-        console.log(error);
-    });
-},
-PageAccueil() {
-  this.$router.push("/");
-},
-}
-}
+
 </script>
 
 
