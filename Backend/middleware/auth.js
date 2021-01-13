@@ -33,7 +33,6 @@ exports.verifyTokenAdmin = (req, res, next) => {
         if(cookie[0] == "jwtAuth"){ // bon cookie
             const token = cookie[1] // token
             const decodedToken = jwt.verify(token, SecretToken);
-            console.log("idEtudiant : "+decodedToken.idEtudiant);
             new Etudiant().select([decodedToken.idEtudiant])
             .then(user => {
                 if(user[0].estAdmin){

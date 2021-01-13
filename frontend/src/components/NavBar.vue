@@ -1,6 +1,6 @@
 <template>
-    <div id= "nav">
-      <b-navbar toggleable="lg" type="dark" variant="info">
+    <div id= "nav" class="shadow-sm">
+      <b-navbar toggleable="lg" type="dark">
         <div class="container">
           
           <b-navbar-brand href="#">
@@ -15,6 +15,7 @@
               <li v-if="isUser() && !isAdmin()" class="nav-item"><b-link class="nav-link" to="/Groupe"><b-icon icon="people-fill"></b-icon>Gestion de groupe</b-link></li>
               <li v-if="isAdmin()" class="nav-item"><b-link class="nav-link" to="/Evenement"><b-icon icon="calendar-event"></b-icon>Gestion des événements</b-link></li>
               <li v-if="isAdmin()" class="nav-item"><b-link class="nav-link" to="/Tuteur"><b-icon icon="people-fill"></b-icon>Gestion des tuteurs</b-link></li>
+              <li v-if="isAdmin()" class="nav-item"><b-link class="nav-link" to="/Promo"><b-icon icon="people-fill"></b-icon>Gestion des promos</b-link></li>
             </b-navbar-nav>
 
             <!-- Right aligned nav items -->
@@ -62,7 +63,7 @@ export default {
 <style lang="scss">
 
   .dropdown-menu{
-  background-color: #17a2b8 !important;
+  background-color: white !important // #17a2b8 !important;
   }
 
   .dropdown-item:hover, .dropdown-item:focus {
@@ -70,13 +71,19 @@ export default {
   }
   #nav {
 
+    margin-bottom : 2%;
+
+    button{
+      background : black;
+    }
+
     .dropdown-menu{
       border-radius: 29px;
-      border: solid 0.5px #00BCD4;
+      border: solid 0.5px grey;
     }
 
     img{
-      background: aliceblue;
+      background: white;
       padding: 1px;
       border-radius: 22px;
     }
@@ -86,12 +93,12 @@ export default {
 
     a {
         font-weight: bold;
-        color: white;
+        color: black;
         font-size: 18px;
         transition: 0.35s ease;
 
         &.router-link-exact-active:not(.navbar-brand):not(.dropdown-item) {   // couleur du lien activé (qui pointe sur la page actuel)
-          border-bottom: solid 2px white;
+          border-bottom: solid 2px black;
           border-bottom-left-radius: 5px;
           border-bottom-right-radius: 5px;
         }
@@ -101,7 +108,7 @@ export default {
         }
 
         &:hover{
-          color : black;
+          color : #17a2b8 !important;
         }
     }
   }

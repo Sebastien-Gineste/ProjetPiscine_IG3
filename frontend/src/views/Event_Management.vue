@@ -2,6 +2,13 @@
     <div id="EventManagement">
 
         <h1 id="title"> Gestion des évenements </h1>
+        <div v-if="wait">
+            <b-icon icon="three-dots" animation="cylon" font-scale="4"></b-icon>
+        </div>
+        <b-alert v-if="!wait && events.length === 0" variant="warning" show> Il n'y a pas encore d'événements ! </b-alert>
+
+        <b-button id="crea" type="button" @click="redirectCrea"> Créer un évenement </b-button>
+
 
     
             <b-list-group-item id="listG" v-for="(event, id) in events" :key="id">
@@ -20,7 +27,8 @@ const axios = axio.create({ withCredentials: true })
     export default {
         data(){
             return{
-                events : []
+                events : [],
+                wait : false,
             }
         },
         methods:{
@@ -45,13 +53,16 @@ const axios = axio.create({ withCredentials: true })
             }
 
         },
-        beforeMount(){  
+        beforeMount(){ 
+            this.wait = true 
             axios.get('http://localhost:3000/api/Evenement/').then((response) => {
                 console.log(response)
                 this.events = response.data;
+                this.wait = false
             })
             .catch((error)=>{
-                console.log(error)
+                console.log(error.response)
+                this.wait = false
             })
         }
         

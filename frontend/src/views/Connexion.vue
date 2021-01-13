@@ -1,32 +1,30 @@
 <template>
   <div id="connexion">
-    <b-form @submit="onSubmit" v-if="show">
-      <b-form-group
-        id="input-group-1"
-        label="Email address:"
-        label-for="input-1"
-        description="We'll never share your email with anyone else."
-      >
-        <b-form-input
-            id="input-1"
-            v-model="form.email"
-            type="email"
-            required
-            placeholder="Enter email"
-        ></b-form-input>
-      </b-form-group>
+    <h1 >Connexion</h1>
+    <b-card>
+      <b-form @submit="onSubmit">
+        <b-form-group
+          id="email-group-1"
+          label="Adresse Email"
+          label-for="input-1"
+        >
+          <b-form-input
+              id="email-1"
+              v-model="form.email"
+              type="email"
+              required
+          ></b-form-input>
+        </b-form-group>
 
-      <b-form-group id="input-group-2" label="Password" label-for="text-password">
-        <b-form-input type="password" id="text-password" aria-describedby="password-help-block" v-model="form.password"></b-form-input>
-        <b-form-text id="password-help-block">
-        Your password must be 8-20 characters long, contain letters and numbers, and must not
-        contain spaces, special characters, or emoji.
-        </b-form-text>
-      </b-form-group>
-
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <div v-if="messageError.length > 0">{{messageError}}</div>
-    </b-form>
+        <b-form-group id="input-group-2" label="Mot de passe" label-for="text-password">
+          <b-form-input type="password" id="text-password" v-model="form.password"></b-form-input>
+        </b-form-group>
+        <b-button type="submit" variant="primary">Se connecter</b-button>
+        <p>Si vous n'avez pas encore de compte, pensez à vous <b-link to="/CreationCompte"> inscrire </b-link></p>
+        <p>Si vous avez oubliez votre mot de passe, cliquer <b-link to="/RecupMdp"> ici </b-link></p>
+        <div v-if="messageError.length > 0">{{messageError}}</div>
+      </b-form>
+    </b-card>
   </div>
 </template>
 
@@ -43,8 +41,6 @@ const axios = axio.create({
           email: '',
           password : '',
         },
-        show: true,
-        error: false,
         messageError : "",
       }
     },
@@ -73,5 +69,10 @@ const axios = axio.create({
         width: 70%;
         margin: 2%;
         margin-left: 15%;
+
+        h1, button{
+          margin-bottom: 2%;
+        }
+
     }
 </style>

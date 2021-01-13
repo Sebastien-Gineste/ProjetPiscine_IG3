@@ -87,7 +87,7 @@ export default {
 
             return{
                 couleur: this.Couleur,
-                cacher : false,
+                cacher : true,
                 show : false,
                 panel : null,
                 salle : "",
