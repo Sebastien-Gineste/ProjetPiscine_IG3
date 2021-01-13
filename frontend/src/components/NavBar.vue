@@ -25,8 +25,8 @@
                   <em> <b-icon icon="person-fill"></b-icon></em>
                 </template>
                 <li v-if="!isUser()" role="presentation"><b-link role="menuitem" class="dropdown-item" to="/Connexion">Connexion</b-link></li> <!-- Lien vers une page sous l'icône du profile -->
-                <li v-if="!isUser() || isAdmin()" role="presentation"><b-link role="menuitem" class="dropdown-item" to="/Etudiant/Création_compte">Créer un compte</b-link></li> <!-- Lien vers une page sous l'icône du profile -->
-                <li v-if="isUser()" role="presentation"><b-link role="menuitem" class="dropdown-item" to="/Etudiant/Compte">Mon compte</b-link></li> <!-- Lien vers une page sous l'icône du profile -->
+                <li v-if="!isUser() || isAdmin()" role="presentation"><b-link role="menuitem" class="dropdown-item" to="/CreationCompte">Créer un compte</b-link></li> <!-- Lien vers une page sous l'icône du profile -->
+                <li v-if="isUser()" role="presentation"><b-link role="menuitem" class="dropdown-item" to="/PageProfil">Mon compte</b-link></li> <!-- Lien vers une page sous l'icône du profile -->
                 <b-dropdown-item v-if="isUser()" @click="Deconnexion" href="#">Deconnexion</b-dropdown-item>
               </b-nav-item-dropdown>
             </b-navbar-nav>
