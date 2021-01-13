@@ -15,14 +15,14 @@
          </transition>
         <transition name="slide-fade">
             <div id="panelModifCreneau" v-if="show">
-                    <h3>Modification du Creneau {{panelCreneau.id}}</h3>
+                    <h3>Modification du créneau {{panelCreneau.id}}</h3>
 
                     <b-form-group id="input-prof" label="Jury" label-for="input-jury">
                         <b-row class="my-1">
                             <b-col v-for="numJ in event.nombreMembreJury" :key="numJ">  
                                 <b-form-select :id="'input-jury-'+numJ" v-model="panelCreneau.jury[numJ-1]" required :options="profs">
                                     <template #first>
-                                        <b-form-select-option :value="null" disabled>Sélectionner un prof</b-form-select-option>
+                                        <b-form-select-option :value="null" disabled>Sélectionner un professeur</b-form-select-option>
                                     </template>
                                 </b-form-select>
                             </b-col>
@@ -287,7 +287,7 @@ export default {
                     this.axiosCreate(newCreneau,this.creneaux.indexOf(newCre));
                 }
                 else{
-                    console.log("on peut pas") // il a cliqué sur un jour qui ne fait pas partie de la durée de l'évenement
+                    console.log("Impossible, ce jour-ci ne fait pas partie de l'évènement.") // il a cliqué sur un jour qui ne fait pas partie de la durée de l'évenement
                 }
             }
         },
@@ -417,7 +417,7 @@ export default {
                 console.log(idC)
                 this.creneaux[idC].jury = newJury
                 if(affichage){
-                    util.makeToast(this,"success","Enregister","Jury ajouter ! :)")
+                    util.makeToast(this,"success","Enregistrement","Jury ajouté ! :)")
                 }
                 // appel AXIOS
                 this.axiosUpdate({type : "jury", id :  this.creneaux[idC].id, jury : newJury});
@@ -435,7 +435,7 @@ export default {
                 var idC = this.creneaux.indexOf(creneau)
                 this.creneaux[idC].salle = salle
                 if(affichage){
-                    util.makeToast(this,"success","Enregister","Salle ajouter ! :)")
+                    util.makeToast(this,"success","Enregister","Salle ajoutée ! :)")
                 }
                 // appel AXIOS
                 this.axiosUpdate({type : "salle", id : this.creneaux[idC].id, salle : salle});
@@ -467,7 +467,7 @@ export default {
                         .catch((error) => console.log(error))          
                     }
                     else{
-                        util.makeToast(this,"danger","Erreur","Vous ne pouvez plus réserver pour les soutenances, la date de limite est dépassée !") 
+                        util.makeToast(this,"danger","Erreur","Vous ne pouvez plus réserver pour les soutenances: la date de limite est dépassée !") 
                     }
                 }
                 else{
@@ -620,7 +620,7 @@ export default {
                 this.axiosUpdate({type : "update", id : this.currentCreneau.id, heureDebut : this.currentCreneau.heureTotal, date :  this.currentCreneau.date});
 
                 if(affichage){
-                    util.makeToast(this,"success","Enregister","Votre modification a été enregistré ! :)")
+                    util.makeToast(this,"success","Enregister","Votre modification a été enregistrée ! :)")
                 }
                 if(relancer){
                     this.genererCreneau()

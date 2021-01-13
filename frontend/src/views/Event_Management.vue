@@ -9,11 +9,15 @@
 
         <b-button id="crea" type="button" @click="redirectCrea"> Créer un évenement </b-button>
 
-       <b-list-group>
-            <b-list-group-item v-for="(event, id) in events" :key="id">
-                Evenement n'{{id+1}} :  {{ event.nomEvenement }} , {{ "IG"+((((new Date().getMonth() + 1) >= 9)? 6 : 5 )-(event.anneePromo - new Date().getFullYear())) }}  <b-button type="button" @click="redirectPlanning(event.numEvenement)"> Planning </b-button> <b-button type="button" @click="redirect(event.numEvenement)"> Modifier </b-button> <b-button type="button" @click="deleteEvenement(id)"> Supprimer </b-button>
+
+    
+            <b-list-group-item id="listG" v-for="(event, id) in events" :key="id">
+                <b>Evenement n°{{id+1}}:</b> {{ event.nomEvenement }} , {{ "IG"+((((new Date().getMonth() + 1) >= 9)? 6 : 5 )-(event.anneePromo - new Date().getFullYear())) }}  <b-button id="b1" variant="primary" type="button" @click="redirectPlanning(event.numEvenement)"> Planning </b-button> <b-button class="b" variant="primary" type="button" @click="redirect(event.numEvenement)"> Modifier </b-button> <b-button variant="primary" class="b" type="button" @click="deleteEvenement(id)"> Supprimer </b-button>
             </b-list-group-item>
-        </b-list-group>
+        
+
+        <b-button id="crea" type="button" variant="primary" @click="redirectCrea"> Créer un nouvel évenement </b-button>
+
     </div>
 </template>
     
@@ -66,7 +70,8 @@ const axios = axio.create({ withCredentials: true })
 </script>
     
 <style >
-    #title_event{
+    #title{
+        margin-top: 5%;
         margin-bottom: 3%;
     }
 
@@ -76,5 +81,21 @@ const axios = axio.create({ withCredentials: true })
     
     #Evenement_panel{
         margin-top: 5%;
+    }
+
+    #listG{
+        width: 70%;
+        margin-left: 15%;
+        padding: 20px;
+        background: lightcyan;
+    }
+
+    #b1 {
+        margin: 5px 5px 5px 15px;
+
+    }
+
+    .b {
+        margin:5px;
     }
 </style>

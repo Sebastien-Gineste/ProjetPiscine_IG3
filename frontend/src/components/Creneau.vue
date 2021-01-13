@@ -110,7 +110,7 @@ export default {
                 return 'réservé ('+this.creneau.groupe+')'
             }
             else{
-                return "groupe non défini"
+                return "Groupe non défini"
             }
         },
         /* Propriété calculé qui permet de faire un affichage de la salle du créneau
@@ -120,7 +120,7 @@ export default {
                 return this.creneau.salle
             }
             else{
-                return "salle non défini"
+                return "Salle non définie"
             }
         },
         /* Propriété calculé qui permet de faire un affichage du jury du créneau
