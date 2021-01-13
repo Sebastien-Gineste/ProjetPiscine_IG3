@@ -106,7 +106,7 @@ exports.login = (req, res, next) => {
           res.status(403).send("mauvais mots de passe")
           break;
         case errorModel.Error.NO_RESULTS:
-          res.status(403).send("Email non trouvée")
+          res.status(403).send("Email non trouvé")
           break;
         default:
           res.status(500).send('Problème de connection')

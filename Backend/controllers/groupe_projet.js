@@ -47,7 +47,7 @@ exports.save = (req, res, next) => {
     .catch((error)=>{
       console.log(error)
       new Groupe().delete([groupe.idGroupe]) // on supprime le groupe solo
-      res.status(400).send("composer non créér")
+      res.status(400).send("composer non créé")
     })
   })
   .catch(error => {

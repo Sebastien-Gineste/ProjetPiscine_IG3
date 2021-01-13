@@ -190,7 +190,10 @@ class Creneau extends model.Model {
       });
     });
   }
-
+  //supprime le groupe d'un créneau
+  deleteGroupe(id,idGroupe){
+    return super.delete(this.tableName,["numCreneau","numEtudiant"],[id,idGroupe])
+  }
   /*
    * objeyVal : {nomColonne : newvalColonne, nomColone2 : newValColone2}
    * id : [val Clé primaire]

@@ -727,7 +727,7 @@ export default {
         nextWeekEvent(){
             var lastDay = new Date(this.dateActu.tab[6]);
             if(lastDay >= new Date(this.date[this.date.length-1])){ // on a dépassé les dates de l'évenement
-                util.makeToast(this,"warning","Attention !","L'événement n'est pas de ce sens ! :)")
+                util.makeToast(this,"warning","Attention !","L'événement n'est pas dans ce sens ! :)")
             }
             else if(lastDay < new Date(this.date[this.date.length-1]) && lastDay > new Date(this.date[0])){ // on passe à la semaine suivante
                 lastDay.setDate(lastDay.getDate() + 1)
@@ -743,7 +743,7 @@ export default {
         prevWeekEvent(){
             var prevDay = new Date(this.dateActu.tab[0]);
             if(prevDay <= new Date(this.date[0])){ // on a dépassé les dates de l'évenement
-                util.makeToast(this,"warning","Attention !","L'événement n'est pas de ce sens ! :)")
+                util.makeToast(this,"warning","Attention !","L'événement n'est pas dans ce sens ! :)")
             }
             else if(prevDay > new Date(this.date[0]) && prevDay < new Date(this.date[this.date.length-1])){ // on passe à la semaine précédente
                 prevDay.setDate(prevDay.getDate() - 1)
