@@ -216,7 +216,7 @@ deleteEleve(id){ // pour supprimer un élève
             });
         }
         // récupère la promo 
-        axios.get('http://localhost:3000/api/Etudiant/Promo/'+this.getId()).then((data) => {
+        axios.get('http://localhost:3000/api/Etudiant/Promo/SansGroupe/'+this.getId()).then((data) => {
             console.log(data.data)
             if(data.data){
                 for(let i=0;i<data.data.length;i++){

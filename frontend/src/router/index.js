@@ -81,8 +81,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Group_Management.vue'),
     meta : {requireAuth : true, requireAdmin : false}
   },
-
-
+  {
+    path: '/RecupPassword',
+    name: 'RecupPassword',
+    component: () => import(/* webpackChunkName: "about" */ '../views/RecupPassword.vue'),
+    meta : {requireAuth : false, requireAdmin : false}
+  },
   {
     path: '/Evenement',
     name: 'GestionEvent',
