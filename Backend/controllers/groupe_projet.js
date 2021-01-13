@@ -27,12 +27,10 @@ exports.save = (req, res, next) => {
   console.log("id Groupe : "+idGroupe);
   console.log(req.body)
   const groupe = {
-      nomProjet : req.body.nomProjet,
       nomTuteur: req.body.nomTuteur,
       prenomTuteur : req.body.prenomTuteur,
       entrepriseTuteur : req.body.entrepriseTuteur,
-      nomEvenement : req.body.nomEvenement,
-      membre1: req.body.membre1
+      etudiants: req.body.etudiants
   };
   console.log(groupe)
   new Groupe().save(groupe)
