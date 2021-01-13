@@ -188,6 +188,24 @@ exports.envoieCodeMail = (req,res,next) =>{
   });
 }
 
+exports.selectAllEtudiantSansGroupe = (req,res,next) => {
+  new Etudiant().selectAllSansGroupe(req.params.id).then((results) => {
+    res.status(200).json(results)
+}).catch((error) => {
+  console.log(error)
+    switch(error) {
+      case Error.NO_RESULTS:
+          console.log('Pas de données dans cette table.');
+          res.status(400).json({ error })
+          break;
+      default : 
+          console.log('service indispo.');
+          res.status(400).json({ error })
+          break;
+    }
+})
+}
+
 /* A faire */
 exports.changeMdp = (req,res,next) => {
   bcrypt.hash(req.body.newPassword, 10)

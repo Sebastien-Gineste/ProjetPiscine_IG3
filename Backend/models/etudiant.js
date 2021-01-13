@@ -54,6 +54,30 @@ class Etudiant extends model.Model {
     return super.save(this.tableName,objetVal); 
   }
 
+  selectAllSansGroupe(id){
+    return new Promise((resolve, reject) => {
+      const query = {
+          name: 'selectAllByPromoIdSansGroupe', // réquête préparer
+          text: 'SELECT etudiant."numEtudiant", etudiant."nomEtudiant", etudiant."prenomEtudiant", composer."idGroupe" FROM etudiant LEFT JOIN composer ON composer."numEtudiant" = etudiant."numEtudiant" WHERE etudiant."estAdmin" = false AND etudiant."annePromo"= (select etudiant."annePromo" from etudiant where etudiant."numEtudiant" = $1)',
+          values: [id]
+      };
+     
+      model.client.query(query, function(error, results) {
+          if (error) {
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+            resolve(results.rows);
+          } else {
+              // pas de résultat
+              reject(model.Error.NO_RESULTS);
+          }
+      });
+    }); 
+  }
+
   selectAll(){
     return new Promise((resolve, reject) => {
       const query = 'SELECT promo."annePromo", composer."idGroupe", etudiant."numEtudiant", etudiant."nomEtudiant", etudiant."prenomEtudiant" FROM promo LEFT JOIN  etudiant ON promo."annePromo"=etudiant."annePromo" LEFT JOIN composer ON composer."numEtudiant"=etudiant."numEtudiant" WHERE etudiant."estAdmin" = false OR etudiant."estAdmin" IS NULL ORDER BY promo."annePromo", composer."idGroupe", etudiant."nomEtudiant" ';
