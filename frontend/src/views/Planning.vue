@@ -450,7 +450,7 @@ export default {
                 if(this.hasGroup()){ // il a eu groupe
                     var dateActu = new Date();
                     if(dateActu <= new Date(this.event.dateLimiteResa)){
-                        var modif = {id : creneau.id, idGroupe : this.getGroup() };
+                        var modif = {id : creneau.id, idGroupe : this.getGroup(), dateLimiteResa : this.event.dateLimiteResa };
                         axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id+"/Inscription", modif)
                         .then((reponse) => {
                             var data = reponse.data;
