@@ -22,15 +22,28 @@
       </b-list-group-item>
 
       <b-list-group-item class="listItem">
-      Mot de passe : <b-link v-if="show" href=""> {{ form.mdpasse }} </b-link> <input v-if="!show" v-model="form.mdpasse"> 
-      </b-list-group-item>
-
-      <b-list-group-item class="listItem">
       Année de promo : <b-link v-if="show" href=""> {{ form.promo }} </b-link> <input v-if="!show" v-model="form.promo">
       </b-list-group-item>
 
-      <b-button id="BoutonModif" type="button" variant="primary" v-if="show" v-on:click="show = false;showMsg = false">Modifier</b-button>
-      <b-button id="BoutonModif" type="button" variant="primary" v-if="!show" v-on:click="show = true;showMsg = true;pop();updateProfil()">Valider</b-button>
+      <b-row v-if="show">
+        <b-col>
+          <b-button id="BoutonModif" type="button" variant="primary" v-on:click="show = false;showMsg = false">Modifier</b-button>
+        </b-col>
+        <b-col>
+          <b-button id="BoutonModif" type="button" variant="primary" @click="toMdp">Modifier le mot de passe</b-button>
+        </b-col> 
+      </b-row>
+
+      <b-row v-if="!show">
+        <b-col>
+          <b-button id="BoutonModif" type="button" variant="primary" v-on:click="show = true;showMsg = true;pop();updateProfil()">Valider</b-button>
+        </b-col>
+        <b-col>
+          <b-button id="BoutonModif" type="button" variant="primary" @click="toMdp">Modifier le mot de passe</b-button>
+        </b-col> 
+      </b-row>
+
+
     </b-list-group>
     
   </div>
@@ -81,6 +94,9 @@ const axios = axio.create({
           .catch((error)=>{
               console.log(error.response)
           });
+        },
+        toMdp(){
+          this.$router.push('/RecupPassword')
         }
       },
       beforeMount() {
@@ -116,8 +132,7 @@ const axios = axio.create({
   }
   #BoutonModif {
     margin-top: 4%;
-    width: 30%;    
-    margin-left: 35%;
+   
   }
   #valid {
     color:green;

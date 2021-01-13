@@ -21,7 +21,7 @@
         </b-form-group>
         <b-button type="submit" variant="primary">Se connecter</b-button>
         <p>Si vous n'avez pas encore de compte, pensez à vous <b-link to="/CreationCompte"> inscrire </b-link></p>
-        <p>Si vous avez oubliez votre mot de passe, cliquer <b-link to="/RecupMdp"> ici </b-link></p>
+        <p>Si vous avez oubliez votre mot de passe, cliquer <b-link to="/RecupPassword"> ici </b-link></p>
         <div v-if="messageError.length > 0">{{messageError}}</div>
       </b-form>
     </b-card>
