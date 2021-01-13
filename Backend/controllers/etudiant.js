@@ -106,7 +106,7 @@ exports.login = (req, res, next) => {
           res.status(403).send("mauvais mots de passe")
           break;
         case errorModel.Error.NO_RESULTS:
-          res.status(403).send("Email non trouvée")
+          res.status(403).send("Email non trouvé")
           break;
         default:
           res.status(500).send('Problème de connection')
@@ -186,6 +186,24 @@ exports.envoieCodeMail = (req,res,next) =>{
       console.log('Email sent: ' + info.response);
     }
   });
+}
+
+exports.selectAllEtudiantSansGroupe = (req,res,next) => {
+  new Etudiant().selectAllSansGroupe(req.params.id).then((results) => {
+    res.status(200).json(results)
+}).catch((error) => {
+  console.log(error)
+    switch(error) {
+      case Error.NO_RESULTS:
+          console.log('Pas de données dans cette table.');
+          res.status(400).json({ error })
+          break;
+      default : 
+          console.log('service indispo.');
+          res.status(400).json({ error })
+          break;
+    }
+})
 }
 
 /* A faire */
