@@ -31,7 +31,7 @@ const routes = [
     path: '/PageProfil',
     name: 'PageProfil',
     component: () => import(/* webpackChunkName: "about" */ '../views/PageProfil.vue'),
-    //meta : {requireAuth : false, requireAdmin : false}
+    meta : {requireAuth : true, requireAdmin : false}
   },
   {
     path: '/CreationCompte',
