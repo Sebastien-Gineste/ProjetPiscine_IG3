@@ -89,7 +89,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Event_Management.vue'),
     meta : {requireAuth : true, requireAdmin : true}
   },
-
+  {
+    path: '/Promo',
+    name: 'promo',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Promo.vue'),
+    meta : {requireAuth : true, requireAdmin : true}
+  },
   { path: "*", // à mettre à la fin du routeur
     name: "404",
    component:  () => import(/* webpackChunkName: "about" */ '../views/Error.vue')

@@ -45,7 +45,7 @@
                         id="date2"
                         label="Date limite de réservation des créneaux:"
                         label-for="DateLimEvent">
-                        <b-form-datepicker id="DateLimEvent" :readonly="readonly" :hide-header="true" :state="form.DateLim.length !== 0" :date-disabled-fn="dateDisabled" :min="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
+                        <b-form-datepicker id="DateLimEvent" :readonly="readonly" :hide-header="true" :state="form.DateLim.length !== 0 && +new Date(form.DateLim) >= +new Date()" :date-disabled-fn="dateDisabled" :min="minDate" :max="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
                     </b-form-group>
                 </b-col>
                 <b-col sm="6">  
@@ -110,8 +110,7 @@
             <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="primary">Annuler</b-button>
             <b-button id="panel" v-if="isCreate" @click="affichePanel()" type="button" variant="primary">Option création</b-button>
             <b-button id="panel" v-else @click="affichePanel()" type="button" variant="primary">Option modification</b-button>
-            <div v-if="messageError.length > 0">{{messageError}}</div>
-
+            <b-alert v-if="messageError.length > 0" variant="warning" show>{{messageError}} </b-alert>
             <div v-if="showPanel" id="optionCreation">
                  <!-- Durée Event --> 
                 <b-row class="my-1">
@@ -233,8 +232,12 @@ export default {
             }
             var dateDeb = new Date(this.form.DateDeb);
             var dateLim = new Date(this.form.DateLim);
-            if(dateLim > dateDeb){
+            if(dateLim.getDate() > dateDeb.getDate()){
                 this.messageError = "La date limite de réservation ne peut pas être supérieure à la date de début de l'évenement"
+                return false
+            }
+            else if(dateLim.getDate() <= new Date().getDate()){
+                this.messageError = "La date limite de réservation ne peut pas être inférieur ou égal à la date du jour"
                 return false
             }
             else if(this.form.DureeE < 1){
@@ -292,7 +295,7 @@ export default {
                 .catch((error) => { 
                     var msg = error.response;
                     console.log(msg)
-                    if(msg.status == '403'){ // pas autorisé 
+                    if(msg){ // Erreur de la BD
                         this.messageError = msg.data
                     }
                 });
@@ -325,7 +328,7 @@ export default {
             axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id).then((response) => {
                 console.log(response)
                 this.data = response.data
-                this.minDate = response.data.dateDebut
+                //this.minDate = response.data.dateDebut
                 this.form = {
                         nomE: response.data.nomEvenement,
                         DateDeb : this.formatDate(response.data.dateDebut),
