@@ -7,10 +7,6 @@
         </div>
         <b-alert v-if="!wait && events.length === 0" variant="warning" show> Il n'y a pas encore d'événements ! </b-alert>
 
-        <b-button id="crea" type="button" @click="redirectCrea"> Créer un évenement </b-button>
-
-
-    
             <b-list-group-item id="listG" v-for="(event, id) in events" :key="id">
                 <b>Evenement n°{{id+1}}:</b> {{ event.nomEvenement }} , {{ "IG"+((((new Date().getMonth() + 1) >= 9)? 6 : 5 )-(event.anneePromo - new Date().getFullYear())) }}  <b-button id="b1" variant="primary" type="button" @click="redirectPlanning(event.numEvenement)"> Planning </b-button> <b-button class="b" variant="primary" type="button" @click="redirect(event.numEvenement)"> Modifier </b-button> <b-button variant="primary" class="b" type="button" @click="deleteEvenement(id)"> Supprimer </b-button>
             </b-list-group-item>
