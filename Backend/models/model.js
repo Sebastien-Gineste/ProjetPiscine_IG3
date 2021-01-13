@@ -36,7 +36,7 @@ exports.Model = class Model{ // Model générique pour les tables de la base de 
             request+= ") VALUES("+strValue.substr(0, strValue.length - 1)+") RETURNING *";
             
             const query = {
-                name: 'save-générique', // réquête préparer
+                name: 'save-générique-'+tableName, // réquête préparer
                 text: request,
                 values: tabValues,
             }
@@ -167,16 +167,21 @@ exports.Model = class Model{ // Model générique pour les tables de la base de 
         return new Promise((resolve, reject) => {
             var request = 'DELETE FROM '+tableName+' WHERE';
             for (let i=0;i<tabKey.length;i++){
-                request += " \""+tabKey[i]+"\" = $"+(i+1);
+                request += " \""+tabKey[i]+"\" = $"+(i+1)+" AND";
             }
 
+            request = request.substr(0,request.length -3)
+
             const query = {
-                name: 'delete-générique', // réquête préparer
+                name: 'delete-générique-'+tableName, // réquête préparer
                 text: request,
                 values: tabKeySearch,
               }
 
+            console.log(query)
+
             this.client.query(query, function(error, results) {
+                console.log(error)
                 if (error) {
                     reject(Errors.CONNECTION_ERROR);
                     return;

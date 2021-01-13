@@ -11,7 +11,7 @@ exports.selectAll = (req, res, next) => {
     switch(error) {
       case Error.NO_RESULTS:
           console.log('Pas de données dans cette table.');
-          res.status(400).json({ error })
+          res.status(400).send("il n'y a pas d'événement pour le moment !")
           break;
       default : 
           console.log('service indispo.');
@@ -38,18 +38,18 @@ exports.save = (req, res, next) => {
         })
         .catch((error) => {
           console.log(error)
-          res.status(400).json({ message : "problème lors de la génération des créneaux" })
+          res.status(400).json("Problème lors de la génération des créneaux")
         })
       })
       .catch(error => {
         console.log(error)
-        res.status(400).json({ error })
+        res.status(400).send(error)
       });
     }
   })
   .catch((error) => {
     console.log(error);
-    res.status(400).json({ message :  "problème avec la validité des données" });
+    res.status(400).send("problème avec la validité des données");
   });
 };
 
@@ -154,7 +154,14 @@ exports.update = (req, res, next) => {
 //A faire
 exports.delete = (req, res, next) => {
   console.log(req.params.id)
-  res.status(500).send('Pas encore fait')
+  new Evenement().delete([req.params.id])
+  .then((results) => {
+    console.log(results)
+    res.status(200).json({ message : results})
+  }).catch((error) => {
+      console.log(error);
+      res.status(400).json({ error })
+  })
 };
 
 
@@ -283,10 +290,10 @@ function verifDateEvent(EvtFront){  // Vérifie les données lors de la créatio
       const today = new Date()
       const dateD = new Date(EvtFront.DateDeb);
       const dateL = new Date(EvtFront.DateLim);
-      if(dateD >= today && dateD >= dateL){
+      if(dateD.getDate() >= today.getDate() && dateD.getDate() >= dateL.getDate()){
         dataEvent.dateDebut = EvtFront.DateDeb
       }
-      if(dateL.getDate() >= today.getDate()){
+      if(dateL.getDate() > today.getDate()){
         dataEvent.dateLimiteResa = EvtFront.DateLim
       }
 
@@ -302,6 +309,8 @@ function verifDateEvent(EvtFront){  // Vérifie les données lors de la créatio
         dataEvent.nombreMembreJury = EvtFront.nbJury
       }
 
+      console.log(dataEvent);
+
       new Promo().select([EvtFront.Promo]).then(()=>{ // vérifie l'existance de la promo
         dataEvent.anneePromo = EvtFront.Promo
         if(Object.keys(dataEvent).length == 7 ){ // tout c'est bien passé
@@ -309,7 +318,7 @@ function verifDateEvent(EvtFront){  // Vérifie les données lors de la créatio
         }
         reject(false);
       })
-      .catch((error) => {console.log("error");reject(false);});
+      .catch((error) => {console.log("promo non trouvé");reject(false);});
 
     });
 

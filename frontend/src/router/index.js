@@ -28,6 +28,18 @@ const routes = [
     meta : {requireAuth : true, requireAdmin : true}
   },
   {
+    path: '/PageProfil',
+    name: 'PageProfil',
+    component: () => import(/* webpackChunkName: "about" */ '../views/PageProfil.vue'),
+    //meta : {requireAuth : false, requireAdmin : false}
+  },
+  {
+    path: '/CreationCompte',
+    name: 'CreationCompte',
+    component: () => import(/* webpackChunkName: "about" */ '../views/CreationCompte.vue'),
+    //meta : {requireAuth : false, requireAdmin : false}
+  },
+  {
     path: '/Evenement/:id',
     name: 'EvenementsModifier',
     component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Evenement.vue'),
@@ -39,6 +51,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Planning.vue'),
   },
   {
+    path: '/Evenement/:id/Planning/:infoProf',
+    name: 'planningEventProf',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Planning.vue'),
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting
@@ -46,22 +63,16 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
-  { path: "*", // à mettre à la fin du routeur
-    name: "404",
-   component:  () => import(/* webpackChunkName: "about" */ '../views/Error.vue')
-  },
-
-
   {
     path: '/Groupe/Création',
     name: 'GroupCreation',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Group.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Group_Management.vue'),
     meta : {requireAuth : true, requireAdmin : false}
   },
   {
-    path: '/Groupe/:id',
+    path: '/Groupe/Modification',
     name: 'GroupModification',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Create_Update_Group.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/Group_Management.vue'),
     meta : {requireAuth : true, requireAdmin : false}
   },
   {
@@ -77,6 +88,16 @@ const routes = [
     name: 'GestionEvent',
     component: () => import(/* webpackChunkName: "about" */ '../views/Event_Management.vue'),
     meta : {requireAuth : true, requireAdmin : true}
+  },
+  {
+    path: '/Promo',
+    name: 'promo',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Promo.vue'),
+    meta : {requireAuth : true, requireAdmin : true}
+  },
+  { path: "*", // à mettre à la fin du routeur
+    name: "404",
+   component:  () => import(/* webpackChunkName: "about" */ '../views/Error.vue')
   },
 ]
 

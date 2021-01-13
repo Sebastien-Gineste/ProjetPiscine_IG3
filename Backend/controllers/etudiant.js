@@ -21,6 +21,23 @@ exports.selectAll = (req, res, next) => {
   })
 }
 
+exports.selectAllEtudiant = (req, res, next) => {
+  new Etudiant().selectAllEtudiant(req.params.id).then((results) => {
+    res.status(200).json(results)
+}).catch((error) => {
+    switch(error) {
+      case Error.NO_RESULTS:
+          console.log('Pas de données dans cette table.');
+          res.status(400).json({ error })
+          break;
+      default : 
+          console.log('service indispo.');
+          res.status(400).json({ error })
+          break;
+    }
+})
+}
+
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
       .then(hash => {
@@ -79,7 +96,7 @@ exports.login = (req, res, next) => {
             {admin: user[0].estAdmin,
             userId: user[0].numEtudiant,
             token: auth.createToken(user[0].numEtudiant),
-            group: user[0].idGroupe,
+            group: (user[0].idGroupe ? user[0].idGroupe : -1),
             numEvent: user[0].numEvenement}
           );
         })
@@ -109,7 +126,7 @@ exports.checkAdmin = (req,res,next) => {
           {admin: user[0].estAdmin,
           userId: user[0].numEtudiant,
           token: auth.createToken(user[0].numEtudiant),
-          group: user[0].idGroupe,
+          group: (user[0].idGroupe ? user[0].idGroupe : -1),
           numEvent: user[0].numEvenement}
         );
     })

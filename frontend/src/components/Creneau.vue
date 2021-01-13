@@ -1,6 +1,6 @@
 <template>
-    <div :style="{cursor : cursor  }" @click="goPanel" v-if="show && !creneau.supprimer" :id="'cre_'+creneau.id" class="creneau"  @mouseover="showInfo = true"  @mouseleave="showInfo = false">
-        <table  class="typeCreneau" :style="{'margin-left' : decaleCss+'% !important', width : splitCss+'% !important'}" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
+    <div :style="{cursor : cursor, display : display  }" v-if="!creneau.supprimer" @click="goPanel" :id="'cre_'+creneau.id" class="creneau" @mouseenter="showInfoInit" @mouseleave="showInfoFuncLeave">
+        <table  class="typeCreneau" :style="{'margin-left' : decaleCss+'% !important', width : splitCss+'% !important', 'background-color' : couleur}" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']">
             <tbody>
                 <tr>
                     <td></td>
@@ -9,17 +9,10 @@
         </table>
         <div class="contenueCreneau" :style="{'margin-left' : decaleCss+'% !important', width : splitCss+'% !important'}" :class="['_Com'+creneau.heureDebut, creneau.duree1h ? '_1heure' : '_1heure30']" >
             <div aria-owns="Planning" aria-label="text" class="infoCreneau">
-                <b v-if="split<3">{{creneau.id+" - "}}{{groupe}}</b>
+                <b v-if="split<3">{{creneau.id+" - "}}<b-badge v-if="creneau.groupe" variant="success">{{groupe}}</b-badge><span v-else class="groupCren">{{groupe}}</span></b>
                 <br v-if="split<3">{{profs}}
-                <br>{{salle}}
+                <br><b-badge v-if="!creneau.salle" :variant="creneau.jury[0]? 'light': 'dark'">{{salle}}</b-badge> <span v-else>{{salle}}</span>
             </div>
-        </div>
-        <div class="infoCreneauDiv" v-if="showInfo" :style="{'margin-top' : creneau.heureDebut == '00' ? '0' : (creneau.heureDebut == '25' ? '5' : (creneau.heureDebut == '50' ? '10' : '15')) +'% !important'}">
-            <p> 
-                <b >{{creneau.id+" - "}}{{groupe}}</b>
-                <br >{{profs}}
-                <br>{{salle}}
-            </p>   
         </div>
     </div>
 </template>
@@ -27,12 +20,7 @@
 <script>
 import util from "../service/fonctionUtil"
 export default {
-    data(){
-        return {
-            showInfo:false,
-        }
-    },
-    props: {creneau: Object, Dates : Object, appelPanel : Function, SupprimeCreneau : Function, DuppliquerCreneau : Function,AjoutJury : Function,AjoutSalle : Function,Inscription : Function, Mode : Object},
+    props: {creneau: Object, Dates : Object,GestionCouleur : Object, appelPanel : Function, SupprimeCreneau : Function, DuppliquerCreneau : Function,AjoutJury : Function,AjoutSalle : Function,Inscription : Function,Visualisation :Object, Mode : Object},
     computed : {
         /* Propriété calculé qui return la valeur CSS du cursor en fonction du mode du panel 
         */
@@ -66,7 +54,7 @@ export default {
                 return  (parseFloat(id) * (1/parseFloat(split)) * 100).toFixed(2)
             }
             else{
-                return "0"
+                return "00"
             }
         },
         /* Propriété calculé qui return la valeur CSS de "width" en fonction du tableau de ses frères (même temporalité) 
@@ -90,24 +78,39 @@ export default {
                 return "0"
             }
         },
-         /* Propriété calculé qui permet de retourner le tableau des dates
+        
+        couleur(){
+            if(this.creneau.jury !== null && this.creneau.jury[0] !== null){
+                var id = this.getIdJury()
+                if(id != -1){
+                    return this.GestionCouleur.couleur[id]
+                }
+                else{
+                    return "white"
+                }
+            }
+            else{
+                return "white"
+            }
+        },
+        /* Propriété calculé qui permet de retourner le tableau des dates
         */
         dates(){
             return this.Dates.tab
         },
-        /* Propriété calculé qui permet de savoir si on doit afficher le créneau ou pas (on vérifie si ça date est compris dans le tableau de dates de la semaine.)
+         /* Propriété calculé qui permet de savoir si on doit afficher le créneau ou pas (on vérifie si ça date est compris dans le tableau de dates de la semaine.)
         */
-        show(){
-            return this.dates.indexOf(this.creneau.date) != -1 ? true : false 
+        display(){
+            return this.dates.indexOf(this.creneau.date) != -1 ? 'block' : 'none' 
         },
         /* Propriété calculé qui permet de faire un affichage du groupe du créneau
         */
         groupe(){
             if(this.creneau.groupe !== null){
-                return this.creneau.groupe
+                return 'réservé ('+this.creneau.groupe+')'
             }
             else{
-                return "groupe non défini"
+                return "Groupe non défini"
             }
         },
         /* Propriété calculé qui permet de faire un affichage de la salle du créneau
@@ -117,7 +120,7 @@ export default {
                 return this.creneau.salle
             }
             else{
-                return "salle non défini"
+                return "Salle non définie"
             }
         },
         /* Propriété calculé qui permet de faire un affichage du jury du créneau
@@ -161,6 +164,27 @@ export default {
                 }
             }
             return tabFrere;
+        },
+        showInfoInit(){
+            console.log(this.Visualisation)
+            this.Visualisation.affiche({couleur : {background: 'linear-gradient('+this.couleur+' 5%, white 35%)'}, salle : this.creneau.salle , affichageSalle :this.salle, profs : this.profs , groupe : this.groupe, testGroupe : this.creneau.groupe, id : this.creneau.id})
+        },
+        showInfoFuncLeave(){
+           this.Visualisation.quitte()
+        },
+        getIdJury(){
+          
+            for(let i = 0;i<this.GestionCouleur.jury.length; i++){
+                let test = true
+     
+                for(let j =0;j<this.creneau.jury.length;j++){
+                    if(this.GestionCouleur.jury[i][j] != this.creneau.jury[j].idProf){
+                        test = false;
+                    }
+                }
+                if(test){return i}
+            }
+            return -1
         },
         /* Fonction qui retourne Vrai si le jury est duppliquer 
         */
@@ -246,6 +270,10 @@ export default {
 
 <style lang="scss">
 
+    .groupCren{
+        text-decoration: underline;
+    }
+
     .creneau{
         cursor: pointer;
         width: 100%;
@@ -255,7 +283,7 @@ export default {
         position: absolute;
         left: 0px;
         width: 100%;
-        border: 2px solid black;
+        border-radius: 5px;
     }
     ._1heure{
         height: 125% !important;
@@ -284,8 +312,10 @@ export default {
         font-family: Dialog; 
         font-style: normal; 
         font-weight: normal; 
-        color: rgb(0, 0, 204); 
+        color: black; 
         text-align: center; 
+        border-radius: 5px;
+        border: solid grey 0.5px;
         overflow: hidden; 
         position: absolute; 
         left: 0px; 
@@ -299,25 +329,5 @@ export default {
         line-height: 120%;
         top: 10px;
     }
-    .infoCreneauDiv{
-        max-width: 100% !important;
-        background-color: unset !important;
-        position : absolute;
-        margin-left: 10% !important;
-        z-index: 95;
-
-        p,h3{
-            width: fit-content;
-            font-size: 12px;
-            padding: 12px;
-            border-radius: 7px;
-            border: black solid 1px;
-            background-color: #f2f2f2;
-        }
-        h3{
-            font-weight: bold;
-        }
-    }
-
 
 </style>

@@ -13,7 +13,7 @@ router.post('/', auth.verifyToken,groupeCtrl.save);                             
 router.post('/:id/addEtudiant',auth.verifyToken,groupeCtrl.ajoutEtudiant)                    //Ajout un étudiant dans le groupe identifier avec son "id" (ajout une ligne dans la table composer)
 router.put('/:id', auth.verifyToken, groupeCtrl.update);                                     //Modifier un groupe représenter par son id
 router.delete('/:id', auth.verifyToken, groupeCtrl.delete);                                  //Supprimer un groupe représenter par son id
-router.delete('/:id/removeEtudiant',auth.verifyToken, groupeCtrl.removeEtudiant)             //Supprimer un étudiant dans le groupe identifier avec son "id" (supprime une ligne dans la table composer)
+router.delete('/:id/removeEtudiant/',auth.verifyToken, groupeCtrl.removeEtudiant)             //Supprimer un étudiant dans le groupe identifier avec son "id" (supprime une ligne dans la table composer)
 
 
 module.exports = router
