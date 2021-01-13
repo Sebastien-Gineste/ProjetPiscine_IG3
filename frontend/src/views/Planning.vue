@@ -923,10 +923,6 @@ export default {
                 let i = 0;
                 this.creneaux = [];
                 while(i < infoCreneau.length){
-<<<<<<< HEAD
-                    
-=======
->>>>>>> 504bf91d39edbc477ace2c1a7209967f73d2c128
                     let tabVideProf = []
                     for(let i = 0;i<this.event.nombreMembreJury;i++){
                         tabVideProf.push(null)
@@ -969,10 +965,6 @@ export default {
                     }
 
                     while(i < infoCreneau.length-1 && infoCreneau[i].numCreneau === infoCreneau[i+1].numCreneau){ // tant qu'on a des profs à rentré dans son jury 
-<<<<<<< HEAD
-                       
-=======
->>>>>>> 504bf91d39edbc477ace2c1a7209967f73d2c128
                         i++;
                         var j = 0;
                         while(this.creneaux[this.creneaux.length-1].jury.length > j && this.creneaux[this.creneaux.length-1].jury[j] !== null){ // tant que les cases du tableau ne sont pas vide, on continue

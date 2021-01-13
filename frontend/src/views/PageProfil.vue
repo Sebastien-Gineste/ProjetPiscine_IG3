@@ -21,22 +21,12 @@
       Mail : <b-link v-if="show" href=""> {{ form.mail }} </b-link> <input v-if="!show" v-model="form.mail"> 
       </b-list-group-item>
 
-<<<<<<< HEAD
-      <!-- géré par page modif mot de passes
-      <b-list-group-item>
-      Mot de passe : <b-link v-if="show" href=""> {{ mdpasse }} </b-link>  <span v-if="!show"> {{ mdpasse }} </span>
-      </b-list-group-item>
-      -->
-      <b-list-group-item>
-      Promo : <b-link v-if="show" href=""> {{ promo }} </b-link> <input v-if="!show" v-model="promo">
-=======
       <b-list-group-item class="listItem">
       Mot de passe : <b-link v-if="show" href=""> {{ form.mdpasse }} </b-link> <input v-if="!show" v-model="form.mdpasse"> 
       </b-list-group-item>
 
       <b-list-group-item class="listItem">
       Année de promo : <b-link v-if="show" href=""> {{ form.promo }} </b-link> <input v-if="!show" v-model="form.promo">
->>>>>>> 504bf91d39edbc477ace2c1a7209967f73d2c128
       </b-list-group-item>
 
       <b-button id="BoutonModif" type="button" variant="primary" v-if="show" v-on:click="show = false;showMsg = false">Modifier</b-button>
@@ -56,16 +46,6 @@ const axios = axio.create({
   export default {
       data() {
         return {
-<<<<<<< HEAD
-            numEtudiant: '',
-            nom: '',
-            prenom : '',
-            mail: '',
-            // mdpasse: '',
-            promo : '',
-            show: true,
-            showMsg: false,
-=======
           form: {
             numEtudiant: 'Test1212',
             nom: 'Test',
@@ -76,7 +56,6 @@ const axios = axio.create({
           }, 
           show: true,
           showMsg: false,
->>>>>>> 504bf91d39edbc477ace2c1a7209967f73d2c128
         }
       },
       methods: {
@@ -84,21 +63,12 @@ const axios = axio.create({
         modifProfil() {
           axios.put(`.../api/etudiant/`+this.getId()).then((response) => {
           var etudiantCo = response.data;
-<<<<<<< HEAD
-          this.nom = etudiantCo.nomEtudiant
-          this.prenom = etudiantCo.prenomEtudiant
-          this.numEtudiant = etudiantCo.numEtudiant // ou getId vu que c'est censé etre le meme
-          this.mail = etudiantCo.emailEtudiant
-          //Fait par page changement mot de passe // this.mdpasse = etudiantCo.mdpEtudiant
-          this.promo = etudiantCo.annePromo
-=======
           this.form.nom = etudiantCo.nomEtudiant
           this.form.prenom = etudiantCo.prenomEtudiant
           this.form.numEtudiant = etudiantCo.numEtudiant // ou getID vu que c'est censé etre le meme
           this.form.mail = etudiantCo.emailEtudiant
           this.form.mdpasse = etudiantCo.mdpEtudiant
           this.form.promo = etudiantCo.annePromo
->>>>>>> 504bf91d39edbc477ace2c1a7209967f73d2c128
           })
         },
         pop(){
@@ -116,21 +86,12 @@ const axios = axio.create({
       beforeMount() {
         axios.get("http://localhost:3000/api/etudiant/"+this.getId()).then((response) => {
           var etudiantCo = response.data;
-<<<<<<< HEAD
-          this.nom = etudiantCo.nomEtudiant
-          this.prenom = etudiantCo.prenomEtudiant
-          this.numEtudiant = etudiantCo.numEtudiant // ou getId vu que c'est censé etre le meme
-          this.mail = etudiantCo.emailEtudiant
-          // géré par page de modif de mots de passes this.mdpasse = etudiantCo.mdpEtudiant
-          this.promo = etudiantCo.annePromo
-=======
           this.form.nom = etudiantCo.nomEtudiant
           this.form.prenom = etudiantCo.prenomEtudiant
           this.form.numEtudiant = etudiantCo.numEtudiant // ou getId vu que c'est censé etre le meme
           this.form.mail = etudiantCo.emailEtudiant
           this.form.mdpasse = etudiantCo.mdpEtudiant
           this.form.promo = etudiantCo.annePromo
->>>>>>> 504bf91d39edbc477ace2c1a7209967f73d2c128
           })
           .catch((error) => {
             var msg = error.response;
