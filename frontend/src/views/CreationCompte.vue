@@ -1,14 +1,21 @@
 <template>
   <div id="contenant">
     <b-list-group>
+      <span v-if="showMsg" id="NonRemplis"> Veuillez remplir tout les champs </span>
       <b-list-group-item id="Profil">Création de compte <b-avatar class="mr-3" id="ProfilePic"></b-avatar></b-list-group-item>
-      <b-list-group-item>Nom : <input v-model="nom"> {{ nom }} </b-list-group-item>
-      <b-list-group-item>Prenom : <input v-model="prenom"> {{ prenom }}</b-list-group-item>
-      <b-list-group-item>NumEtudiant : <input v-model="numEtudiant"> {{ numEtudiant }}</b-list-group-item>
-      <b-list-group-item>Mail : <input v-model="mail"> {{ mail }}</b-list-group-item>
-      <b-list-group-item>Mot de passe : <input v-model="mdpasse"> {{ mdpasse }}</b-list-group-item>
-      <b-list-group-item>Promo : <input v-model="promo"> {{ promo }}</b-list-group-item>
-      <b-button id="BoutonCreate" v-on:click="PageAccueil">Créer compte</b-button>
+      <b-list-group-item>Nom : <input v-model="form.nomEtudiant"> </b-list-group-item>
+      <b-list-group-item>Prenom : <input v-model="form.prenomEtudiant"> </b-list-group-item>
+      <b-list-group-item>Numéro Etudiant : <input v-model="form.numEtudiant"> </b-list-group-item>
+      <b-list-group-item>Mail : <input v-model="form.emailEtudiant"> </b-list-group-item>
+      <b-list-group-item>Mot de passe : <input v-model="form.mdpEtudiant"> </b-list-group-item>
+      <b-list-group-item>Promo : 
+      <b-form-select id="Promo" v-model="form.annePromo" required :options="promos">
+      <template #first>
+      <b-form-select-option :value="null" disabled>Sélectionner une promo</b-form-select-option>
+      </template>
+      </b-form-select>
+      </b-list-group-item>
+      <b-button id="BoutonCreate" v-on:click="create">Créer compte</b-button>
     </b-list-group>
     
   </div>
@@ -22,38 +29,60 @@ const axios = axio.create({
   export default {
       data() {
         return {
-            nom: '',
-            prenom : '',
-            numEtudiant: '',
-            mail: '',
-            mdpasse: '',
-            promo : '',
+            form: {
+              nomEtudiant: '',
+              prenomEtudiant : '',
+              numEtudiant: '',
+              emailEtudiant: '',
+              mdpEtudiant: '',
+              annePromo : null,
+            },
+            promos : [],
             show: true,
+            showMsg: false,
             error: false,
             messageError : "",
+            
         }
       },
-      Methods: {
+      methods: {
         create() {
-            axios.post('.../api/etudiant/', {
-                numEtudiant: this.numEtudiant,
-                nomEtudiant: this.nom,
-                prenomEtudiant: this.prenom,
-                emailEtudiant: this.mail,
-                mdpEtudiant: this.mdpasse,
-                annePromo: this.promo,
-                estAdmin: false,
-            })
-            .then((response) => {
-                console.log(response);
-                this.$router.push("/");
-            }, (error) => {
-                console.log(error);
-            });
+            this.showMsg = false
+            if ((this.form.numEtudiant.length > 0) && (this.form.nomEtudiant.length > 0) && (this.form.prenomEtudiant.length > 0) && (this.form.emailEtudiant.length > 0) && (this.form.mdpEtudiant.length > 0) && (this.form.annePromo != null)){
+              axios.post('http://localhost:3000/api/etudiant/', this.form)
+              .then((response) => {
+                  console.log(response);
+                  this.PageAccueil();
+              }, (error) => {
+                  console.log(error);
+              });
+            }
+            else {
+              this.showMsg = true
+            }
         },
         PageAccueil() {
           this.$router.push("/");
         },
+      },
+      beforeMount() {
+        // récupère promo
+        axios.get(`http://localhost:3000/api/Promo/`).then((response) => {
+            this.promos = [];
+            var actuYear = new Date().getFullYear()
+            var month = new Date().getMonth() + 1
+            var text = "IG"
+            var idClass = ((month >= 9)? 6 : 5 ) // permet de déduire les classes avec les années de promo 
+            for (let i = 0; i < response.data.length; i++) {
+                this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : this.readonly})
+            }
+        })
+        .catch((error) => { 
+            console.log(error);
+            this.show = false;
+            this.error = "Erreur : Impossible de récuperer les promos";
+            //this.$router.push("/");
+        });
       }
   }
 </script>
@@ -73,5 +102,8 @@ const axios = axio.create({
     margin-top: 2%;
     margin-bottom: 2%;
     margin-left:70%;
+  }
+  #NonRemplis {
+    color:red;
   }
 </style>

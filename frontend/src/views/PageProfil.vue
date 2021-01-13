@@ -22,10 +22,11 @@
       Mail : <b-link v-if="show" href=""> {{ mail }} </b-link> <input v-if="!show" v-model="mail"> 
       </b-list-group-item>
 
+      <!-- géré par page modif mot de passes
       <b-list-group-item>
-      Mot de passe : <b-link v-if="show" href=""> {{ mdpasse }} </b-link> <input v-if="!show" v-model="mdpasse"> 
+      Mot de passe : <b-link v-if="show" href=""> {{ mdpasse }} </b-link>  <span v-if="!show"> {{ mdpasse }} </span>
       </b-list-group-item>
-
+      -->
       <b-list-group-item>
       Promo : <b-link v-if="show" href=""> {{ promo }} </b-link> <input v-if="!show" v-model="promo">
       </b-list-group-item>
@@ -46,12 +47,12 @@ const axios = axio.create({
   export default {
       data() {
         return {
-            numEtudiant: 'Test1212',
-            nom: 'Test',
-            prenom : 'Test',
-            mail: 'Test@Test.com',
-            mdpasse: 'Test',
-            promo : 'Test2020',
+            numEtudiant: '',
+            nom: '',
+            prenom : '',
+            mail: '',
+            // mdpasse: '',
+            promo : '',
             show: true,
             showMsg: false,
         }
@@ -63,9 +64,9 @@ const axios = axio.create({
           var etudiantCo = response.data;
           this.nom = etudiantCo.nomEtudiant
           this.prenom = etudiantCo.prenomEtudiant
-          this.numEtudiant = etudiantCo.numEtudiant // ou getID vu que c'est censé etre le meme
+          this.numEtudiant = etudiantCo.numEtudiant // ou getId vu que c'est censé etre le meme
           this.mail = etudiantCo.emailEtudiant
-          this.mdpasse = etudiantCo.mdpEtudiant
+          //Fait par page changement mot de passe // this.mdpasse = etudiantCo.mdpEtudiant
           this.promo = etudiantCo.annePromo
           })
         }
@@ -77,7 +78,7 @@ const axios = axio.create({
           this.prenom = etudiantCo.prenomEtudiant
           this.numEtudiant = etudiantCo.numEtudiant // ou getId vu que c'est censé etre le meme
           this.mail = etudiantCo.emailEtudiant
-          this.mdpasse = etudiantCo.mdpEtudiant
+          // géré par page de modif de mots de passes this.mdpasse = etudiantCo.mdpEtudiant
           this.promo = etudiantCo.annePromo
           })
           .catch((error) => {

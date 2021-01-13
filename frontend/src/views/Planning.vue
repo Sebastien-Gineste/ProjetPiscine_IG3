@@ -928,7 +928,7 @@ export default {
                 let i = 0;
                 this.creneaux = [];
                 while(i < infoCreneau.length){
-                    console.log("YES")
+                    
                     let tabVideProf = []
                     for(let i = 0;i<this.event.nombreMembreJury;i++){
                         tabVideProf.push(null)
@@ -971,12 +971,11 @@ export default {
                     }
 
                     while(i < infoCreneau.length-1 && infoCreneau[i].numCreneau === infoCreneau[i+1].numCreneau){ // tant qu'on a des profs à rentré dans son jury 
-                        console.log("salut")
+                       
                         i++;
                         var j = 0;
                         console.log(this.creneaux[this.creneaux.length-1].jury.length)
                         while(this.creneaux[this.creneaux.length-1].jury.length > j && this.creneaux[this.creneaux.length-1].jury[j] !== null){ // tant que les cases du tableau ne sont pas vide, on continue
-                            console.log("OOF")
                             j++
                         } // on a trouvé la case qui est null
                         this.creneaux[this.creneaux.length-1].jury[j] = {idProf : infoCreneau[i].idProf, nomProf : infoCreneau[i].nomProf, prenomProf : infoCreneau[i].prenomProf} // ajout un nouveau prof
