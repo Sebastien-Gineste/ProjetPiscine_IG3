@@ -14,7 +14,7 @@ class Etudiant extends model.Model {
     return new Promise((resolve, reject) => {
       const query = {
           name: 'select-userByEmail', // réquête préparer
-          text: 'SELECT etudiant."numEtudiant", etudiant."mdpEtudiant", etudiant."estAdmin", evenement."numEvenement", composer."idGroupe" FROM etudiant LEFT JOIN composer ON composer."numEtudiant" = etudiant."numEtudiant" JOIN evenement ON evenement."anneePromo" = etudiant."annePromo" WHERE "emailEtudiant" = $1',
+          text: 'SELECT etudiant."numEtudiant", etudiant."mdpEtudiant", etudiant."estAdmin", evenement."numEvenement", composer."idGroupe" FROM etudiant LEFT JOIN composer ON composer."numEtudiant" = etudiant."numEtudiant" LEFT JOIN evenement ON evenement."anneePromo" = etudiant."annePromo" WHERE "emailEtudiant" = $1',
           values: [email],
       };
      
@@ -55,7 +55,23 @@ class Etudiant extends model.Model {
   }
 
   selectAll(){
-    return super.selectAll(this.tableName)
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT promo."annePromo", composer."idGroupe", etudiant."numEtudiant", etudiant."nomEtudiant", etudiant."prenomEtudiant" FROM promo LEFT JOIN  etudiant ON promo."annePromo"=etudiant."annePromo" LEFT JOIN composer ON composer."numEtudiant"=etudiant."numEtudiant" WHERE etudiant."estAdmin" = false OR etudiant."estAdmin" IS NULL ORDER BY promo."annePromo", composer."idGroupe", etudiant."nomEtudiant" ';
+     
+      model.client.query(query, function(error, results) {
+          if (error) {
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+            resolve(results.rows);
+          } else {
+              // pas de résultat
+              reject(model.Error.NO_RESULTS);
+          }
+      });
+    }); 
   }
 
   selectByEmail(email){
@@ -97,7 +113,7 @@ class Etudiant extends model.Model {
     return new Promise((resolve, reject) => {
       const query = {
           name: 'select-userByID', // réquête préparer
-          text: 'SELECT etudiant."numEtudiant", etudiant."mdpEtudiant", etudiant."estAdmin", evenement."numEvenement", composer."idGroupe" FROM etudiant LEFT JOIN composer ON composer."numEtudiant" = etudiant."numEtudiant" JOIN evenement ON evenement."anneePromo" = etudiant."annePromo" WHERE etudiant."numEtudiant" = $1',
+          text: 'SELECT etudiant."numEtudiant", etudiant."estAdmin", evenement."numEvenement", composer."idGroupe" FROM etudiant LEFT JOIN composer ON composer."numEtudiant" = etudiant."numEtudiant" LEFT JOIN evenement ON evenement."anneePromo" = etudiant."annePromo" WHERE etudiant."numEtudiant" = $1',
           values: [id],
       };
      
