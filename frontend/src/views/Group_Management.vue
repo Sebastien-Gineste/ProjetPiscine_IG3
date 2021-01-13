@@ -27,7 +27,7 @@
                     </b-form-group>
                 </b-col>
                 <b-col sm="6">  
-                   <b-form-group id="input-prof-group2" label="Tuteur du projet" label-for="input-profs-group">
+                   <b-form-group id="input-prof-group2" label="Tuteur du projet:" label-for="input-profs-group">
                             <b-form-select id="input-profs-group" v-model="form.idProf" required :options="profs">
                                 <template #first>
                                     <b-form-select-option :value="null" disabled>Sélectionner un prof</b-form-select-option>
@@ -39,7 +39,7 @@
   
              <!-- Liste d'élèves -->
              <div v-if="hasGroup()" id="liste">
-                 <h3>Liste étudiants du groupe </h3>
+                 <h3 id="listEtud">Étudiants du groupe: </h3>
                 <b-row class="my-1">
                      <b-col sm="2"></b-col>
                     <b-col sm="6">
@@ -50,12 +50,12 @@
                         </b-form-select>
                     </b-col>
                     <b-col sm="3">
-                        <b-button id="ajouter" type="button" @click="ajouterEleve()"> Ajouter </b-button>
+                        <b-button id="ajouter" type="button" variant="primary" @click="ajouterEleve()"> Ajouter </b-button>
                     </b-col>
                 </b-row> 
                 <b-list-group>
                    <b-list-group-item v-for="(membre, id) in listMembers" :key="id">
-                       Etudiant n'{{id+1}} :  {{ membre.text }} <b-button v-if="membre.value != getId()"  type="button" @click="deleteEleve(id)"> Supprimer </b-button>
+                       Étudiant n°{{id+1}} :  {{ membre.text }} <b-button v-if="membre.value != getId()"  type="button" @click="deleteEleve(id)"> Supprimer </b-button>
                     </b-list-group-item>
                 </b-list-group>
             </div>
@@ -67,6 +67,9 @@
             <b-button v-if="showModif && hasGroup()" id="modif" @click="updateGroup()" type="button" variant="primary">Valider</b-button>
             <b-button v-if="hasGroup()" id="Supprimer" @click="deleteGroup()" type="button" variant="primary">Supprimer le groupe</b-button>
             <!-- La fonction createGroup() amène sur la page /Modification afin que l'élève puisse ajouter des membres -->
+            <div id="a">
+            <i id="b">Cliquez sur "Modifier le groupe" puis sur "Valider" afin de confirmer vos modifications.</i>
+            </div>
             <div v-if="messageError.length > 0">{{messageError}}</div>
 
         </b-form>
@@ -167,11 +170,11 @@ ajouterEleve(){
         })
         .catch((error)=>{
             console.log(error)
-            alert("étudiant déjà présent !")
+            alert("Étudiant déjà présent dans le groupe !")
         })
     }
     else{
-        alert("étudiant déjà présent !")
+        alert("Étudiant déjà présent dans le groupe !")
     }
 },
 deleteEleve(id){ // pour supprimer un élève
@@ -246,35 +249,43 @@ deleteEleve(id){ // pour supprimer un élève
 
 
 <style lang="scss">
- #Group_panel{
-     margin-top: 5%;
- }
- #formGroup{
-     width: 70%;
-     margin-left: 15%;
-     padding: 20px;
-     background: lightcyan;
- }
- #Annuler{
-     margin-left: 5%;
- }
- #title_group{
-     margin-bottom: 3%;
- }
- #liste{
-     background: lightblue;
+#Group_panel{
+    margin-top: 5%;
+}
+#formGroup{
+    width: 70%;
+    margin-left: 15%;
+    padding: 20px;
+    background: lightcyan;
+}
+#Annuler{
+    margin-left: 5%;
+}
+#title_group{
+    margin-bottom: 3%;
+}
+#liste{
+    background: lightblue;
     padding: 5px;
     margin-bottom : 2%
- }
- .list-group{
-     width : 50%;
-     margin-left : 25%;
-     margin-top:2%;
-     margin-bottom:2%;
- }
- #modif,#annuler{
-     margin-right:2%; 
- }
-
-
+}
+.list-group{
+    width : 50%;
+    margin-left : 25%;
+    margin-top:2%;
+    margin-bottom:2%;
+}
+#modif,#annuler{
+    margin-right:2%; 
+}
+#listEtud {
+    margin-top:2%;
+    margin-bottom: 2%;
+}
+#a{
+    margin-top: 1%;
+}
+#b{
+    font-size: 13px;
+}
 </style>
