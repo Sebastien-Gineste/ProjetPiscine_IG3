@@ -114,7 +114,7 @@ exports.login = (req, res, next) => {
 }
 
 
-
+//verifie si la personne qui se connecte est administrateur
 exports.checkAdmin = (req,res,next) => {
   var id = auth.exportsId(req.headers.cookie)
   if(id){ // il y a un id dans le token du cookie
@@ -138,7 +138,7 @@ exports.checkAdmin = (req,res,next) => {
   }
 }
 
-/* A faire */
+/* Sélectionne tous les étudiants */
 exports.select = (req,res,next) => {
   console.log(req.params.id)
 
@@ -157,12 +157,11 @@ exports.select = (req,res,next) => {
     }
   })
 }
-
+//Envoie un code par mail à valider pour changer son mot de passe
 exports.envoieCodeMail = (req,res,next) =>{
-  console.log(req.body.email);
-  res.status(500).send('Pas encore fait')
-  var code =  Math.random() * (99999 - 10000) + 10000;
-  var transporter = nodemailer.createTransport({
+  new Etudiant().selectByEmail([req.body.email]).then((results)=>{
+    var code =  Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+    var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'projetiscine@gmail.com',
@@ -182,10 +181,13 @@ exports.envoieCodeMail = (req,res,next) =>{
       console.log(error);
     } else {
       console.log('Email sent: ' + info.response);
+      res.status(200).json([code,results[0].numEtudiant]);
     }
   });
+  })
+  .catch(error =>{console.log(error); res.status(400).json({ error })}); 
 }
-
+//selectionne tous les étudiants sans groupe
 exports.selectAllEtudiantSansGroupe = (req,res,next) => {
   new Etudiant().selectAllSansGroupe(req.params.id).then((results) => {
     res.status(200).json(results)
@@ -204,22 +206,21 @@ exports.selectAllEtudiantSansGroupe = (req,res,next) => {
 })
 }
 
-/* A faire */
+/* Modifie le mot de passe pour un étudiant  */
 exports.changeMdp = (req,res,next) => {
   bcrypt.hash(req.body.newPassword, 10)
       .then(hash => {
         const user = { }
           user.mdpEtudiant = hash
-          console.log(user)
-
-          new Etudiant().update([req.params.id],user)
+        console.log(req.params.id)
+        new Etudiant().update([req.params.id],user)
           .then(() => res.status(200).json({ message: 'Utilisateur modifié !' }))
           .catch(error => res.status(400).json({ error }))
       })
-      .catch(error => res.status(500).json({ error })); 
+      .catch(error =>{console.log(error); res.status(500).json({ error })}); 
 }
 
-/* A faire */
+/* Supprime un étudiant après avoir reçu son id */
 exports.delete = (req,res,next) => {
   new Etudiant().delete([req.params.id])
   .then((results) => {

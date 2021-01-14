@@ -1,23 +1,56 @@
 <template>
   <div id="contenant">
-    <b-form>
-    <b-list-group>
-      <span v-if="showMsg" id="NonRemplis"> Veuillez remplir tous les champs </span>
-      <b-list-group-item id="Profil">Création de compte <b-avatar class="mr-3" id="ProfilePic"></b-avatar></b-list-group-item>
-      <b-list-group-item>Nom : <input v-model="form.nomEtudiant"> </b-list-group-item>
-      <b-list-group-item>Prenom : <input v-model="form.prenomEtudiant"> </b-list-group-item>
-      <b-list-group-item>Numéro Etudiant : <input type="number" v-model="form.numEtudiant"> </b-list-group-item>
-      <b-list-group-item>Mail : <input type="email" v-model="form.emailEtudiant"> </b-list-group-item>
-      <b-list-group-item>Mot de passe : <input v-model="form.mdpEtudiant"> </b-list-group-item>
-      <b-list-group-item>Promo : 
-      <b-form-select id="Promo" v-model="form.annePromo" required :options="promos">
-      <template #first>
-      <b-form-select-option :value="null" disabled>Sélectionner une promo</b-form-select-option>
-      </template>
-      </b-form-select>
-      </b-list-group-item>  
-      <b-button id="BoutonCreate" type="submit" v-on:click="create()">Créer compte</b-button>
-    </b-list-group>
+    <b-form @submit="create">
+      <div>
+        <h1>Création de compte <b-avatar class="mr-3" id="ProfilePic"></b-avatar></h1>
+        <span v-if="showMsg" id="NonRemplis"> Veuillez remplir tous les champs </span>
+        <b-row class="my-1">
+              <b-col sm="6">  
+                  <b-form-group id="input-group-1" label="Nom :" label-for="nomEtud">
+                      <b-form-input id="nomEtud"  v-model="form.nomEtudiant" type="text" required placeholder="Votre nom..."
+                      ></b-form-input>
+                  </b-form-group>
+              </b-col>
+              <b-col sm="6">  
+                <b-form-group id="input-group-2" label="Prenom :" label-for="prenomEtud">
+                    <b-form-input id="prenomEtud"  v-model="form.prenomEtudiant" type="text" required placeholder="Votre prénom..."
+                    ></b-form-input>
+                </b-form-group>
+            </b-col>
+        </b-row> 
+         <b-row class="my-1">
+              <b-col sm="6">  
+                  <b-form-group id="input-group-3" label="Numéro Etudiant :" label-for="numeroEtud">
+                      <b-form-input id="numeroEtud"  v-model="form.numEtudiant" type="number" required
+                      ></b-form-input>
+                  </b-form-group>
+              </b-col>
+              <b-col sm="6">  
+                <b-form-group id="input-group-4" label="Promo :" label-for="Promo">
+                     <b-form-select id="Promo" v-model="form.annePromo" required :options="promos">
+                        <template #first>
+                          <b-form-select-option :value="null" disabled>Sélectionner une promo</b-form-select-option>
+                        </template>
+                      </b-form-select>
+                </b-form-group>
+            </b-col>
+        </b-row> 
+        <b-row class="my-1">
+            <b-col sm="6">  
+                  <b-form-group id="input-group-5" label="Mail :" label-for="mailEtud">
+                      <b-form-input id="mailEtud"  v-model="form.emailEtudiant" type="email" required placeholder="nom.prenom@etu.umontpellier.fr"
+                      ></b-form-input>
+                  </b-form-group>
+            </b-col>
+            <b-col sm="6">  
+                <b-form-group id="input-group-6" label="Mot de passe :" label-for="mdrEtud">
+                    <b-form-input id="mdrEtud"  v-model="form.mdpEtudiant" type="password" required
+                    ></b-form-input>
+                </b-form-group>
+            </b-col>
+        </b-row> 
+        <b-button id="BoutonCreate" variant="primary" type="submit">Créer compte</b-button>
+      </div>
     </b-form>
   </div>
 </template>
@@ -48,7 +81,8 @@ const axios = axio.create({
         }
       },
       methods: {
-        create() {
+        create(e) {
+            e.preventDefault()
             this.showMsg = false
             if (this.form.emailEtudiant.includes(this.emailContain)) {
               if ((this.form.numEtudiant.length > 0) && (this.form.nomEtudiant.length > 0) && (this.form.prenomEtudiant.length > 0) && (this.form.emailEtudiant.length > 0) && (this.form.mdpEtudiant.length > 0) && (this.form.annePromo != null)){
@@ -66,8 +100,9 @@ const axios = axio.create({
                 this.showMsg = true
               }
             }
-            else
+            else {
               alert("Veuillez entrer une adresse email valide (nom.prenom@etu.umontpellier.fr)")
+            }
         },
         PageAccueil() {
           this.$router.push("/");
@@ -99,9 +134,13 @@ const axios = axio.create({
 
 <style lang="scss">
   #contenant {
-    margin-left: 33%;
-    margin-right:33%;
+    margin-left: 10%;
+    margin-right:10%;
     margin-top:5%;
+
+    h1{
+      margin-bottom : 3%;
+    }
   }
   #ProfilePic {
     margin-left:3%;
@@ -109,11 +148,7 @@ const axios = axio.create({
   #Profil {
     margin-bottom: 3%;
   }
-  #BoutonCreate {
-    margin-top: 4%;
-    width:30%;
-    margin-left: 35%
-  }
+
   #listCont {
     padding: 20px;
     margin-bottom : 2%
