@@ -32,6 +32,7 @@
             <b-list-group-item>Confirmation Mot de passe : <input v-model="form.cnMdpEtudiant" type="password"> </b-list-group-item>
             </b-list-group>
             <b-button type="submit" variant="primary">Envoyer</b-button>
+            <div v-if="messageError.length > 0">{{messageError}}</div>
         </b-form>
     </b-card>
   </div>
