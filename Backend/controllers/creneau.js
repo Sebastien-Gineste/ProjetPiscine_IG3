@@ -5,11 +5,12 @@ const errorModel = require("../models/model");
 const Participe = require('../models/participe');
 const Groupe = require('../models/groupe_projet');
 
+//Récupère l'id de l'événement où on modifie les créneaux
 function getIdE(req){
     return req.baseUrl.split("/")[3];
 }
 
-//A faire
+//Sélectionne tous les créneaux associés à un évenemnt 
 exports.selectAll = (req, res, next) => {
     var idE = getIdE(req)
     console.log("id Evenement : "+idE);
@@ -54,14 +55,14 @@ exports.selectAllWithProf = (req, res, next) => {
         res.status(400).json( "Erreur params" )
     }
 };
-//A faire
+//Selectionne toutes les salles
 exports.selectAllSalle = (req, res, next) => {
     var idE = getIdE(req)
     console.log("id Evenement : "+idE);
-    res.status(500).send('Pas encore fait')
+    res.status(500).send('')
 };
 
-//A faire
+//Sauvegarde les informations du créneaux dans la BD
 exports.save = (req, res, next) => {
     var idE = getIdE(req)
     console.log("id Evenement : "+idE);
@@ -87,12 +88,7 @@ exports.select = (req, res, next) => {
     res.status(500).send('Pas encore fait')
 };
 
-//A faire (tâche de Cécile)
-/* Doit vérifier s'il n'a pas déjà un groupe sur un autre créneau / Si oui : on supprime le groupe de l'ancien creneau
- * Doit vérifier si la date limite de réservation n'est pas depassée
- * Modifie le groupe du créneau
- * return {otherCreneau : idAncienCreneau (null sinon)}
- */
+//Mise à jour d'un créneau lorsqu'un étudiant clique, on vérifie si l'étudiant a un groupe, si la date limite est dépassée ou si il a déjà un créneau
 exports.updateCreneau = (req,res, next) =>{
     console.log(req.params.idC)
     var idE = getIdE(req)
@@ -129,7 +125,7 @@ exports.updateCreneau = (req,res, next) =>{
     }
 }
 
-
+//Met à jour les informations su créneaux avec celles envoyées par l'utilisateur
 exports.update = (req, res, next) => {
     console.log(req.params.idC)
     var idE = getIdE(req)
@@ -181,7 +177,7 @@ exports.update = (req, res, next) => {
     }
 };
 
-//A faire
+//Supprime un créneau
 exports.delete = (req, res, next) => {
     console.log(req.params.idC)
     var idE = getIdE(req)
