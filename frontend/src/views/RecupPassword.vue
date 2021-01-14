@@ -77,7 +77,6 @@ const axios = axio.create({
         }
         else{
         axios.post(`http://localhost:3000/api/Etudiant/VerifMail`,this.form).then((response) => {
-            console.log(response.data[0])
             this.codeVerif=response.data[0];
             this.numEtudiant=response.data[1];
         })
@@ -98,7 +97,6 @@ const axios = axio.create({
             this.messageError="Le Mot de passe et sa confirmation sont différents";
         }
         else{
-            console.log("modif")
             axios.put(`http://localhost:3000/api/Etudiant/ModifMdp/`+this.numEtudiant,{newPassword:this.form.newPassword}).then(() => {
                 console.log("mot de passe changé")
                 axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
