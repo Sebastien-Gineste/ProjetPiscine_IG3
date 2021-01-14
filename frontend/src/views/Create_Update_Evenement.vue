@@ -237,7 +237,7 @@ export default {
                 return false
             }
             else if(dateLim.getDate() <= new Date().getDate()){
-                this.messageError = "La date limite de réservation ne peut pas être inférieur ou égal à la date du jour"
+                this.messageError = "La date limite de réservation ne peut pas être inférieure ou égale à la date du jour"
                 return false
             }
             else if(this.form.DureeE < 1){

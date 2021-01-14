@@ -449,22 +449,26 @@ export default {
             if(creneau.groupe === null){ // n'a pas déjà un groupe
                 if(this.hasGroup()){ // il a eu groupe
                     var dateActu = new Date();
-                    if(dateActu <= new Date(this.event.dateLimiteResa)){
-                        var modif = {id : creneau.id, idGroupe : this.getGroup() };
+                    if(dateActu.getDate() <= new Date(this.event.dateLimiteResa).getDate()){
+                        var modif = {id : creneau.id, idGroupe : this.getGroup(), dateLimiteResa : this.event.dateLimiteResa };
+                        console.log(modif)
                         axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id+"/Inscription", modif)
                         .then((reponse) => {
                             var data = reponse.data;
                             if(data.otherCreneau){ // On avait déjà réserver un créneau, on le remet à null
                                 var i = 0
+                                console.log(data.otherCreneau)
+                                console.log(this.creneaux)
                                 while(i < this.creneaux.length){
-                                    if(this.creneaux[i].groupe == data.otherCreneau){
+                                    if(this.creneaux[i].id == data.otherCreneau){
                                         this.creneaux[i].groupe = null
                                     }
+                                    i++;
                                 }
                             }
                             creneau.groupe = this.getGroup(); // met le groupe de l'étudiant 
                         })
-                        .catch((error) => console.log(error))          
+                        .catch((error) => console.log(error.response))          
                     }
                     else{
                         util.makeToast(this,"danger","Erreur","Vous ne pouvez plus réserver pour les soutenances: la date de limite est dépassée !") 
@@ -727,7 +731,7 @@ export default {
         nextWeekEvent(){
             var lastDay = new Date(this.dateActu.tab[6]);
             if(lastDay >= new Date(this.date[this.date.length-1])){ // on a dépassé les dates de l'évenement
-                util.makeToast(this,"warning","Attention !","L'événement n'est pas de ce sens ! :)")
+                util.makeToast(this,"warning","Attention !","L'événement n'est pas dans ce sens ! :)")
             }
             else if(lastDay < new Date(this.date[this.date.length-1]) && lastDay > new Date(this.date[0])){ // on passe à la semaine suivante
                 lastDay.setDate(lastDay.getDate() + 1)
@@ -743,7 +747,7 @@ export default {
         prevWeekEvent(){
             var prevDay = new Date(this.dateActu.tab[0]);
             if(prevDay <= new Date(this.date[0])){ // on a dépassé les dates de l'évenement
-                util.makeToast(this,"warning","Attention !","L'événement n'est pas de ce sens ! :)")
+                util.makeToast(this,"warning","Attention !","L'événement n'est pas dans ce sens ! :)")
             }
             else if(prevDay > new Date(this.date[0]) && prevDay < new Date(this.date[this.date.length-1])){ // on passe à la semaine précédente
                 prevDay.setDate(prevDay.getDate() - 1)

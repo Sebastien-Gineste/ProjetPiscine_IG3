@@ -129,7 +129,7 @@ export default {
                     } 
                     console.log(this.listeEtudiants[idTab].tabEtudiants[i])
                     this.listeEtudiants[idTab].tabEtudiants.splice(i,1) // enlève l'étudiant du tableau
-                    util.makeToast(this,"success","Etudiant","L'étudiant a été suprimmée !")
+                    util.makeToast(this,"success","Etudiant","L'étudiant a été suprimmé !")
                 })
                 .catch((error)=>{
                     console.log(error.response)
