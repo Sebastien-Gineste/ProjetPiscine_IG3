@@ -12,7 +12,7 @@
                   </b-form-group>
               </b-col>
               <b-col sm="6">  
-                <b-form-group id="input-group-2" label="Prenom :" label-for="prenomEtud">
+                <b-form-group id="input-group-2" label="Prénom :" label-for="prenomEtud">
                     <b-form-input id="prenomEtud"  v-model="form.prenomEtudiant" type="text" required placeholder="Votre prénom..."
                     ></b-form-input>
                 </b-form-group>
@@ -89,10 +89,10 @@ const axios = axio.create({
                 axios.post('http://localhost:3000/api/Etudiant/', this.form)
                 .then((response) => {
                     console.log(response);
-                    alert("Compte créée avec succès !");
+                    alert("Compte créé avec succès !");
                     this.PageAccueil();
                 }, (error) => {
-                    alert("Erreur, compte non créée.")
+                    alert("Erreur, compte non créé.")
                     console.log(error.response);
                 });
               }
@@ -101,7 +101,7 @@ const axios = axio.create({
               }
             }
             else {
-              alert("Veuillez entrer une adresse email valide (nom.prenom@etu.umontpellier.fr)")
+              alert("Veuillez entrer une adresse email valide (prenom.nom@etu.umontpellier.fr)")
             }
         },
         PageAccueil() {

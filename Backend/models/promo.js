@@ -18,6 +18,26 @@ class Promo extends model.Model {
     return super.selectAll(this.tableName)
   }
 
+  selectAllVerifEvent(){
+    return new Promise((resolve, reject) => {
+      const query = 'select promo."annePromo", "numEvenement" from promo left join evenement on evenement."anneePromo" = promo."annePromo"';
+     
+      model.client.query(query, function(error, results) {
+          if (error) {
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+            resolve(results.rows);
+          } else {
+              // pas de résultat
+              reject(model.Error.NO_RESULTS);
+          }
+      });
+    }); 
+  }
+
   /*  
    * id : [val Clé primaire]
   */

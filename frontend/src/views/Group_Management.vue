@@ -45,7 +45,7 @@
                     <b-col sm="6">
                         <b-form-select id="input-etud-group" v-model="currentEtud" required :options="etudiants">
                             <template #first>
-                                <b-form-select-option :value="null" disabled>Sélectionner un étudiant</b-form-select-option>
+                                <b-form-select-option :value="null" disabled>Sélectionner un étudiant sans groupe</b-form-select-option>
                             </template>
                         </b-form-select>
                     </b-col>
@@ -55,19 +55,19 @@
                 </b-row> 
                 <b-list-group>
                    <b-list-group-item v-for="(membre, id) in listMembers" :key="id">
-                       Étudiant n°{{id+1}} :  {{ membre.text }} <b-button v-if="membre.value != getId()"  type="button" @click="deleteEleve(id)"> Supprimer </b-button>
+                       Étudiant n°{{id+1}} :  {{ membre.text }} <b-button variant="danger" v-if="membre.value != getId()" id="but" type="button" @click="deleteEleve(id)"> Supprimer </b-button>
                     </b-list-group-item>
                 </b-list-group>
             </div>
             
 
             <b-button v-if="!hasGroup()" id="submit" type="submit" @submit="createGroup()" variant="primary">Créer</b-button>
-            <b-button v-if="hasGroup() && !showModif" id="modif" @click="showModif = !showModif" type="button" variant="primary">Modifier le groupe</b-button>
-            <b-button v-if="hasGroup() && showModif" id="annuler" @click="showModif = !showModif" type="button" variant="primary">Annuler</b-button>
-            <b-button v-if="showModif && hasGroup()" id="modif" @click="updateGroup()" type="button" variant="primary">Valider</b-button>
-            <b-button v-if="hasGroup()" id="Supprimer" @click="deleteGroup()" type="button" variant="primary">Supprimer le groupe</b-button>
+            <b-button v-if="hasGroup() && !showModif" id="modif" @click="showModif = !showModif" type="button" variant="warning">Modifier le groupe</b-button>
+            <b-button v-if="hasGroup() && showModif" id="annuler" @click="showModif = !showModif" type="button" variant="warning">Annuler</b-button>
+            <b-button v-if="showModif && hasGroup()" id="modif" @click="updateGroup()" type="button" variant="success">Valider</b-button>
+            <b-button v-if="hasGroup()" id="Supprimer" @click="deleteGroup()" type="button" variant="danger">Supprimer le groupe</b-button>
             <!-- La fonction createGroup() amène sur la page /Modification afin que l'élève puisse ajouter des membres -->
-            <div id="a">
+            <div id="a" v-if="hasGroup()">
             <i id="b">Cliquez sur "Modifier le groupe" puis sur "Valider" afin de confirmer vos modifications.</i>
             </div>
             <div v-if="messageError.length > 0">{{messageError}}</div>
@@ -115,7 +115,6 @@ isCreate(){
 methods:{
 onSubmit(event) {
     event.preventDefault()
-    alert("onSubmit")
     console.log(this.form)
     axios.post(`http://localhost:3000/api/Groupe`,this.form).then((response) => {
         this.$store.dispatch('ajoutGroup',response.data);
@@ -194,7 +193,7 @@ deleteEleve(id){ // pour supprimer un élève
     beforeMount(){ // récupère les infos d'un groupe si on est sur la page création groupe 
         if(this.hasGroup()){
             axios.get(`http://localhost:3000/api/Groupe/`+this.getGroup()).then((response) => {
-                console.log(response)
+                console.log(response.data)
 
                 this.form.idGroupe = response.data.idGroupe
                 this.form.nomTuteur = response.data.nomTuteurEntreprise
@@ -220,7 +219,9 @@ deleteEleve(id){ // pour supprimer un élève
             console.log(data.data)
             if(data.data){
                 for(let i=0;i<data.data.length;i++){
-                    this.etudiants.push({value : data.data[i].numEtudiant , text : data.data[i].nomEtudiant+" "+data.data[i].prenomEtudiant})
+                    if( data.data[i].idGroupe === null){
+                        this.etudiants.push({value : data.data[i].numEtudiant , text : data.data[i].nomEtudiant+" "+data.data[i].prenomEtudiant,disabled :  data.data[i].idGroupe !== null  ,  idGroupe : data.data[i].idGroupe})
+                    }
                 }
             }
         })
@@ -251,6 +252,12 @@ deleteEleve(id){ // pour supprimer un élève
 <style lang="scss">
 #Group_panel{
     margin-top: 5%;
+    .list-group{
+        width : 50%;
+        margin-left : 25%;
+        margin-top:2%;
+        margin-bottom:2%;
+    }
 }
 #formGroup{
     width: 70%;
@@ -269,12 +276,7 @@ deleteEleve(id){ // pour supprimer un élève
     padding: 5px;
     margin-bottom : 2%
 }
-.list-group{
-    width : 50%;
-    margin-left : 25%;
-    margin-top:2%;
-    margin-bottom:2%;
-}
+
 #modif,#annuler{
     margin-right:2%; 
 }
@@ -287,5 +289,8 @@ deleteEleve(id){ // pour supprimer un élève
 }
 #b{
     font-size: 13px;
+}
+#but{
+    margin-left: 4%
 }
 </style>

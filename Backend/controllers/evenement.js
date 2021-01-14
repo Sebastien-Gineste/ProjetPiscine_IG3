@@ -5,7 +5,7 @@ const Creneau = require('../models/creneau');
 
 //A faire
 exports.selectAll = (req, res, next) => {
-  new Evenement().selectAll().then((results) => {
+  new Evenement().selectAllWithCount().then((results) => {
     res.status(200).json(results)
 }).catch((error) => {
     switch(error) {

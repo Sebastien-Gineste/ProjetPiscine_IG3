@@ -105,13 +105,13 @@ exports.login = (req, res, next) => {
     .catch(error =>{
       switch(error) {
         case errorModel.Error.BAD_PASSWORD:
-          res.status(403).send("mauvais mots de passe")
+          res.status(403).send("Mauvais mot de passe")
           break;
         case errorModel.Error.NO_RESULTS:
           res.status(403).send("Email non trouvé")
           break;
         default:
-          res.status(500).send('Problème de connection')
+          res.status(500).send('Problème de connexion')
           break;
       }      
     });
