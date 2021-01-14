@@ -3,6 +3,7 @@ const Creneaux = require('../models/creneau');
 const participe = require('../models/participe')
 const errorModel = require("../models/model");
 const Participe = require('../models/participe');
+const Groupe = require('../models/groupe_projet');
 
 function getIdE(req){
     return req.baseUrl.split("/")[3];
@@ -95,23 +96,37 @@ exports.select = (req, res, next) => {
 exports.updateCreneau = (req,res, next) =>{
     console.log(req.params.idC)
     var idE = getIdE(req)
-    if (req.params.idGroupe !== undefined){                 //si le groupe a déjà un créneau
-        new Creneaux().update([req.params.idC,{idGroupe:null}])
-        .then((creneau) => res.status(200).json({ message: 'Groupe supprimé de son ancien créneau  !', data : creneau }))
-        .catch(error => res.status(400).json({ error }));
+    var dateActu = new Date();
+    if(req.body.idGroupe === null || req.body.idGroupe == -1) { // pas d'idGroupe
+        res.status(400).send("Vous n'avez pas de groupe");
+    }
+    else if (dateActu.getDate() > new Date(req.body.dateLimiteResa).getDate()){  //si la date limite est dépassée   
+        res.status(400).send("La date limite est dépassée")
     }
     else{
-        var dateActu = new Date();
-        if (dateActu > new Date(req.body.dateLimiteResa)){  //si la date limite est dépassée   
-            req.status(400).json({message: "La date limite est dépassée"})
-        }
-        else{
-        new Creneaux().update([req.params.idC,{idGroupe:req.body.idGroupe}])      //si toutes les conditions sont respectées, on enregistre le groupe
-        .then((creneau) => res.status(200).json({ message: 'Groupe enregistré sur le créneau !', data : creneau }))
-        .catch(error => res.status(400).json({ error }));
-        }
+        new Groupe().selectCreneauOfGroupe(req.body.idGroupe).then((response)=>{
+            console.log(response)
+            if(response === true){ // on peut ajouter le groupe
+                new Creneaux().update([req.params.idC],{idGroupe:req.body.idGroupe})      //si toutes les conditions sont respectées, on enregistre le groupe
+                .then(() => res.status(200).send("enregistrer ! "))
+                .catch(error => { console.log("ok"); console.log(error); res.status(400).json({ error })});
+            }
+            else{ // on doit supprimer le groupe
+                new Creneaux().update([response[0].numCreneau],{idGroupe:null})
+                .then(() => {
+                    new Creneaux().update([req.params.idC],{idGroupe:req.body.idGroupe})      //si toutes les conditions sont respectées, on enregistre le groupe
+                    .then(() => res.status(200).json({ otherCreneau: response[0].numCreneau}))
+                    .catch(error => { console.log(error); res.status(400).json({ error })});                    
+                })
+                .catch(error => res.status(400).json({ error }));
+            }
+        })
+        .catch((error)=>{
+            console.log(error);
+            res.status(400).send("Vous avez trop de groupe");
+        })
 
-    }  
+    }
 }
 
 

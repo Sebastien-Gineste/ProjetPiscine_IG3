@@ -67,6 +67,7 @@ exports.select = (req, res, next) => {
       groupe.listMembers = listMembers
       res.status(200).json(groupe)
     }).catch((error) => {
+      console.log(error)
       switch(error) {
         case Error.NO_RESULTS:
             console.log('Pas de données dans cette table.');
