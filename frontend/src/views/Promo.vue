@@ -16,7 +16,7 @@
                      
                     </b-col>
                       
-                    <b-button id="ajouter" type="button" @click="ajouterPromo()"> Ajouter la promo </b-button>
+                    <b-button variant="primary" id="ajouter" type="button" @click="ajouterPromo()"> Ajouter la promo </b-button>
                     <b-col sm="4">  
                         <b-form-select id="input-promo" v-model="currentPromoRemove" required :options="listPromo">
                                 <template #first>
@@ -24,7 +24,7 @@
                                 </template>
                         </b-form-select>
                     </b-col>  
-                     <b-button id="supprimerPromo" type="button" @click="supprimerPromo()"> Supprimer la promo </b-button>
+                     <b-button variant="danger" id="supprimerPromo" type="button" @click="supprimerPromo()"> Supprimer la promo </b-button>
                 </b-row>  
                 <b-card>
                     <b-tabs content-class="mt-3" fill>
@@ -64,7 +64,7 @@
                                     <b-table v-if="promo.tabEtudiants.length > 0" :busy="isBusy" striped hover :items="promo.tabEtudiants" :fields="fields"  :current-page="promo.currentPage" :per-page="promo.perPage">
                                     <!-- A custom formatted column -->
                                     <template #cell(delete)="data">
-                                        <b-button type="button" @click="deleteEleve(data.item.numEtudiant, id)"> Supprimer </b-button>
+                                        <b-button type="button" variant="danger" @click="deleteEleve(data.item.numEtudiant, id)"> Supprimer </b-button>
                                     </template>
 
                                     <template #table-busy>

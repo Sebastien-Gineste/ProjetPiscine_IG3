@@ -60,8 +60,8 @@
                         </b-col>
                     </b-row> 
 
-                    <b-button id="enregister" @click="enregistrerCreneau()" type="button" variant="primary">Enregistrer</b-button>
-                    <b-button id="supprimer" @click="supprimerCreneau()" type="button" variant="primary">Supprimer</b-button>
+                    <b-button id="enregister" @click="enregistrerCreneau()" type="button" variant="warning">Enregistrer</b-button>
+                    <b-button id="supprimer" @click="supprimerCreneau()" type="button" variant="danger">Supprimer</b-button>
             </div>
         </transition>
         <b-container id="contain" class="bv-example-row">
