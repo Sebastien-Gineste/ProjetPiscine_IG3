@@ -110,7 +110,7 @@ exports.update = (req, res, next) => {
             supprimeCreneaux(dateDeb, durreE ,durreC,dataBD.numEvenement,heureMin,heureMax,tabAncienceDate,toutRegenerer).then((result)=> {
               console.log(result)
               new Creneau().generate(result).then((results) => { // on génère les nouveaux créneaux
-                res.status(200).json({ message: 'Evenement modifier ! Avec sa petite génération :) ' })
+                res.status(200).json({ message: 'Evenement modifié ! Avec sa petite génération :) ' })
               })
               .catch((error) => {
                 console.log(error)
@@ -123,7 +123,7 @@ exports.update = (req, res, next) => {
             })
           }
           else{
-            res.status(200).json({ message: 'Evenement modifier !' })
+            res.status(200).json({ message: 'Evenement modifié !' })
           }
         
         })
@@ -318,7 +318,7 @@ function verifDateEvent(EvtFront){  // Vérifie les données lors de la créatio
         }
         reject(false);
       })
-      .catch((error) => {console.log("promo non trouvé");reject(false);});
+      .catch((error) => {console.log("promo non trouvée");reject(false);});
 
     });
 
