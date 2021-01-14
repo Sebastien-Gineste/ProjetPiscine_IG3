@@ -14,8 +14,8 @@ router.post('/Connexion', etudiantCtrl.login);                                  
 router.post('/Deconnexion', auth.logout);                                       // Déconnexion d'un étudiant
 router.post('/VerifMail', etudiantCtrl.envoieCodeMail)                          // Prend un email et renvoi un code pour modifier le mot de passe après 
 router.post('/VerifCo',etudiantCtrl.checkAdmin);                                // Renvoie true s'il est admin 
+router.put('/ModifMdp/:id', etudiantCtrl.changeMdp)                              // Modification du mots de passe du compte identifier avec son "id"
 router.put('/:id',auth.verifyToken, etudiantCtrl.update)                        // Modification d'un compte étudiant identifier avec son "id"
-router.put('/:id/ModifMdp',auth.verifyToken,etudiantCtrl.changeMdp)             // Modification du mots de passe du compte identifier avec son "id"
 router.delete('/:id',auth.verifyToken,etudiantCtrl.delete)                      // Supprimer un compte étudiant identifier avec son "id"
 
 

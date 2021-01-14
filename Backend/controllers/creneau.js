@@ -108,7 +108,7 @@ exports.updateCreneau = (req,res, next) =>{
             console.log(response)
             if(response === true){ // on peut ajouter le groupe
                 new Creneaux().update([req.params.idC],{idGroupe:req.body.idGroupe})      //si toutes les conditions sont respectées, on enregistre le groupe
-                .then(() => res.status(200).send("enregistrer ! "))
+                .then(() => res.status(200).send("enregistré ! "))
                 .catch(error => { console.log("ok"); console.log(error); res.status(400).json({ error })});
             }
             else{ // on doit supprimer le groupe

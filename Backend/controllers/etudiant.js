@@ -160,9 +160,13 @@ exports.select = (req,res,next) => {
 
 exports.envoieCodeMail = (req,res,next) =>{
   console.log(req.body.email);
-  res.status(500).send('Pas encore fait')
-  var code =  Math.random() * (99999 - 10000) + 10000;
-  var transporter = nodemailer.createTransport({
+  new Etudiant().selectByEmail([req.body.email]).then((results)=>{
+    if (results==undefined){
+      res.status(400).send("Cet email n'est pas associé à un compte");
+    }
+    else{
+    var code =  Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
+    var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'projetiscine@gmail.com',
@@ -182,8 +186,11 @@ exports.envoieCodeMail = (req,res,next) =>{
       console.log(error);
     } else {
       console.log('Email sent: ' + info.response);
+      res.status(200).json([code,results[0].numEtudiant]);
     }
   });
+    }
+  })
 }
 
 exports.selectAllEtudiantSansGroupe = (req,res,next) => {
@@ -206,17 +213,18 @@ exports.selectAllEtudiantSansGroupe = (req,res,next) => {
 
 /* A faire */
 exports.changeMdp = (req,res,next) => {
+  console.log(req.body.newPassword)
   bcrypt.hash(req.body.newPassword, 10)
       .then(hash => {
         const user = { }
           user.mdpEtudiant = hash
           console.log(user)
-
-          new Etudiant().update([req.params.id],user)
+        console.log(req.params.id)
+        new Etudiant().update([req.params.id],user)
           .then(() => res.status(200).json({ message: 'Utilisateur modifié !' }))
           .catch(error => res.status(400).json({ error }))
       })
-      .catch(error => res.status(500).json({ error })); 
+      .catch(error =>{console.log(error); res.status(500).json({ error })}); 
 }
 
 /* A faire */
