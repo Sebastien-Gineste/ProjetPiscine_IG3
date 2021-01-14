@@ -73,8 +73,8 @@ exports.update =(req,res,next) => {
         if(req.body.promo){
           user.annePromo = req.body.promo
         }
-        if(req.body.email){
-          user.emailEtudiant = req.body.email
+        if(req.body.mail){
+          user.emailEtudiant = req.body.mail
         }
 
         if(Object.keys(user).length == 0){ // pas de modif 

@@ -15,9 +15,8 @@
       <b-form-input  v-else id="prenomEtud"  v-model="form.prenom" type="text" required placeholder="Votre prenom..." ></b-form-input>
       </b-list-group-item>
 
-      <b-list-group-item class="listItem">
-      Numéro étudiant : <b-link v-if="show" href=""> {{ form.numEtudiant }} </b-link> 
-      <b-form-input  v-else id="numEtud"  v-model="form.numEtudiant" type="number" required ></b-form-input>    
+      <b-list-group-item  v-if="show" class="listItem">
+      Numéro étudiant : <b-link href=""> {{ getId() }} </b-link> 
       </b-list-group-item>
 
       <b-list-group-item class="listItem">
@@ -66,7 +65,6 @@ const axios = axio.create({
       data() {
         return {
           form: {
-            numEtudiant: 'Test1212',
             nom: 'Test',
             prenom : 'Test',
             mail: 'Test@Test.com',
@@ -79,17 +77,6 @@ const axios = axio.create({
       },
       methods: {
         ...mapGetters(['getId','isAdmin']),
-        modifProfil() {
-          axios.put(`.../api/etudiant/`+this.getId()).then((response) => {
-          var etudiantCo = response.data;
-          this.form.nom = etudiantCo.nomEtudiant
-          this.form.prenom = etudiantCo.prenomEtudiant
-          this.form.numEtudiant = etudiantCo.numEtudiant // ou getID vu que c'est censé etre le meme
-          this.form.mail = etudiantCo.emailEtudiant
-          // this.form.mdpasse = etudiantCo.mdpEtudiant
-          this.form.promo = etudiantCo.annePromo
-          })
-        },
         pop(){
           alert("Profil modifié avec succès !")
         },
@@ -97,7 +84,7 @@ const axios = axio.create({
           alert("Profil supprimé avec succès !")
         },
         updateProfil(){
-          axios.put(`http://localhost:3000/api/Etudiant/`+this.form.numEtudiant,this.form).then((response) => {
+          axios.put(`http://localhost:3000/api/Etudiant/`+this.getId(),this.form).then((response) => {
           console.log(response.data)
           this.pop();
           })
@@ -106,7 +93,7 @@ const axios = axio.create({
           });
         },
         supprCompte(){
-          axios.delete(`http://localhost:3000/api/Etudiant/`+this.form.numEtudiant).then((response) => {
+          axios.delete(`http://localhost:3000/api/Etudiant/`+this.getId()).then((response) => {
           console.log(response.data)
           axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
           this.$store.dispatch("deconnexion")
@@ -129,9 +116,7 @@ const axios = axio.create({
           var etudiantCo = response.data;
           this.form.nom = etudiantCo.nomEtudiant
           this.form.prenom = etudiantCo.prenomEtudiant
-          this.form.numEtudiant = etudiantCo.numEtudiant // ou getId vu que c'est censé etre le meme
           this.form.mail = etudiantCo.emailEtudiant
-          // this.form.mdpasse = etudiantCo.mdpEtudiant
           this.form.promo = etudiantCo.annePromo
           })
           .catch((error) => {

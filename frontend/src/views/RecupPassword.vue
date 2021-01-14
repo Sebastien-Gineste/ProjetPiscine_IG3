@@ -58,12 +58,12 @@ const axios = axio.create({
         showModif: this.isUser(),
         messageError : "",
         codeVerif: -1,
-        numEtudiant: '',
+        numEtudiant: this.getId(),
       }
     },
     methods: {
       //Envoie un code par mail à l'utilisateur et si celui-ci le donne correctement envoie sur la création du nouveau mot de passe
-      ...mapGetters(['isUser']),
+      ...mapGetters(['isUser',"getId"]),
       onSubmit(evt) {
         evt.preventDefault()
         if (this.codeVerif>0){
