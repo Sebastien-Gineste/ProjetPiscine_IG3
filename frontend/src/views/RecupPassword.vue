@@ -61,6 +61,7 @@ const axios = axio.create({
       }
     },
     methods: {
+      //Envoie un code par mail à l'utilisateur et si celui-ci le donne correctement envoie sur la création du nouveau mot de passe
       ...mapGetters(['isUser']),
       onSubmit(evt) {
         evt.preventDefault()
@@ -93,7 +94,7 @@ const axios = axio.create({
         }
         
       },
-    
+    //change le mot de passe si le nouveau et sa confirmation envoyés par l'utilisateur sont identiques
     changeMdp(c){
     c.preventDefault()
         if (this.form.newPassword!=this.form.cnMdpEtudiant){

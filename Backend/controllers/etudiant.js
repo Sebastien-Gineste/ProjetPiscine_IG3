@@ -3,7 +3,7 @@ const Etudiant = require("../models/etudiant");
 const errorModel = require("../models/model");
 const bcrypt = require("bcrypt");
 const nodemailer = require('nodemailer');
-
+ //Sélectionne tous les étudiants enregistrés sur le site
 exports.selectAll = (req, res, next) => {
   new Etudiant().selectAll().then((results) => {
       res.status(200).json(results)
@@ -21,6 +21,7 @@ exports.selectAll = (req, res, next) => {
   })
 }
 
+//Selectionne tous les étudiants d'une même promo
 exports.selectAllEtudiant = (req, res, next) => {
   new Etudiant().selectAllEtudiant(req.params.id).then((results) => {
     res.status(200).json(results)
@@ -38,6 +39,7 @@ exports.selectAllEtudiant = (req, res, next) => {
 })
 }
 
+//Créer un nouvel utilisateur
 exports.signup = (req, res, next) => {
     console.log("ok")
     bcrypt.hash(req.body.mdpEtudiant, 10)
@@ -57,6 +59,7 @@ exports.signup = (req, res, next) => {
         res.status(500).json({ error })});
 };
 
+//Met à jour le profil de l'étudiant avec les nouvelles infos envoyées par l'utilisateur
 exports.update =(req,res,next) => {
 
         const user = { }
@@ -85,6 +88,7 @@ exports.update =(req,res,next) => {
         }
 };
 
+//Vérifie les informations de connexion et connecte l'étudiant
 exports.login = (req, res, next) => {
   console.log(req.body);
   new Etudiant().checkConnexion(req.body.email, req.body.password)
@@ -138,7 +142,7 @@ exports.checkAdmin = (req,res,next) => {
   }
 }
 
-/* Sélectionne tous les étudiants */
+/* Sélectionne étudiant */
 exports.select = (req,res,next) => {
   console.log(req.params.id)
 

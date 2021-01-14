@@ -4,7 +4,7 @@ const Etudiant = require('../models/etudiant');
 const errorModel = require("../models/model");
 const auth = require("../middleware/auth")
 
-//A tester
+//Selectionne tous les groupes
 exports.selectAll = (req, res, next) => {
   new Groupe().selectAll().then((results) => {
     res.status(200).json(results)
@@ -22,7 +22,7 @@ exports.selectAll = (req, res, next) => {
 })
 };
 
-//A revoir id et nombre membre groupe
+//Enregistre un nouveau groupe dans la BD
 exports.save = (req, res, next) => {
   console.log(req.body)
   const groupe = {
@@ -56,7 +56,7 @@ exports.save = (req, res, next) => {
   });
 };
 
-//A faire
+//Selectionne un groupe
 exports.select = (req, res, next) => {
   console.log(req.params.id)
 
@@ -93,7 +93,7 @@ exports.select = (req, res, next) => {
   })
 };
 
-//A tester
+//Met à jour les informations d'un groupe envoyé par l'utilisateur
 exports.update = (req, res, next) => {
   const g = { }
 
@@ -121,7 +121,7 @@ exports.update = (req, res, next) => {
         }
 };
 
-//A tester
+//Permet de supprimer un groupe
 exports.delete = (req, res, next) => {
   console.log(req.params.id)
   new Groupe().delete([req.params.id])
@@ -134,7 +134,7 @@ exports.delete = (req, res, next) => {
 })
 };
 
-//A tester
+//Selectionne tous les étudiants
 exports.selectAllEtudiant = (req, res, next) => {
   console.log(req.params.id)
   new Etudiant().selectAll().then((results) => {
@@ -153,7 +153,7 @@ exports.selectAllEtudiant = (req, res, next) => {
 })
 };
 
-//A faire
+//Ajoute un étudiant à un groupe
 exports.ajoutEtudiant = (req, res, next) => {
   console.log(req.params.id)
   new Etudiant().selectEtudiant(req.body.idEtudiant).then((etu)=> {
@@ -180,7 +180,7 @@ exports.ajoutEtudiant = (req, res, next) => {
 };
 
 
-//A faire
+//Supprime un étudiant d'un groupe donné
 exports.removeEtudiant = (req, res, next) => {
   console.log(req.params.id)
   console.log(req.body)
