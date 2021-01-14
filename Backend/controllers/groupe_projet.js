@@ -47,7 +47,7 @@ exports.save = (req, res, next) => {
     .catch((error)=>{
       console.log(error)
       new Groupe().delete([groupe.idGroupe]) // on supprime le groupe solo
-      res.status(400).send("composer non créér")
+      res.status(400).send("composer non créé")
     })
   })
   .catch(error => {
@@ -67,6 +67,7 @@ exports.select = (req, res, next) => {
       groupe.listMembers = listMembers
       res.status(200).json(groupe)
     }).catch((error) => {
+      console.log(error)
       switch(error) {
         case Error.NO_RESULTS:
             console.log('Pas de données dans cette table.');
@@ -155,17 +156,26 @@ exports.selectAllEtudiant = (req, res, next) => {
 //A faire
 exports.ajoutEtudiant = (req, res, next) => {
   console.log(req.params.id)
-  const composer = {
-    idGroupe :req.params.id,
-    numEtudiant : req.body.idEtudiant 
-  }
-  new Composer().save(composer).then((compose)=>{
-    console.log(compose)
-    res.status(201).send("ajouter !")
-  })
-  .catch((error)=>{
-    console.log(error)
-    res.status(400).send("élève non ajouter")
+  new Etudiant().selectEtudiant(req.body.idEtudiant).then((etu)=> {
+    console.log(etu)
+    if (etu.idGroupe){
+      console.log("Dans un groupe");
+      res.status(400).send("Déjà dans un groupe")
+    }
+    else{
+      const composer = {
+        idGroupe :req.params.id,
+        numEtudiant : req.body.idEtudiant 
+      }
+      new Composer().save(composer).then((compose)=>{
+        console.log(compose)
+        res.status(201).send("ajouté !")
+      })
+      .catch((error)=>{
+        console.log(error)
+        res.status(400).send("élève non ajouté")
+      })
+    }
   })
 };
 

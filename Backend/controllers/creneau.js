@@ -3,6 +3,7 @@ const Creneaux = require('../models/creneau');
 const participe = require('../models/participe')
 const errorModel = require("../models/model");
 const Participe = require('../models/participe');
+const Groupe = require('../models/groupe_projet');
 
 function getIdE(req){
     return req.baseUrl.split("/")[3];
@@ -87,17 +88,47 @@ exports.select = (req, res, next) => {
 };
 
 //A faire (tâche de Cécile)
-/* Doit vérifier s'il n'a pas déjà un groupe sur un autre créneau / Si oui : le supprime
- * Doit vérifier si la date limite de réservation n'est pas terminer
+/* Doit vérifier s'il n'a pas déjà un groupe sur un autre créneau / Si oui : on supprime le groupe de l'ancien creneau
+ * Doit vérifier si la date limite de réservation n'est pas depassée
  * Modifie le groupe du créneau
  * return {otherCreneau : idAncienCreneau (null sinon)}
  */
 exports.updateCreneau = (req,res, next) =>{
     console.log(req.params.idC)
     var idE = getIdE(req)
-    console.log("id Evenement : "+idE);
-    res.status(500).send('Pas encore fait')
+    var dateActu = new Date();
+    if(req.body.idGroupe === null || req.body.idGroupe == -1) { // pas d'idGroupe
+        res.status(400).send("Vous n'avez pas de groupe");
+    }
+    else if (dateActu.getDate() > new Date(req.body.dateLimiteResa).getDate()){  //si la date limite est dépassée   
+        res.status(400).send("La date limite est dépassée")
+    }
+    else{
+        new Groupe().selectCreneauOfGroupe(req.body.idGroupe).then((response)=>{
+            console.log(response)
+            if(response === true){ // on peut ajouter le groupe
+                new Creneaux().update([req.params.idC],{idGroupe:req.body.idGroupe})      //si toutes les conditions sont respectées, on enregistre le groupe
+                .then(() => res.status(200).send("enregistrer ! "))
+                .catch(error => { console.log("ok"); console.log(error); res.status(400).json({ error })});
+            }
+            else{ // on doit supprimer le groupe
+                new Creneaux().update([response[0].numCreneau],{idGroupe:null})
+                .then(() => {
+                    new Creneaux().update([req.params.idC],{idGroupe:req.body.idGroupe})      //si toutes les conditions sont respectées, on enregistre le groupe
+                    .then(() => res.status(200).json({ otherCreneau: response[0].numCreneau}))
+                    .catch(error => { console.log(error); res.status(400).json({ error })});                    
+                })
+                .catch(error => res.status(400).json({ error }));
+            }
+        })
+        .catch((error)=>{
+            console.log(error);
+            res.status(400).send("Vous avez trop de groupe");
+        })
+
+    }
 }
+
 
 exports.update = (req, res, next) => {
     console.log(req.params.idC)
@@ -106,12 +137,12 @@ exports.update = (req, res, next) => {
     console.log(req.body)
     if(req.body.type == "update"){ // update heure ou date
         new Creneaux().update([req.params.idC],{date : req.body.date, heureDebut : req.body.heureDebut})
-        .then((creneau) => res.status(200).json({ message: 'Creneau modifier !', data : creneau }))
+        .then((creneau) => res.status(200).json({ message: 'Creneau modifié !', data : creneau }))
         .catch(error => res.status(400).json({ error }));
     }
     else if(req.body.type == "salle"){ // salle
         new Creneaux().update([req.params.idC],{salle : req.body.salle})
-        .then((creneau) => res.status(200).json({ message: 'Creneau modifier !', data : creneau }))
+        .then((creneau) => res.status(200).json({ message: 'Creneau modifié !', data : creneau }))
         .catch(error => res.status(400).json({ error }));
     }
     else{ // jury
@@ -120,7 +151,7 @@ exports.update = (req, res, next) => {
                 if(nb > 0){
                     new Participe().deleteJury(idE,req.params.idC).then((results)=>{ // supprime les anciens jury avant de mettre les nouveaux
                         new Participe().saveJury(idE,req.params.idC,req.body.jury).then((creneau)=>{
-                            res.status(200).json({ message: 'Creneau modifier !', data : creneau })
+                            res.status(200).json({ message: 'Creneau modifié !', data : creneau })
                         })
                         .catch((error) => {
                             console.log(error)
@@ -134,7 +165,7 @@ exports.update = (req, res, next) => {
                 }
                 else{
                     new Participe().saveJury(idE,req.params.idC,req.body.jury).then((creneau)=>{
-                        res.status(200).json({ message: 'Creneau modifier !', data : creneau })
+                        res.status(200).json({ message: 'Creneau modifié !', data : creneau })
                     })
                     .catch((error) => {
                         console.log(error)

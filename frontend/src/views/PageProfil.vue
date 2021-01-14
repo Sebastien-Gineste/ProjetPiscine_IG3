@@ -22,18 +22,48 @@
       </b-list-group-item>
       <!-- retiré - le mot de passe est modifié dans la page dédiée
       <b-list-group-item class="listItem">
+
       Mot de passe : <b-link v-if="show" href=""> {{ form.mdpasse }} </b-link> <input v-if="!show" v-model="form.mdpasse"> 
       </b-list-group-item>
       -->
       <b-list-group-item class="listItem">
+
       Année de promo : <b-link v-if="show" href=""> {{ form.promo }} </b-link> <input v-if="!show" v-model="form.promo">
       </b-list-group-item>
+      <b-row id="AlignButtons">
+      <b-col>
+        <b-button id="BoutonSuppr" type="button" variant="primary" v-if="show" v-on:click="supprCompte()">Supprimer le compte</b-button>
+      </b-col>
+      <b-col>
+        <b-button id="BoutonModif" type="button" variant="primary" v-if="show" v-on:click="show = false;showMsg = false">Modifier</b-button>
+      </b-col>
+      <b-col>
+        <b-button id="BoutonModif" type="button" variant="primary" v-if="!show" v-on:click="show = true;showMsg = true;updateProfil()">Valider</b-button>
+      </b-col>
+      <b-col>
+        <b-button id="BoutonModifMDP" type="button" variant="primary" v-if="show" @click="toMdp">Modifier le mot de passe</b-button>
+      </b-col>
+      </b-row>
+      <!--
+      <b-row v-if="show">
+        <b-col>
+          <b-button id="BoutonModif" type="button" variant="primary" v-on:click="show = false;showMsg = false">Modifier</b-button>
+        </b-col>
+        <b-col>
+          <b-button id="BoutonModif" type="button" variant="primary" @click="toMdp">Modifier le mot de passe</b-button>
+        </b-col> 
+      </b-row>
 
-      <div id="AlignButtons">
-      <b-button id="BoutonSuppr" type="button" variant="primary" v-if="show" v-on:click="supprCompte()">Supprimer le compte</b-button>
-      <b-button id="BoutonModif" type="button" variant="primary" v-if="show" v-on:click="show = false;showMsg = false">Modifier</b-button>
-      <b-button id="BoutonModif" type="button" variant="primary" v-if="!show" v-on:click="show = true;showMsg = true;updateProfil()">Valider</b-button>
-      </div>
+      <b-row v-if="!show">
+        <b-col>
+          <b-button id="BoutonModif" type="button" variant="primary" v-on:click="show = true;showMsg = true;updateProfil()">Valider</b-button>
+        </b-col>
+        <b-col>
+          <b-button id="BoutonModif" type="button" variant="primary" @click="toMdp">Modifier le mot de passe</b-button>
+        </b-col> 
+      </b-row>
+      -->
+
     </b-list-group>
     
   </div>
@@ -103,6 +133,9 @@ const axios = axio.create({
         PageAccueil() {
           this.$router.push("/");
         },
+        toMdp(){
+          this.$router.push('/RecupPassword')
+        },
       },
       beforeMount() {
         axios.get("http://localhost:3000/api/etudiant/"+this.getId()).then((response) => {
@@ -137,16 +170,17 @@ const axios = axio.create({
   }
   #BoutonModif {
     display:inline-block;
-    float:right;
     margin-top: 4%;
-    width: 30%;  
+    margin-left: 15%;
+  }
+  #BoutonModifMDP {
+    display:inline-block;
+    margin-top: 4%; 
     margin-left: 15%;
   }
   #BoutonSuppr {
     display:inline-block;
-    float:left;
-    margin-top: 4%;
-    width: 40%;    
+    margin-top: 4%;   
     margin-right: 15%;
   }
   #AlignButtons {

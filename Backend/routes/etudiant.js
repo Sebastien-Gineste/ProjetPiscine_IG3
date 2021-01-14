@@ -7,6 +7,7 @@ const etudiantCtrl = require('../controllers/etudiant');
 
 router.get('/', auth.verifyToken, etudiantCtrl.selectAll);                      // Information de tous les étudiants
 router.get('/Promo/:id', auth.verifyToken, etudiantCtrl.selectAllEtudiant)   // Information d'un étudiant appartenant à une promo
+router.get('/Promo/SansGroupe/:id', auth.verifyToken, etudiantCtrl.selectAllEtudiantSansGroupe)   // Information d'un étudiant appartenant à une promo
 router.get('/:id',auth.verifyToken, etudiantCtrl.select);                       // Information d'un étudiant identifiant avec son "id"
 router.post('/', etudiantCtrl.signup);                                          // Création d'un compte étudiant
 router.post('/Connexion', etudiantCtrl.login);                                  // Connexion d'un étudiant
