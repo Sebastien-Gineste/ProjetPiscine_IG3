@@ -22,12 +22,12 @@ exports.selectAll = (req, res, next) => {
 exports.save = (req, res, next) => {
   if (req.body.nomProf != "" && req.body.prenomProf!="" && typeof(req.body.prenomProf)=="string" && typeof (req.body.nomProf) == "string") {
     const prof = {
-      nomProf: req.body.nom,
-      prenomProf: req.body.prenom,
+      nomProf: req.body.nomProf,
+      prenomProf: req.body.prenomProf,
     };
     console.log(prof)
     new Prof().save(prof)
-      .then(() => res.status(201).json({ message: 'Professeur créé !' }))
+      .then((response) => res.status(201).json(response))
       .catch(error => res.status(400).json({ error }));
   }
   else{
@@ -45,9 +45,7 @@ exports.select = (req, res, next) => {
 exports.update =(req,res,next) => {
 
   const prof = { }
-  if(req.body.idProf){
-    prof.idProf = req.body.idProf
-  }
+  console.log(req.params.id)
 
   if(req.body.nomProf){
     prof.nomProf = req.body.nomProf

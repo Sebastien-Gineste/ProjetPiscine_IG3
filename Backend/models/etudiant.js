@@ -24,7 +24,6 @@ class Etudiant extends model.Model {
               reject(model.Error.CONNECTION_ERROR);
               return;
           }
-          console.log(results)
           if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
             if(results.rows.length > 1 ){
               reject(model.Error.TOO_MANY_RESPONSE)

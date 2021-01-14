@@ -45,7 +45,7 @@
                     <b-col sm="6">
                         <b-form-select id="input-etud-group" v-model="currentEtud" required :options="etudiants">
                             <template #first>
-                                <b-form-select-option :value="null" disabled>Sélectionner un étudiant</b-form-select-option>
+                                <b-form-select-option :value="null" disabled>Sélectionner un étudiant sans groupe</b-form-select-option>
                             </template>
                         </b-form-select>
                     </b-col>
@@ -194,7 +194,7 @@ deleteEleve(id){ // pour supprimer un élève
     beforeMount(){ // récupère les infos d'un groupe si on est sur la page création groupe 
         if(this.hasGroup()){
             axios.get(`http://localhost:3000/api/Groupe/`+this.getGroup()).then((response) => {
-                console.log(response)
+                console.log(response.data)
 
                 this.form.idGroupe = response.data.idGroupe
                 this.form.nomTuteur = response.data.nomTuteurEntreprise
@@ -220,7 +220,9 @@ deleteEleve(id){ // pour supprimer un élève
             console.log(data.data)
             if(data.data){
                 for(let i=0;i<data.data.length;i++){
-                    this.etudiants.push({value : data.data[i].numEtudiant , text : data.data[i].nomEtudiant+" "+data.data[i].prenomEtudiant})
+                    if( data.data[i].idGroupe === null){
+                        this.etudiants.push({value : data.data[i].numEtudiant , text : data.data[i].nomEtudiant+" "+data.data[i].prenomEtudiant,disabled :  data.data[i].idGroupe !== null  ,  idGroupe : data.data[i].idGroupe})
+                    }
                 }
             }
         })
@@ -251,6 +253,12 @@ deleteEleve(id){ // pour supprimer un élève
 <style lang="scss">
 #Group_panel{
     margin-top: 5%;
+    .list-group{
+        width : 50%;
+        margin-left : 25%;
+        margin-top:2%;
+        margin-bottom:2%;
+    }
 }
 #formGroup{
     width: 70%;
@@ -269,12 +277,7 @@ deleteEleve(id){ // pour supprimer un élève
     padding: 5px;
     margin-bottom : 2%
 }
-.list-group{
-    width : 50%;
-    margin-left : 25%;
-    margin-top:2%;
-    margin-bottom:2%;
-}
+
 #modif,#annuler{
     margin-right:2%; 
 }
