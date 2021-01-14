@@ -4,14 +4,14 @@
   <b-form @submit="saveProf">
     <b-row >
       <b-col sm="5">
-        <b-form-group id="input-prenom-prof" label="Prenom:" label-for="prenomProf">
-            <b-form-input  id="prenomProf" v-model="form.prenomProf"  type="text"  required  placeholder="Prénom du tuteur"
+        <b-form-group id="input-nom-prof" label="Nom :" label-for="nomProf">
+            <b-form-input  id="nomProf" v-model="form.nomProf"  type="text"  required  placeholder="Nom du tuteur"
             ></b-form-input>
         </b-form-group>
       </b-col>
       <b-col sm="5">
-        <b-form-group id="input-nom-prof" label="Nom :" label-for="nomProf">
-            <b-form-input  id="nomProf" v-model="form.nomProf"  type="text"  required  placeholder="Nom du tuteur"
+        <b-form-group id="input-prenom-prof" label="Prenom:" label-for="prenomProf">
+            <b-form-input  id="prenomProf" v-model="form.prenomProf"  type="text"  required  placeholder="Prénom du tuteur"
             ></b-form-input>
         </b-form-group>
       </b-col>
@@ -49,15 +49,15 @@
           <h3>Modification Prof {{update.idProf}}</h3>
           <b-row>
             <b-col sm="6">
-                <b-form-group id="input-prenom-prof-update" label="Prenom:" label-for="prenomProf">
-                    <b-form-input  id="prenomProfupdate" v-model="update.prenomProf"  type="text"  required  placeholder="Prénom du tuteur" ></b-form-input>
-                </b-form-group>
-              </b-col>
+              <b-form-group id="input-nom-prof-update" label="Nom :" label-for="nomProf">
+                <b-form-input  id="nomProfupdate" v-model="update.nomProf"  type="text"  required  placeholder="Nom du tuteur"></b-form-input>
+              </b-form-group>
+            </b-col>
               <b-col sm="6">
-                <b-form-group id="input-nom-prof-update" label="Nom :" label-for="nomProf">
-                  <b-form-input  id="nomProfupdate" v-model="update.nomProf"  type="text"  required  placeholder="Nom du tuteur"></b-form-input>
-                </b-form-group>
-              </b-col>
+              <b-form-group id="input-prenom-prof-update" label="Prenom:" label-for="prenomProf">
+                  <b-form-input  id="prenomProfupdate" v-model="update.prenomProf"  type="text"  required  placeholder="Prénom du tuteur" ></b-form-input>
+              </b-form-group>
+            </b-col>
           </b-row>
           <b-button id="enregister" @click="updateProf()" type="button" variant="primary">Modifier</b-button>
         </div>
