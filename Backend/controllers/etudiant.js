@@ -39,15 +39,11 @@ exports.selectAllEtudiant = (req, res, next) => {
 }
 
 exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
+    console.log("ok")
+    bcrypt.hash(req.body.mdpEtudiant, 10)
       .then(hash => {
-        const user = {
-          nomEtudiant : req.body.nom,
-          prenomEtudiant : req.body.prenom,
-          emailEtudiant: req.body.email,
-          mdpEtudiant: hash,
-          annePromo : req.body.promo
-        };
+        var user = req.body
+        user.mdpEtudiant= hash
         console.log(user)
         if(req.body.numEtudiant){ //Si l'étudiant à mit son num étudiant 
           user.numEtudiant = req.body.numEtudiant
@@ -56,7 +52,9 @@ exports.signup = (req, res, next) => {
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
           .catch(error => res.status(400).json({ error }));
       })
-      .catch(error => res.status(500).json({ error }));
+      .catch(error => {
+        console.log(error)
+        res.status(500).json({ error })});
 };
 
 exports.update =(req,res,next) => {
