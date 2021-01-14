@@ -13,6 +13,26 @@ class Evenement extends model.Model {
   save(objetVal){
     return super.save(this.tableName,objetVal); 
   }
+  
+  selectAllWithCount(){
+    return new Promise((resolve, reject) => {
+      const query = 'select evenement."numEvenement", "nomEvenement", "dateDebut", "dateLimiteResa", "anneePromo", "duree", "nombreMembreJury", "dureeCreneau", count(creneau."idGroupe") as "nbCreneauReserver", count(creneau."numCreneau") as "nbCreneau" from evenement left join creneau on creneau."numEvenement" = evenement."numEvenement" GROUP BY evenement."numEvenement" ORDER BY evenement."anneePromo"';
+     
+      model.client.query(query, function(error, results) {
+          if (error) {
+              console.log(error)
+              reject(model.Error.CONNECTION_ERROR);
+              return;
+          }
+          if(results !== undefined && results.rows !== undefined &&  results.rows.length > 0 ) {
+            resolve(results.rows);
+          } else {
+              // pas de résultat
+              reject(model.Error.NO_RESULTS);
+          }
+      });
+    }); 
+  }
 
   selectAll(){
     return super.selectAll(this.tableName)

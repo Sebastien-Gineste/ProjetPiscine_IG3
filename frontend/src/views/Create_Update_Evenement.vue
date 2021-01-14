@@ -45,7 +45,7 @@
                         id="date2"
                         label="Date limite de réservation des créneaux:"
                         label-for="DateLimEvent">
-                        <b-form-datepicker id="DateLimEvent" :readonly="readonly" :hide-header="true" :state="form.DateLim.length !== 0 && +new Date(form.DateLim) >= +new Date()" :date-disabled-fn="dateDisabled" :min="minDate" :max="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
+                        <b-form-datepicker id="DateLimEvent" :readonly="readonly" :hide-header="true" :state="form.DateLim.length !== 0 && +new Date(form.DateLim).getDate() > +new Date().getDate()" :date-disabled-fn="dateDisabled" :min="minDate" :max="form.DateDeb" required v-model="form.DateLim" class="mb-2"></b-form-datepicker>
                     </b-form-group>
                 </b-col>
                 <b-col sm="6">  
@@ -53,7 +53,7 @@
                         id="date1"
                         label="Date début Evenement:"
                         label-for="DateDebEvent">
-                        <b-form-datepicker id="DateDebEvent" :readonly="readonly" :hide-header="true" :state="form.DateDeb.length !== 0 && +new Date(form.DateLim) <= +new Date(form.DateDeb)" :date-disabled-fn="dateDisabled" :min="minDate" required v-model="form.DateDeb" class="mb-2"></b-form-datepicker>
+                        <b-form-datepicker id="DateDebEvent" :readonly="readonly" :hide-header="true" :state="form.DateDeb.length !== 0 && +new Date(form.DateLim).getDate() <= +new Date(form.DateDeb).getDate()" :date-disabled-fn="dateDisabled" :min="minDate" required v-model="form.DateDeb" class="mb-2"></b-form-datepicker>
                     </b-form-group>
                 </b-col>
             </b-row> 
@@ -105,11 +105,11 @@
             </b-row> 
 
 
-            <b-button id="submit" v-if="isCreate" type="submit" variant="primary">Créer</b-button>
+            <b-button id="submit"  v-if="isCreate" type="submit" variant="primary">Créer</b-button>
             <b-button id="submit" v-else type="submit" variant="primary">Modifier</b-button>
-            <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="primary">Annuler</b-button>
-            <b-button id="panel" v-if="isCreate" @click="affichePanel()" type="button" variant="primary">Option création</b-button>
-            <b-button id="panel" v-else @click="affichePanel()" type="button" variant="primary">Option modification</b-button>
+            <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="warning">Annuler</b-button>
+            <b-button id="panel" v-if="isCreate" @click="affichePanel()" type="button" variant="success">Option création</b-button>
+            <b-button id="panel" v-else @click="affichePanel()" type="button" variant="success">Option modification</b-button>
             <b-alert v-if="messageError.length > 0" variant="warning" show>{{messageError}} </b-alert>
             <div v-if="showPanel" id="optionCreation">
                  <!-- Durée Event --> 
@@ -230,6 +230,13 @@ export default {
                 this.messageError = "Il doit y avoir au moins 1 membre pour le jury"
                 return false
             }
+            for(let i = 0;i<this.promos.length;i++){
+                if(this.promos[i].value == this.form.Promo && this.promos[i].numEvent !== null){
+                    this.messageError = "Un évenement est déjà programmé pour cette promo :("
+                    return false
+                }
+            }
+
             var dateDeb = new Date(this.form.DateDeb);
             var dateLim = new Date(this.form.DateLim);
             if(dateLim.getDate() > dateDeb.getDate()){
@@ -348,14 +355,14 @@ export default {
             });
         }
         // récupère promo
-        axios.get(`http://localhost:3000/api/Promo/`).then((response) => {
+        axios.get(`http://localhost:3000/api/Promo/VerifEvent`).then((response) => {
             this.promos = [];
             var actuYear = new Date().getFullYear()
             var month = new Date().getMonth() + 1
             var text = "IG"
             var idClass = ((month >= 9)? 6 : 5 ) // permet de déduire les classes avec les années de promo 
             for (let i = 0; i < response.data.length; i++) {
-                this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : this.readonly})
+                this.promos.push({value: response.data[i].annePromo, text : text+(idClass-(response.data[i].annePromo - actuYear)), disabled : this.readonly, numEvent : response.data[i].numEvenement})
             }
         })
         .catch((error) => { 
