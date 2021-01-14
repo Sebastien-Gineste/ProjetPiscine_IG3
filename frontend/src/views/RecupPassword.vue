@@ -6,7 +6,7 @@
       <b-form @submit="onSubmit">
         <b-form-group
           id="email-group-1"
-          label="Adresse Email pour récupérer votre mot de passe"
+          label="Adresse email pour récupérer votre mot de passe:"
           label-for="input-1"
         >
           <b-form-input
@@ -17,11 +17,12 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-code-1" label="Code reçu par mail" label-for="input-2">
+        <b-form-group id="input-code-1" label="Code reçu par mail:" label-for="input-2">
           <b-form-input type="text" id="code" v-model="form.code"></b-form-input>
         </b-form-group>
-        <b-button type="submit" variant="primary">Envoyer</b-button>
-        <p><b-link to="/Connexion"> Retour </b-link></p>
+        <b-button id="but" type="submit" variant="primary">Envoyer</b-button>
+        <br>
+        <span><b-link to="/Connexion"> Retour </b-link></span>
         <div v-if="messageError.length > 0">{{messageError}}</div>
       </b-form>
     </b-card>
@@ -120,12 +121,12 @@ const axios = axio.create({
 </script>
 
 <style lang="scss">
-    #connexion{
+    #a{
         width: 70%;
         margin: 2%;
         margin-left: 15%;
 
-        h1, button{
+        h1, #but{
           margin-bottom: 2%;
         }
 

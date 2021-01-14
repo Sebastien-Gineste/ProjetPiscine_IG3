@@ -55,7 +55,7 @@
                 </b-row> 
                 <b-list-group>
                    <b-list-group-item v-for="(membre, id) in listMembers" :key="id">
-                       Étudiant n°{{id+1}} :  {{ membre.text }} <b-button v-if="membre.value != getId()" variant="danger" type="button" @click="deleteEleve(id)"> Supprimer </b-button>
+                       Étudiant n°{{id+1}} :  {{ membre.text }} <b-button variant="danger" v-if="membre.value != getId()" id="but" type="button" @click="deleteEleve(id)"> Supprimer </b-button>
                     </b-list-group-item>
                 </b-list-group>
             </div>
@@ -67,7 +67,7 @@
             <b-button v-if="showModif && hasGroup()" id="modif" @click="updateGroup()" type="button" variant="success">Valider</b-button>
             <b-button v-if="hasGroup()" id="Supprimer" @click="deleteGroup()" type="button" variant="danger">Supprimer le groupe</b-button>
             <!-- La fonction createGroup() amène sur la page /Modification afin que l'élève puisse ajouter des membres -->
-            <div id="a">
+            <div id="a" v-if="hasGroup()">
             <i id="b">Cliquez sur "Modifier le groupe" puis sur "Valider" afin de confirmer vos modifications.</i>
             </div>
             <div v-if="messageError.length > 0">{{messageError}}</div>
@@ -115,7 +115,6 @@ isCreate(){
 methods:{
 onSubmit(event) {
     event.preventDefault()
-    alert("onSubmit")
     console.log(this.form)
     axios.post(`http://localhost:3000/api/Groupe`,this.form).then((response) => {
         this.$store.dispatch('ajoutGroup',response.data);
@@ -290,5 +289,8 @@ deleteEleve(id){ // pour supprimer un élève
 }
 #b{
     font-size: 13px;
+}
+#but{
+    margin-left: 4%
 }
 </style>
