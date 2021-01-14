@@ -33,6 +33,7 @@
             <b-list-group-item>Confirmation Mot de passe : <input v-model="form.cnMdpEtudiant" type="password"> </b-list-group-item>
             </b-list-group>
             <b-button type="submit" variant="primary">Envoyer</b-button>
+            <div v-if="messageError.length > 0">{{messageError}}</div>
         </b-form>
     </b-card>
   </div>
@@ -61,6 +62,7 @@ const axios = axio.create({
       }
     },
     methods: {
+      //Envoie un code par mail à l'utilisateur et si celui-ci le donne correctement envoie sur la création du nouveau mot de passe
       ...mapGetters(['isUser']),
       onSubmit(evt) {
         evt.preventDefault()
@@ -93,7 +95,7 @@ const axios = axio.create({
         }
         
       },
-    
+    //change le mot de passe si le nouveau et sa confirmation envoyés par l'utilisateur sont identiques
     changeMdp(c){
     c.preventDefault()
         if (this.form.newPassword!=this.form.cnMdpEtudiant){
