@@ -14,13 +14,13 @@
       </b-list-group-item>
 
       <b-list-group-item class="listItem">
-      Numéro étudiant : <b-link v-if="show" href=""> {{ form.numEtudiant }} </b-link> <input v-if="!show" v-model="form.numEtudiant"> 
+      Numéro étudiant : <b-link v-if="show" href=""> {{ form.numEtudiant }} </b-link> <input type="number" v-if="!show" v-model="form.numEtudiant"> 
       </b-list-group-item>
 
       <b-list-group-item class="listItem">
-      Mail : <b-link v-if="show" href=""> {{ form.mail }} </b-link> <input v-if="!show" v-model="form.mail"> 
+      Mail : <b-link v-if="show" href=""> {{ form.mail }} </b-link> <input type="email" v-if="!show" v-model="form.mail"> 
       </b-list-group-item>
-      <!--
+      <!-- retiré - le mot de passe est modifié dans la page dédiée
       <b-list-group-item class="listItem">
 
       Mot de passe : <b-link v-if="show" href=""> {{ form.mdpasse }} </b-link> <input v-if="!show" v-model="form.mdpasse"> 
@@ -30,7 +30,21 @@
 
       Année de promo : <b-link v-if="show" href=""> {{ form.promo }} </b-link> <input v-if="!show" v-model="form.promo">
       </b-list-group-item>
-
+      <b-row id="AlignButtons">
+      <b-col>
+        <b-button id="BoutonSuppr" type="button" variant="primary" v-if="show" v-on:click="supprCompte()">Supprimer le compte</b-button>
+      </b-col>
+      <b-col>
+        <b-button id="BoutonModif" type="button" variant="primary" v-if="show" v-on:click="show = false;showMsg = false">Modifier</b-button>
+      </b-col>
+      <b-col>
+        <b-button id="BoutonModif" type="button" variant="primary" v-if="!show" v-on:click="show = true;showMsg = true;updateProfil()">Valider</b-button>
+      </b-col>
+      <b-col>
+        <b-button id="BoutonModifMDP" type="button" variant="primary" v-if="show" @click="toMdp">Modifier le mot de passe</b-button>
+      </b-col>
+      </b-row>
+      <!--
       <b-row v-if="show">
         <b-col>
           <b-button id="BoutonModif" type="button" variant="primary" v-on:click="show = false;showMsg = false">Modifier</b-button>
@@ -42,13 +56,13 @@
 
       <b-row v-if="!show">
         <b-col>
-          <b-button id="BoutonModif" type="button" variant="primary" v-on:click="show = true;showMsg = true;pop();updateProfil()">Valider</b-button>
+          <b-button id="BoutonModif" type="button" variant="primary" v-on:click="show = true;showMsg = true;updateProfil()">Valider</b-button>
         </b-col>
         <b-col>
           <b-button id="BoutonModif" type="button" variant="primary" @click="toMdp">Modifier le mot de passe</b-button>
         </b-col> 
       </b-row>
-
+      -->
 
     </b-list-group>
     
@@ -57,7 +71,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import util from "../service/fonctionUtil"
 import axio from "axios";
 const axios = axio.create({
   withCredentials: true
@@ -91,19 +104,38 @@ const axios = axio.create({
           })
         },
         pop(){
-          util.makeToast(this,"success","Modification","Profil modifié avec succès !")
+          alert("Profil modifié avec succès !")
+        },
+        popDelete(){
+          alert("Profil supprimé avec succès !")
         },
         updateProfil(){
           axios.put(`http://localhost:3000/api/Etudiant/`+this.form.numEtudiant,this.form).then((response) => {
           console.log(response.data)
+          this.pop();
           })
           .catch((error)=>{
               console.log(error.response)
           });
         },
+        supprCompte(){
+          axios.delete(`http://localhost:3000/api/Etudiant/`+this.form.numEtudiant).then((response) => {
+          console.log(response.data)
+          axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
+          this.$store.dispatch("deconnexion")
+          this.popDelete();
+          this.PageAccueil();
+          })
+          .catch((error) => {
+            console.log(error.response)
+          });
+        },
+        PageAccueil() {
+          this.$router.push("/");
+        },
         toMdp(){
           this.$router.push('/RecupPassword')
-        }
+        },
       },
       beforeMount() {
         axios.get("http://localhost:3000/api/etudiant/"+this.getId()).then((response) => {
@@ -137,8 +169,22 @@ const axios = axio.create({
     margin-bottom: 3%;
   }
   #BoutonModif {
+    display:inline-block;
     margin-top: 4%;
-   
+    margin-left: 15%;
+  }
+  #BoutonModifMDP {
+    display:inline-block;
+    margin-top: 4%; 
+    margin-left: 15%;
+  }
+  #BoutonSuppr {
+    display:inline-block;
+    margin-top: 4%;   
+    margin-right: 15%;
+  }
+  #AlignButtons {
+    text-align:center;
   }
   #valid {
     color:green;
