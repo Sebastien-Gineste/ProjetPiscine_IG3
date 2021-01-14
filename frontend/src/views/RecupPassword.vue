@@ -40,6 +40,7 @@
 
 <script>
 import axio from "axios";
+import { mapGetters } from 'vuex'
 const axios = axio.create({
   withCredentials: true
 })
@@ -53,13 +54,14 @@ const axios = axio.create({
           newPassword: '',
           cnMdpEtudiant: '',
         },
-        showModif: false,
+        showModif: this.isUser(),
         messageError : "",
         codeVerif: -1,
         numEtudiant: '',
       }
     },
     methods: {
+      ...mapGetters(['isUser']),
       onSubmit(evt) {
         evt.preventDefault()
         if (this.codeVerif>0){

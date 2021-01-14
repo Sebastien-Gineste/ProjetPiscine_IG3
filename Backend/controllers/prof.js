@@ -20,7 +20,7 @@ exports.selectAll = (req, res, next) => {
 };
 
 exports.save = (req, res, next) => {
-  if (req.body.nom != "" && req.body.prenom!="" && typeof(req.body.prenom)=="string" && typeof (req.body.nom) == "string") {
+  if (req.body.nomProf != "" && req.body.prenomProf!="" && typeof(req.body.prenomProf)=="string" && typeof (req.body.nomProf) == "string") {
     const prof = {
       nomProf: req.body.nom,
       prenomProf: req.body.prenom,
@@ -44,26 +44,27 @@ exports.select = (req, res, next) => {
 
 exports.update =(req,res,next) => {
 
-  const Prof = { }
-  if(req.body.id){
-    Prof.idProf = req.body.id
+  const prof = { }
+  if(req.body.idProf){
+    prof.idProf = req.body.idProf
   }
 
-  if(req.body.nom){
-    Prof.nomProf = req.body.nom
+  if(req.body.nomProf){
+    prof.nomProf = req.body.nomProf
   }
-  if(req.body.prenom){
-    Prof.prenomProf = req.body.prenom
+  if(req.body.prenomProf){
+    prof.prenomProf = req.body.prenomProf
   }
 
-  if(Object.keys(Prof).length == 0){ // aucune modification 
+  if(Object.keys(prof).length == 0){ // aucune modification 
+    console.log(prof)
     res.status(400).json({ message : "Pas de valeur à modifier" })
   }
   else{
-    console.log(Prof)
-    new Etudiant().update(id,Prof)
+    console.log(prof)
+    new Prof().update(req.params.id,prof)
     .then(() => res.status(200).json({ message: 'Professeur modifié !' }))
-    .catch(error => res.status(400).json({ error }));
+    .catch(error =>{console.log(error); res.status(400).json({ error })});
   }
 };
 
