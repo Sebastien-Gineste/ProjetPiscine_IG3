@@ -55,17 +55,17 @@
                 </b-row> 
                 <b-list-group>
                    <b-list-group-item v-for="(membre, id) in listMembers" :key="id">
-                       Étudiant n°{{id+1}} :  {{ membre.text }} <b-button v-if="membre.value != getId()"  type="button" @click="deleteEleve(id)"> Supprimer </b-button>
+                       Étudiant n°{{id+1}} :  {{ membre.text }} <b-button v-if="membre.value != getId()" variant="danger" type="button" @click="deleteEleve(id)"> Supprimer </b-button>
                     </b-list-group-item>
                 </b-list-group>
             </div>
             
 
             <b-button v-if="!hasGroup()" id="submit" type="submit" @submit="createGroup()" variant="primary">Créer</b-button>
-            <b-button v-if="hasGroup() && !showModif" id="modif" @click="showModif = !showModif" type="button" variant="primary">Modifier le groupe</b-button>
-            <b-button v-if="hasGroup() && showModif" id="annuler" @click="showModif = !showModif" type="button" variant="primary">Annuler</b-button>
-            <b-button v-if="showModif && hasGroup()" id="modif" @click="updateGroup()" type="button" variant="primary">Valider</b-button>
-            <b-button v-if="hasGroup()" id="Supprimer" @click="deleteGroup()" type="button" variant="primary">Supprimer le groupe</b-button>
+            <b-button v-if="hasGroup() && !showModif" id="modif" @click="showModif = !showModif" type="button" variant="warning">Modifier le groupe</b-button>
+            <b-button v-if="hasGroup() && showModif" id="annuler" @click="showModif = !showModif" type="button" variant="warning">Annuler</b-button>
+            <b-button v-if="showModif && hasGroup()" id="modif" @click="updateGroup()" type="button" variant="success">Valider</b-button>
+            <b-button v-if="hasGroup()" id="Supprimer" @click="deleteGroup()" type="button" variant="danger">Supprimer le groupe</b-button>
             <!-- La fonction createGroup() amène sur la page /Modification afin que l'élève puisse ajouter des membres -->
             <div id="a">
             <i id="b">Cliquez sur "Modifier le groupe" puis sur "Valider" afin de confirmer vos modifications.</i>

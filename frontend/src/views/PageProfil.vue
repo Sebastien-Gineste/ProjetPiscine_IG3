@@ -35,16 +35,16 @@
       </b-list-group-item>    
      <b-row class="my-1">
           <b-col v-if="show"  sm="4">  
-              <b-button  type="button" variant="primary" v-on:click="supprCompte()">Supprimer le compte</b-button>
+              <b-button  type="button" variant="danger" v-on:click="supprCompte()">Supprimer le compte</b-button>
           </b-col>
             <b-col v-else sm="6">  
-              <b-button type="button" variant="primary" v-on:click="show = true;showMsg = true;">Annuler</b-button>
+              <b-button type="button" variant="warning" v-on:click="show = true;showMsg = true;">Annuler</b-button>
           </b-col>
           <b-col v-if="show" sm="4">  
-              <b-button type="button" variant="primary" v-on:click="show = false;showMsg = false">Modifier</b-button>
+              <b-button type="button" variant="warning" v-on:click="show = false;showMsg = false">Modifier</b-button>
           </b-col>
            <b-col v-else sm="6">  
-              <b-button type="button" variant="primary" v-on:click="show = true;showMsg = true;updateProfil()">Valider</b-button>
+              <b-button type="button" variant="success" v-on:click="show = true;showMsg = true;updateProfil()">Valider</b-button>
           </b-col>
           <b-col v-if="show" sm="4">  
               <b-button type="button" variant="primary" v-if="show" @click="toMdp">Modifier le mot de passe</b-button>

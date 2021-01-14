@@ -105,11 +105,11 @@
             </b-row> 
 
 
-            <b-button id="submit" v-if="isCreate" type="submit" variant="primary">Créer</b-button>
+            <b-button id="submit"  v-if="isCreate" type="submit" variant="primary">Créer</b-button>
             <b-button id="submit" v-else type="submit" variant="primary">Modifier</b-button>
-            <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="primary">Annuler</b-button>
-            <b-button id="panel" v-if="isCreate" @click="affichePanel()" type="button" variant="primary">Option création</b-button>
-            <b-button id="panel" v-else @click="affichePanel()" type="button" variant="primary">Option modification</b-button>
+            <b-button id="Annuler" @click="refrech()" v-if="showModif" type="submit" variant="warning">Annuler</b-button>
+            <b-button id="panel" v-if="isCreate" @click="affichePanel()" type="button" variant="success">Option création</b-button>
+            <b-button id="panel" v-else @click="affichePanel()" type="button" variant="success">Option modification</b-button>
             <b-alert v-if="messageError.length > 0" variant="warning" show>{{messageError}} </b-alert>
             <div v-if="showPanel" id="optionCreation">
                  <!-- Durée Event --> 
