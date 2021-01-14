@@ -28,6 +28,7 @@ const axios = axio.create({
   withCredentials: true
 }) 
   export default {
+      // Variables
       data() {
         return {
             form: {

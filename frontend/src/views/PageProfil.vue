@@ -20,11 +20,11 @@
       <b-list-group-item class="listItem">
       Mail : <b-link v-if="show" href=""> {{ form.mail }} </b-link> <input v-if="!show" v-model="form.mail"> 
       </b-list-group-item>
-
+      <!--
       <b-list-group-item class="listItem">
       Mot de passe : <b-link v-if="show" href=""> {{ form.mdpasse }} </b-link> <input v-if="!show" v-model="form.mdpasse"> 
       </b-list-group-item>
-
+      -->
       <b-list-group-item class="listItem">
       Année de promo : <b-link v-if="show" href=""> {{ form.promo }} </b-link> <input v-if="!show" v-model="form.promo">
       </b-list-group-item>
@@ -51,7 +51,7 @@ const axios = axio.create({
             nom: 'Test',
             prenom : 'Test',
             mail: 'Test@Test.com',
-            mdpasse: 'Test',
+            // mdpasse: 'Test',
             promo : 'Test2020',
           }, 
           show: true,
@@ -67,7 +67,7 @@ const axios = axio.create({
           this.form.prenom = etudiantCo.prenomEtudiant
           this.form.numEtudiant = etudiantCo.numEtudiant // ou getID vu que c'est censé etre le meme
           this.form.mail = etudiantCo.emailEtudiant
-          this.form.mdpasse = etudiantCo.mdpEtudiant
+          // this.form.mdpasse = etudiantCo.mdpEtudiant
           this.form.promo = etudiantCo.annePromo
           })
         },
@@ -90,7 +90,7 @@ const axios = axio.create({
           this.form.prenom = etudiantCo.prenomEtudiant
           this.form.numEtudiant = etudiantCo.numEtudiant // ou getId vu que c'est censé etre le meme
           this.form.mail = etudiantCo.emailEtudiant
-          this.form.mdpasse = etudiantCo.mdpEtudiant
+          // this.form.mdpasse = etudiantCo.mdpEtudiant
           this.form.promo = etudiantCo.annePromo
           })
           .catch((error) => {
