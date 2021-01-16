@@ -114,7 +114,7 @@ const router = new VueRouter({
 router.beforeEach((to,from,next) => {
   if(to.meta.requireAuth){
     if(store.getters.isUpdate){ // on vient de recharger la page
-      axios.post(`http://localhost:3000/api/Etudiant/VerifCo`).then((res) => {
+      axios.post(`https://projetpiscine.herokuapp.com/api/Etudiant/VerifCo`).then((res) => {
         if(to.meta.requireAdmin){
             if(res.data.admin) {next();} // identifier
             else{ next({ name : "Connexion" });}
