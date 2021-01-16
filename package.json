@@ -1,15 +1,15 @@
 {
   "name": "projetpiscine_ig3",
   "version": "1.0.0",
-  "engines":{
-    "node":"12.x"
+  "engines": {
+    "node": "12.x"
   },
   "description": "A installer sur son ordi avant : \r     npm install -g nodemon   : Serveur qui s'actualise à chaque changement (remplace node)\r     npm install -g @vue/cli  : Outil de développement pour l'application front end",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cd Backend && npm install && npm run start",
-    "heroku-postbuild":"cd frontend && npm install --only=dev && npm install && npm run build"
+    "heroku-postbuild": "cd frontend && npm install --only=dev && npm install && npm run build"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
