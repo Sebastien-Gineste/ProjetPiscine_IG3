@@ -121,7 +121,7 @@ export default {
             console.log(id)
             console.log(idTab)  
             if(confirm("Voulez vous vraiment supprimer cet étudiant?")){ 
-                axios.delete('http://localhost:3000/api/Etudiant/'+id).then((response)=>{
+                axios.delete('https://projetpiscine.herokuapp.com/api/Etudiant/'+id).then((response)=>{
                     console.log(response.data)
                     var i = 0
                     while(i<this.listeEtudiants[idTab].tabEtudiants.length && this.listeEtudiants[idTab].tabEtudiants[i].numEtudiant != id){
@@ -138,7 +138,7 @@ export default {
         },
         supprimerPromo(){
             if(confirm("Voulez vous vraiment supprimer la promo, ainsi que tous ses élèves et groupes?")){
-                axios.delete('http://localhost:3000/api/Promo/'+this.currentPromoRemove).then((response)=>{
+                axios.delete('https://projetpiscine.herokuapp.com/api/Promo/'+this.currentPromoRemove).then((response)=>{
                     console.log(response.data)
                     var id = this.listPromo.indexOf(this.currentPromoRemove)
                     console.log(id)
@@ -154,7 +154,7 @@ export default {
         },
         ajouterPromo(){
             if(this.listPromo.indexOf(this.currentPromo) == -1){
-                axios.post('http://localhost:3000/api/Promo/',{promo : this.currentPromo}).then((response)=>{
+                axios.post('https://projetpiscine.herokuapp.com/api/Promo/',{promo : this.currentPromo}).then((response)=>{
                     console.log(response.data)
                     this.listPromo.push(response.data.annePromo)
                     this.listeEtudiants.push({promo : response.data.annePromo, tabEtudiants : [], currentPage : 1, totalRows : 0, perPage : 5})
@@ -172,7 +172,7 @@ export default {
         }
     },
     beforeMount(){
-        axios.get('http://localhost:3000/api/Etudiant/').then((response) => {
+        axios.get('https://projetpiscine.herokuapp.com/api/Etudiant/').then((response) => {
                 console.log(response.data)
                 var liste = response.data;
                 for(let i = 0;i<liste.length;i++){

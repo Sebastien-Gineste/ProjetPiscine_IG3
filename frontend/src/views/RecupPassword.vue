@@ -81,7 +81,7 @@ const axios = axio.create({
             }
         }
         else{
-        axios.post(`http://localhost:3000/api/Etudiant/VerifMail`,this.form).then((response) => {
+        axios.post(`https://projetpiscine.herokuapp.com/api/Etudiant/VerifMail`,this.form).then((response) => {
             this.codeVerif=response.data[0];
             this.numEtudiant=response.data[1];
         })
@@ -102,9 +102,9 @@ const axios = axio.create({
             this.messageError="Le Mot de passe et sa confirmation sont différents";
         }
         else{
-            axios.put(`http://localhost:3000/api/Etudiant/ModifMdp/`+this.numEtudiant,{newPassword:this.form.newPassword}).then(() => {
+            axios.put(`https://projetpiscine.herokuapp.com/api/Etudiant/ModifMdp/`+this.numEtudiant,{newPassword:this.form.newPassword}).then(() => {
                 console.log("mot de passe changé")
-                axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
+                axios.post("https://projetpiscine.herokuapp.com/api/Etudiant/Deconnexion")
                 this.$store.dispatch('deconnexion');
                 this.$router.push('/Connexion');
             

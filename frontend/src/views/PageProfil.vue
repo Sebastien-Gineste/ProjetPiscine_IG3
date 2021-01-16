@@ -84,7 +84,7 @@ const axios = axio.create({
           alert("Profil supprimé avec succès !")
         },
         updateProfil(){
-          axios.put(`http://localhost:3000/api/Etudiant/`+this.getId(),this.form).then((response) => {
+          axios.put(`https://projetpiscine.herokuapp.com/api/Etudiant/`+this.getId(),this.form).then((response) => {
           console.log(response.data)
           this.pop();
           })
@@ -93,9 +93,9 @@ const axios = axio.create({
           });
         },
         supprCompte(){
-          axios.delete(`http://localhost:3000/api/Etudiant/`+this.getId()).then((response) => {
+          axios.delete(`https://projetpiscine.herokuapp.com/api/Etudiant/`+this.getId()).then((response) => {
           console.log(response.data)
-          axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
+          axios.post("https://projetpiscine.herokuapp.com/api/Etudiant/Deconnexion")
           this.$store.dispatch("deconnexion")
           this.popDelete();
           this.PageAccueil();
@@ -112,7 +112,7 @@ const axios = axio.create({
         },
       },
       beforeMount() {
-        axios.get("http://localhost:3000/api/etudiant/"+this.getId()).then((response) => {
+        axios.get("https://projetpiscine.herokuapp.com/api/etudiant/"+this.getId()).then((response) => {
           var etudiantCo = response.data;
           this.form.nom = etudiantCo.nomEtudiant
           this.form.prenom = etudiantCo.prenomEtudiant
@@ -125,7 +125,7 @@ const axios = axio.create({
           });
 
            // récupère promo
-        axios.get(`http://localhost:3000/api/Promo/`).then((response) => {
+        axios.get(`https://projetpiscine.herokuapp.com/api/Promo/`).then((response) => {
             this.promos = [];
             var actuYear = new Date().getFullYear()
             var month = new Date().getMonth() + 1

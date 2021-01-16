@@ -452,7 +452,7 @@ export default {
                     if(dateActu.getDate() <= new Date(this.event.dateLimiteResa).getDate()){
                         var modif = {id : creneau.id, idGroupe : this.getGroup(), dateLimiteResa : this.event.dateLimiteResa };
                         console.log(modif)
-                        axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id+"/Inscription", modif)
+                        axios.put("https://projetpiscine.herokuapp.com/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id+"/Inscription", modif)
                         .then((reponse) => {
                             var data = reponse.data;
                             if(data.otherCreneau){ // On avait déjà réserver un créneau, on le remet à null
@@ -873,7 +873,7 @@ export default {
         */
         axiosCreate(creneau,id){
             if(this.isAdmin()){
-                axios.post("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/",{date : creneau.date ,groupe : creneau.groupe, salle : creneau.salle, heureTotal : creneau.heureTotal}).then((response)=> {
+                axios.post("https://projetpiscine.herokuapp.com/api/Evenement/"+this.$route.params.id+"/Creneau/",{date : creneau.date ,groupe : creneau.groupe, salle : creneau.salle, heureTotal : creneau.heureTotal}).then((response)=> {
                 this.creneaux[id].id = response.data.data.numCreneau;
                 })
                 .catch((error) => console.log(error))
@@ -884,7 +884,7 @@ export default {
         */
         axiosUpdate(creneau){
             if(this.isAdmin()){
-                axios.put("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id, creneau).catch((error) => console.log(error))
+                axios.put("https://projetpiscine.herokuapp.com/api/Evenement/"+this.$route.params.id+"/Creneau/"+creneau.id, creneau).catch((error) => console.log(error))
             }
         },
         /* fonction permettant de lancer un appel axios DELETE (requête HTTP) au backend, supprimant le creneau en paramètre dans la BD
@@ -892,7 +892,7 @@ export default {
         */
         axiosDelete(idCreneau){ // supprimer le créneau dans la BD
             if(this.isAdmin()){
-                axios.delete("http://localhost:3000/api/Evenement/"+this.$route.params.id+"/Creneau/"+idCreneau).catch((error) => console.log(error))
+                axios.delete("https://projetpiscine.herokuapp.com/api/Evenement/"+this.$route.params.id+"/Creneau/"+idCreneau).catch((error) => console.log(error))
             }
         }
     },
@@ -907,7 +907,7 @@ export default {
         this.dateActu.tab = this.getDateWeek(new Date())
 
         // récupère l'évenement
-        axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id).then((response) => {
+        axios.get(`https://projetpiscine.herokuapp.com/api/Evenement/`+this.$route.params.id).then((response) => {
             console.log(response)
             var infoEvent = response.data;
             this.date = this.generateDateEvent(infoEvent.dateDebut, infoEvent.duree);
@@ -917,7 +917,7 @@ export default {
             }
 
             // récupère les créneaux
-            var route = `http://localhost:3000/api/Evenement/`+this.$route.params.id+'/Creneau'
+            var route = `https://projetpiscine.herokuapp.com/api/Evenement/`+this.$route.params.id+'/Creneau'
             if(this.$route.params.infoProf != null){
                 route+="/Jury/"+this.$route.params.infoProf
             }
@@ -1026,7 +1026,7 @@ export default {
         });
 
         // récupère les profs
-        axios.get(`http://localhost:3000/api/Prof/`).then((response) => {
+        axios.get(`https://projetpiscine.herokuapp.com/api/Prof/`).then((response) => {
             var profs = response.data;
             this.bdProfs = response.data
             for(let i=0;i<profs.length;i++){

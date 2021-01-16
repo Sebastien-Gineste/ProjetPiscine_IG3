@@ -27,6 +27,7 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 app.use(cookieParser())
+app.use(express.static(path.join(__dirname,'../frontend/dist')))
 
 app.use('/api/Etudiant', etudiantRoutes);
 app.use('/api/Groupe', groupeRoutes);
@@ -34,5 +35,9 @@ app.use('/api/Prof', profRoutes);
 app.use('/api/Promo', promoRoutes);
 app.use('/api/Evenement', evenementRoutes);
 app.use('/api/Evenement/:id/Creneau',creneauRoutes);
+
+app.get('*',(req,res) => {
+  res.sendFile(path.join(__dirname + '/../frontend/dist/index.html'))
+})
 
 module.exports = app;

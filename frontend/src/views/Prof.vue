@@ -103,7 +103,7 @@ export default {
     saveProf(e){
       e.preventDefault();
       console.log(this.form)
-      axios.post(`http://localhost:3000/api/Prof/`,this.form).then((response) => {
+      axios.post(`https://projetpiscine.herokuapp.com/api/Prof/`,this.form).then((response) => {
             var profs = response.data;
             console.log(response.data)
             this.bdProfs.push({idProf : profs.idProf , nomProf : this.form.nomProf , prenomProf : this.form.prenomProf})
@@ -119,7 +119,7 @@ export default {
         })
     },
     deleteProf(idProf){
-    axios.delete("http://localhost:3000/api/Prof/"+idProf).then((response)=> { 
+    axios.delete("https://projetpiscine.herokuapp.com/api/Prof/"+idProf).then((response)=> { 
         console.log(response.data)
         var i=0
         var id=-1
@@ -144,7 +144,7 @@ export default {
     updateProf(){
 
       console.log(this.update)
-      axios.put(`http://localhost:3000/api/Prof/`+this.update.idProf,this.update).then((response) => {
+      axios.put(`https://projetpiscine.herokuapp.com/api/Prof/`+this.update.idProf,this.update).then((response) => {
         console.log(response.data)
         var i=0
         var id=-1
@@ -168,7 +168,7 @@ export default {
     }
   },
   beforeMount(){
-        axios.get(`http://localhost:3000/api/Prof/`).then((response) => {
+        axios.get(`https://projetpiscine.herokuapp.com/api/Prof/`).then((response) => {
             this.bdProfs = response.data
             this.totalRows = this.bdProfs.length
         })

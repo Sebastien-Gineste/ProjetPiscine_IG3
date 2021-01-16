@@ -30,7 +30,7 @@ const axios = axio.create({ withCredentials: true })
         methods:{
             deleteEvenement(id){
                 console.log(id)
-                axios.delete('http://localhost:3000/api/Evenement/'+this.events[id].numEvenement).then((response) => {
+                axios.delete('https://projetpiscine.herokuapp.com/api/Evenement/'+this.events[id].numEvenement).then((response) => {
                     console.log(response)
                     this.events.splice(id,1)
                 })
@@ -51,7 +51,7 @@ const axios = axio.create({ withCredentials: true })
         },
         beforeMount(){ 
             this.wait = true 
-            axios.get('http://localhost:3000/api/Evenement/').then((response) => {
+            axios.get('https://projetpiscine.herokuapp.com/api/Evenement/').then((response) => {
                 console.log(response)
                 this.events = response.data;
                 this.wait = false

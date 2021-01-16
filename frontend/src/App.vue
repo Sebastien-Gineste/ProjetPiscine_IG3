@@ -74,7 +74,7 @@ export default {
   components: { NavBar },
   beforeMount(){ // Appelé avant tout le reste
     if(store.getters.isUpdate){
-      axios.post(`http://localhost:3000/api/Etudiant/VerifCo`).then((response) => {
+      axios.post(`https://projetpiscine.herokuapp.com/api/Etudiant/VerifCo`).then((response) => {
         var user = response.data;
         store.dispatch('connexion',user);
       })

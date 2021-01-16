@@ -293,7 +293,7 @@ export default {
                 // appel axios
                 this.form.minHeure = parseFloat(this.form.minHeure)
                 this.form.maxHeure = parseFloat(this.form.maxHeure)
-                axios.post(`http://localhost:3000/api/Evenement/`,this.form).then((response) => {
+                axios.post(`https://projetpiscine.herokuapp.com/api/Evenement/`,this.form).then((response) => {
                     console.log(response.data);
                     alert(response.data.message);
                     //util.makeToast(this,'success',"Enregistrer :)","")
@@ -313,7 +313,7 @@ export default {
                 this.form.maxHeure = parseFloat(this.form.maxHeure)
                 console.log(this.form);
                 // appel axios
-                axios.put(`http://localhost:3000/api/Evenement/`+this.$route.params.id,this.form).then((response) => {
+                axios.put(`https://projetpiscine.herokuapp.com/api/Evenement/`+this.$route.params.id,this.form).then((response) => {
                     console.log(response.data);
                     util.makeToast(this,'success',"Enregistrer :)",response.data.message)
                     this.refrech();
@@ -332,7 +332,7 @@ export default {
     },
     beforeMount(){ // récupère les infos d'un événement si on est sur la page création Evenement 
         if(!this.isCreate){
-            axios.get(`http://localhost:3000/api/Evenement/`+this.$route.params.id).then((response) => {
+            axios.get(`https://projetpiscine.herokuapp.com/api/Evenement/`+this.$route.params.id).then((response) => {
                 console.log(response)
                 this.data = response.data
                 //this.minDate = response.data.dateDebut
@@ -355,7 +355,7 @@ export default {
             });
         }
         // récupère promo
-        axios.get(`http://localhost:3000/api/Promo/VerifEvent`).then((response) => {
+        axios.get(`https://projetpiscine.herokuapp.com/api/Promo/VerifEvent`).then((response) => {
             this.promos = [];
             var actuYear = new Date().getFullYear()
             var month = new Date().getMonth() + 1

@@ -62,7 +62,7 @@ export default {
   //appelee avant d'arriver au vue
   beforeMount(){
     this.wait = true 
-    axios.get(`http://localhost:3000/api/Evenement/`).then((response) => {
+    axios.get(`https://projetpiscine.herokuapp.com/api/Evenement/`).then((response) => {
                 console.log(response)
                 this.data = response.data
                 this.wait = false

@@ -86,7 +86,7 @@ const axios = axio.create({
             this.showMsg = false
             if (this.form.emailEtudiant.includes(this.emailContain)) {
               if ((this.form.numEtudiant.length > 0) && (this.form.nomEtudiant.length > 0) && (this.form.prenomEtudiant.length > 0) && (this.form.emailEtudiant.length > 0) && (this.form.mdpEtudiant.length > 0) && (this.form.annePromo != null)){
-                axios.post('http://localhost:3000/api/Etudiant/', this.form)
+                axios.post('https://projetpiscine.herokuapp.com/api/Etudiant/', this.form)
                 .then((response) => {
                     console.log(response);
                     alert("Compte créé avec succès !");
@@ -110,7 +110,7 @@ const axios = axio.create({
       },
       beforeMount() {
         // récupère promo
-        axios.get(`http://localhost:3000/api/Promo/`).then((response) => {
+        axios.get(`https://projetpiscine.herokuapp.com/api/Promo/`).then((response) => {
             this.promos = [];
             var actuYear = new Date().getFullYear()
             var month = new Date().getMonth() + 1

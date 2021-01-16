@@ -116,7 +116,7 @@ methods:{
 onSubmit(event) {
     event.preventDefault()
     console.log(this.form)
-    axios.post(`http://localhost:3000/api/Groupe`,this.form).then((response) => {
+    axios.post(`https://projetpiscine.herokuapp.com/api/Groupe`,this.form).then((response) => {
         this.$store.dispatch('ajoutGroup',response.data);
         this.currentGroupe = this.form
         this.listMembers = [{value : this.getId(), text : "vous" }]
@@ -127,7 +127,7 @@ onSubmit(event) {
 },
 updateGroup(){
     console.log(this.form)
-    axios.put(`http://localhost:3000/api/Groupe/`+this.getGroup(),this.form).then((response) => {
+    axios.put(`https://projetpiscine.herokuapp.com/api/Groupe/`+this.getGroup(),this.form).then((response) => {
         console.log(response.data)
         this.showModif = false
     })
@@ -136,7 +136,7 @@ updateGroup(){
     });
 },
 deleteGroup(){
-    axios.delete("http://localhost:3000/api/Groupe/"+this.getGroup()).then((response)=> { 
+    axios.delete("https://projetpiscine.herokuapp.com/api/Groupe/"+this.getGroup()).then((response)=> { 
         console.log(response.data)
         this.$store.dispatch('ajoutGroup',-1);
         this.form =   {
@@ -158,7 +158,7 @@ ajouterEleve(){
         if(this.listMembers[i].value == this.currentEtud){present = true}
     }
     if(!present){
-        axios.post("http://localhost:3000/api/Groupe/"+this.getGroup()+"/addEtudiant",{idEtudiant : this.currentEtud}).then((response)=> {
+        axios.post("https://projetpiscine.herokuapp.com/api/Groupe/"+this.getGroup()+"/addEtudiant",{idEtudiant : this.currentEtud}).then((response)=> {
         console.log(response.data)
         var i = 0
         while(i<this.etudiants.length && this.etudiants[i].value != this.currentEtud){
@@ -179,7 +179,7 @@ ajouterEleve(){
 deleteEleve(id){ // pour supprimer un élève
     console.log(id)
     console.log( this.listMembers[id])
-    axios.delete("http://localhost:3000/api/Groupe/"+this.getGroup()+"/removeEtudiant/",{ data: { idEtudiant : this.listMembers[id].value}}).then((response)=> {
+    axios.delete("https://projetpiscine.herokuapp.com/api/Groupe/"+this.getGroup()+"/removeEtudiant/",{ data: { idEtudiant : this.listMembers[id].value}}).then((response)=> {
         console.log(response.data)
         this.listMembers.splice(id,1)
     })
@@ -192,7 +192,7 @@ deleteEleve(id){ // pour supprimer un élève
 
     beforeMount(){ // récupère les infos d'un groupe si on est sur la page création groupe 
         if(this.hasGroup()){
-            axios.get(`http://localhost:3000/api/Groupe/`+this.getGroup()).then((response) => {
+            axios.get(`https://projetpiscine.herokuapp.com/api/Groupe/`+this.getGroup()).then((response) => {
                 console.log(response.data)
 
                 this.form.idGroupe = response.data.idGroupe
@@ -215,7 +215,7 @@ deleteEleve(id){ // pour supprimer un élève
             });
         }
         // récupère la promo 
-        axios.get('http://localhost:3000/api/Etudiant/Promo/SansGroupe/'+this.getId()).then((data) => {
+        axios.get('https://projetpiscine.herokuapp.com/api/Etudiant/Promo/SansGroupe/'+this.getId()).then((data) => {
             console.log(data.data)
             if(data.data){
                 for(let i=0;i<data.data.length;i++){
@@ -230,7 +230,7 @@ deleteEleve(id){ // pour supprimer un élève
         });
 
        // récupère les profs
-        axios.get(`http://localhost:3000/api/Prof/`).then((response) => {
+        axios.get(`https://projetpiscine.herokuapp.com/api/Prof/`).then((response) => {
             var profs = response.data;
             for(let i=0;i<profs.length;i++){
                 this.profs.push({value : profs[i].idProf , text : profs[i].nomProf+" "+profs[i].prenomProf})

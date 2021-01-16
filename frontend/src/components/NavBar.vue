@@ -48,7 +48,7 @@ export default {
    methods:{
        ...mapGetters(['isUser','isAdmin','getIdEvent']),
        Deconnexion(){
-          axios.post("http://localhost:3000/api/Etudiant/Deconnexion")
+          axios.post("https://projetpiscine.herokuapp.com/api/Etudiant/Deconnexion")
           /*sessionStorage.removeItem('token');*/
           this.$store.dispatch('deconnexion');
           if(this.$router.history.current.name !== "Home"){
